@@ -32,40 +32,36 @@
             padding: 0 1rem;
         }
         .sidebar {
-            width: 250px;
+            width: 200px;
             background: white;
-            padding: 1rem;
+            padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 1rem;
             height: fit-content;
+            text-align: center;
         }
         .sidebar h3 {
             color: #2e7d32;
             margin-top: 0;
+            font-size: 1.2rem;
         }
         .sidebar select {
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.75rem;
             margin-bottom: 1rem;
-            border: 1px solid #4caf50;
+            border: 2px solid #4caf50;
             border-radius: 4px;
-            font-size: 1rem;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar li {
-            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            background: #f4f9f4;
         }
         .result {
             margin-top: 1rem;
             padding: 1rem;
             background: #e8f5e9;
             border-radius: 4px;
+            font-size: 0.95rem;
         }
         .content {
             flex: 1;
@@ -127,7 +123,7 @@
             font-size: 1.2rem;
             margin-top: 1rem;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .main-container {
                 flex-direction: column;
             }
@@ -140,13 +136,17 @@
                 margin-left: 0;
             }
             table, th, td {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             header h1 {
                 font-size: 1.8rem;
             }
             .details {
                 padding: 1rem;
+            }
+            .sidebar select {
+                font-size: 1rem;
+                padding: 0.5rem;
             }
         }
     </style>
@@ -159,30 +159,6 @@
 
     <div class="main-container">
         <div class="sidebar">
-            <h3>All Effects</h3>
-            <ul>
-                <li>Pain relief</li>
-                <li>Reduces inflammation</li>
-                <li>Anti-inflammatory</li>
-                <li>Reduces stress</li>
-                <li>Anxiolytic (reduces anxiety)</li>
-                <li>Helpful for arthritis</li>
-                <li>Bronchodilator (treats respiratory diseases)</li>
-                <li>Enhances absorption of other compounds</li>
-                <li>Analgesic</li>
-                <li>Antiparasitic</li>
-                <li>Antioxidant</li>
-                <li>Anti-proliferative (prevents cancer cell growth)</li>
-                <li>Suppresses appetite</li>
-                <li>Aids in healing broken bones</li>
-                <li>Improves cognitive function</li>
-                <li>Lowers cholesterol levels</li>
-                <li>Insect repellent</li>
-                <li>Kills breast cancer cells</li>
-                <li>Anti-depressant</li>
-                <li>Neuroprotective</li>
-                <li>Anti-allergic</li>
-            </ul>
             <h3>Find Terpenes by Effect</h3>
             <select id="effectSelect" onchange="showTerpenes()">
                 <option value="">Select an effect...</option>
