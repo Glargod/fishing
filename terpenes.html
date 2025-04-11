@@ -26,20 +26,16 @@
             font-size: 2.5rem;
         }
         .main-container {
-            display: flex;
             max-width: 1400px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
         .sidebar {
-            width: 200px;
             background: white;
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 1rem;
-            height: fit-content;
+            margin-bottom: 2rem;
             text-align: center;
         }
         .sidebar h3 {
@@ -64,8 +60,7 @@
             font-size: 0.95rem;
         }
         .content {
-            flex: 1;
-            margin-left: 2rem;
+            width: 100%;
         }
         table {
             width: 100%;
@@ -127,17 +122,6 @@
             margin-top: 1rem;
         }
         @media (max-width: 600px) {
-            .main-container {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                position: static;
-                margin-bottom: 1rem;
-            }
-            .content {
-                margin-left: 0;
-            }
             table, th, td {
                 font-size: 0.85rem;
             }
@@ -174,12 +158,12 @@
                 <option value="Reduces stress">Reduces stress</option>
                 <option value="Anxiolytic (reduces anxiety)">Anxiolytic (reduces anxiety)</option>
                 <option value="Helpful for arthritis">Helpful for arthritis</option>
-                <option value="Bronchodilator (treats respiratory diseases)">Bronchodilator (treats respiratory diseases)</option>
-                <option value="Enhances absorption of other compounds">Enhances absorption of other compounds</option>
+                <option value="Bronchodilator">Bronchodilator</option>
+                <option value="Enhances absorption of compounds">Enhances absorption of compounds</option>
                 <option value="Analgesic">Analgesic</option>
                 <option value="Antiparasitic">Antiparasitic</option>
                 <option value="Antioxidant">Antioxidant</option>
-                <option value="Anti-proliferative (prevents cancer cell growth)">Anti-proliferative (prevents cancer cell growth)</option>
+                <option value="Anti-proliferative">Anti-proliferative</option>
                 <option value="Suppresses appetite">Suppresses appetite</option>
                 <option value="Aids in healing broken bones">Aids in healing broken bones</option>
                 <option value="Improves cognitive function">Improves cognitive function</option>
@@ -192,6 +176,7 @@
                 <option value="Relaxing">Relaxing</option>
                 <option value="Calming">Calming</option>
                 <option value="Anti-bacterial">Anti-bacterial</option>
+                <option value="Sedative">Sedative</option>
             </select>
             <div id="result" class="result"></div>
         </div>
@@ -297,14 +282,13 @@
                 
                 <h3>Terpene Details</h3>
                 <ul>
-                    <li><strong>Myrcene</strong>: The most common terpene in cannabis, known for sedative and anti-inflammatory properties. Found in strains like Mango Kush, Skunk XL, White Widow, and OG Kush, it’s noted for pain relief and sedation.</li>
-                    <li><strong>Limonene</strong>:
- Recognized for mood-enhancing and stress-relieving effects, with anti-inflammatory benefits. Common in Sour Diesel, Super Lemon Haze, Durban Poison, and Jack Herer, it’s associated with antioxidant properties.</li>
-                    <li><strong>Linalool</strong>: Known for calming and analgesic effects, found in Amnesia Haze, Lavender, LA Confidential, and Pink Kush. It’s valued for its anti-inflammatory properties.</li>
-                    <li><strong>Caryophyllene</strong>: Notable for anti-inflammatory effects and aiding arthritis or gastrointestinal issues. Found in Girl Scout Cookies, Sour Diesel, Super Silver Haze, and Zkittles.</li>
-                    <li><strong>Alpha-pinene and Beta-pinene</strong>: Both offer anti-inflammatory and bronchodilator effects, common in Jack Herer, Blue Dream, Dutch Treat, and OG Kush or Haze Berry, aiding respiratory health.</li>
+                    <li><strong>Myrcene</strong>: The most common terpene in cannabis, known for sedative and pain-relieving properties. Found in strains like Mango Kush, Skunk XL, White Widow, and OG Kush.</li>
+                    <li><strong>Limonene</strong>: Recognized for anti-inflammatory and antioxidant effects. Common in Sour Diesel, Super Lemon Haze, Durban Poison, and Jack Herer.</li>
+                    <li><strong>Linalool</strong>: Known for anti-inflammatory and analgesic effects, found in Amnesia Haze, Lavender, LA Confidential, and Pink Kush.</li>
+                    <li><strong>Caryophyllene</strong>: Notable for anti-inflammatory effects and aiding arthritis. Found in Girl Scout Cookies, Sour Diesel, Super Silver Haze, and Zkittles.</li>
+                    <li><strong>Alpha-pinene and Beta-pinene</strong>: Both offer anti-inflammatory and bronchodilator effects, common in Jack Herer, Blue Dream, Dutch Treat, and Haze Berry or OG Kush.</li>
                     <li><strong>Alpha-bisabolol</strong>: Enhances absorption and provides analgesic effects, found in Harle-Tsu, Pink Kush, OG Shark, and ACDC.</li>
-                    <li><strong>Eucalyptol</strong>: Relieves pain and reduces inflammation, present in Super Lemon Haze, Girl Scout Cookies, Headband, and AC/DC.</li>
+                    <li><strong>Eucalyptol</strong>: Relieves pain and has anti-bacterial properties, present in Super Lemon Haze, Girl Scout Cookies, Headband, and AC/DC.</li>
                     <li><strong>Trans-nerolidol</strong>: Offers antiparasitic and antioxidant properties, found in Sweet Skunk, Island Sweet Skunk, Skywalker OG, and Blue Dream.</li>
                     <li><strong>Humulene</strong>: Known for anti-proliferative effects and appetite suppression, common in Sour Diesel, Girl Scout Cookies, Headband, and White Widow.</li>
                     <li><strong>Delta 3 Carene</strong>: Aids bone healing and cognitive function, found in Arjan’s Ultra Haze, Bubba Kush, Amnesia Haze, and Super Silver Haze.</li>
@@ -315,13 +299,13 @@
                 </ul>
                 
                 <h3>Strain Variability and Considerations</h3>
-                <p>Strain associations can vary due to cultivation methods, regional differences, and testing standards. For example, some sources list Zkittles for Caryophyllene, while others highlight Girl Scout Cookies. Users should check product-specific terpene profiles via dispensary websites or labels, especially when selecting from multiple strain options.</p>
+                <p>Strain associations can vary due to cultivation methods, regional differences, and testing standards. For example, some sources list Zkittles for Caryophyllene, while others highlight Girl Scout Cookies. Check product-specific terpene profiles via dispensary websites or labels, especially with four options to choose from.</p>
                 
                 <h3>Limitations and Future Research</h3>
-                <p>Terpene effects are not universal and depend on individual physiology, dosage, and consumption method. The entourage effect is still under study, and more research is needed to confirm benefits. Strain potency varies, so consulting healthcare professionals is advised for medical use.</p>
+                <p>Terpene effects depend on individual physiology, dosage, and consumption method. The entourage effect is still under study, and more research is needed to confirm benefits. Strain potency varies, so consult healthcare professionals for medical use.</p>
                 
                 <h3>Practical Implications</h3>
-                <p>Understanding terpene profiles can guide strain selection. For pain relief, consider Myrcene-rich Mango Kush or OG Kush; for stress, Limonene-rich Sour Diesel or Durban Poison. Availability and legal status vary, so check local dispensaries or resources like Cannacon for the listed strains.</p>
+                <p>For pain relief, try Myrcene-rich Mango Kush or OG Kush; for antioxidants, Limonene-rich Sour Diesel or Durban Poison. With four strains per terpene, you’ve got flexibility based on what’s available—check local dispensaries or Cannacon.</p>
             </div>
         </div>
     </div>
