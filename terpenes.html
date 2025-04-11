@@ -76,7 +76,7 @@
             color: #555;
         }
         .strong-suggestion {
-            background: #c8e6c9; /* Slightly darker for visibility */
+            background: #c8e6c9;
             padding: 0.5rem;
             border-radius: 4px;
             margin-bottom: 1rem;
@@ -402,8 +402,8 @@
             });
             const commonStrains = Object.keys(strainCounts).filter(strain => strainCounts[strain] > 1);
 
-            // Build the result HTML
-            let resultHTML = "<h4>Terpenes with " + selectedEffect + "</h4>";
+            // Build the result HTML with simplified heading
+            let resultHTML = "<h4>Results</h4>"; // Changed to "Results"
 
             // Add "Strong Suggestion" section if there are common strains
             if (commonStrains.length > 0) {
