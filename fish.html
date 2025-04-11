@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economy, NS High Tide Depth Widget</title>
+    <!-- Link to the Google Drive favicon -->
+    <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1sZOjKu0crfpGsa2lzDMsdFVIt2ZzZrQR">
+    <!-- Fallback: Download the image, save as favicon.png in the same directory, and use: -->
+    <!-- <link rel="icon" type="image/png" href="favicon.png"> -->
+</head>
+<body>
+    <div id="tide-widget">Initial Loading...</div>
+
+    <script>
+        console.log('Script started');
+        const TideWidget = {
+            config: {
+                apiKey: 'b55d6859-9188-44b1-a1d3-3a4176b92e49',
+                lat: 45.3833,
+                lon: -64.1333,
+                timezone: 'America/Halifax',
+                apiUrl: 'https://www.worldtides.info/api/v3?heights',
+                containerId: 'tide-widget',
+                minHighTideHeight: 10,
+                targetMaxRange: 16.85,
+                driveTimeMinutes: 35
+            },
+
+            async fetchTides() {
+                console.log('fetchTides called');
+                const now = Math.floor(Date.now() / 1000);
+                const url = `${this.config.apiUrl}&lat=${this.config.lat}&lon=${this.config.lon}&key=${this.config.apiKey}&start=${now}&length=172800`;
+                console.log('Fetch URL:', url);
+                try {
+                    console.log('Attempting fetch');
+                    const response = await fetch(url);
+                    console.log('Fetch response status:', response.status);
+                    if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error);
+                    console.log('API response:', data);
+                    return data.heights || [];
+                } catch (error) {
+                    console.error('Fetch error:', error.message);
+                    this.showError(`Fetch failed: ${error.message} (Check console)`);
+                    return [];
+                }
+            },
+
+            init() {
+                console.log('init called');
+                this.renderWidget();
+                this.fetchAndDisplayTides();
+            },
+
+            renderWidget() {
+                console.log('renderWidget called');
+                const container = document.getElementById(this.config.containerId);
+                if (!container) {
+                    console.error('Container not found');
+                    document.body.innerHTML = '<p>Error: Container not found</p>';
+                    return;
+                }
+                container.innerHTML = `
+                    <style>
+                        .tide-widget { font-family: Arial, sans-serif; background: #e6f0ff; padding: 15px; max-width: 450px; margin: 10px auto; box-sizing: border-box; }
+                        .tide-widget h3 { margin: 0 0 5px; font-size: 1.2em; color: #1a3c6e; text-align: center; }
+                        .tide-widget .subtitle { margin: 0 0 10px; font-size: 0.9em; color: #333; text-align: center; }
+                        .tide-widget .clock { font-size: 0.8em; color: #666; margin-left: 10px; display: inline; }
+                        .tide-widget .loading, .tide-widget .error { text-align: center; font-size: 0.9em; margin: 10px 0; }
+                        .tide-widget .error { color: #d32f2f; }
+                        .tide-widget .tide-chart { width: 100%; height: 150px; display: block; background: #f0f8ff; }
+                        .tide-widget table { width: 100%; max-width: 100%; border-collapse: collapse; font-size: 0.85em; margin-top: 10px; background: #e6f0ff; box-sizing: border-box; overflow-x: auto; }
+                        .tide-widget th, .tide-widget td { padding: 2px 3px; text-align: left; border-bottom: 1px solid #ddd; white-space: nowrap; box-sizing: border-box; }
+                        .tide-widget th { background: #1a3c6e; color: white; font-weight: bold; font-size: 0.8em; overflow: hidden; text-overflow: ellipsis; }
+                        .tide-widget th:nth-child(1), .tide-widget td:nth-child(1) { min-width: 60px; }
+                        .tide-widget th:nth-child(2), .tide-widget td:nth-child(2) { min-width: 40px; }
+                        .tide-widget th:nth-child(3), .tide-widget td:nth-child(3) { min-width: 40px; }
+                        .tide-widget th:nth-child(4), .tide-widget td:nth-child(4) { min-width: 40px; }
+                        .tide-widget th:nth-child(5), .tide-widget td:nth-child(5) { min-width: 80px; }
+                        .tide-widget .reminder { color: #d32f2f; font-weight: bold; }
+                    </style>
+                    <div class="tide-widget">
+                        <h3>Economy, NS High Tide Depths</h3>
+                        <p class="subtitle"><span class="depth-text">Current Depth: Loading...</span><span class="clock"></span></p>
+                        <div class="loading">Loading tide predictions...</div>
+                        <div class="error" style="display: none;"></div>
+                        <canvas class="tide-chart"></canvas>
+                        <div class="table-placeholder">Table will go here</div>
+                    </div>
+                `;
+            },
+
+            formatDate(timestamp) {
+                return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+                    timeZone: this.config.timezone,
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            },
+
+            formatTime(timestamp) {
+                return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
+                    timeZone: this.config.timezone,
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            },
+
+            formatClock() {
+                return new Date().toLocaleTimeString('en-US', {
+                    timeZone: this.config.timezone,
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    fractionalSecondDigits: 3,
+                    hour12: true
+                });
+            },
+
+            adjustTides(tides) {
+                console.log('adjustTides called', tides.length);
+                if (!tides.length) return [];
+                const minHeight = Math.min(...tides.map(t => t.height));
+                const maxHeight = Math.max(...tides.map(t => t.height));
+                const apiRange = maxHeight - minHeight;
+                const latOffset = Math.abs(minHeight);
+                const scaleFactor = apiRange > 0 ? this.config.targetMaxRange / apiRange : 1;
+                const adjustedTides = tides.map(t => ({
+                    dt: t.dt,
+                    height: (t.height + latOffset) * scaleFactor
+                }));
+                console.log('Adjusted tides:', adjustedTides.slice(0, 5));
+                return adjustedTides;
+            },
+
+            findHighTides(adjustedTides) {
+                console.log('findHighTides called');
+                const highTides = [];
+                for (let i = 1; i < adjustedTides.length - 1; i++) {
+                    if (adjustedTides[i].height > adjustedTides[i-1].height && adjustedTides[i].height > adjustedTides[i+1].height) {
+                        const tideTime = adjustedTides[i].dt;
+                        const tideHeight = adjustedTides[i].height;
+                        if (tideHeight >= this.config.minHighTideHeight) {
+                            highTides.push({ tideTime, tideHeight, arriveTime: tideTime - 3600 });
+                        }
+                    }
+                }
+                console.log('High tides:', highTides);
+                return highTides;
+            },
+
+            getCurrentHeight(adjustedTides) {
+                if (adjustedTides.length < 2) return 'N/A';
+                const now = Math.floor(Date.now() / 1000);
+                let prev = null, next = null;
+                for (let i = 0; i < adjustedTides.length; i++) {
+                    if (adjustedTides[i].dt <= now) prev = adjustedTides[i];
+                    else if (adjustedTides[i].dt > now && !next) { next = adjustedTides[i]; break; }
+                }
+                if (!prev || !next) return prev ? prev.height.toFixed(1) : 'N/A';
+                const timeDiff = next.dt - prev.dt;
+                const timeFraction = (now - prev.dt) / timeDiff;
+                const currentHeight = prev.height + (next.height - prev.height) * timeFraction;
+                return currentHeight.toFixed(1);
+            },
+
+            drawStripedBass(ctx, x, y, size) {
+                console.log('Drawing striped bass at', x, y);
+                // Body (green)
+                ctx.beginPath();
+                ctx.moveTo(x - size, y); // Tail start
+                ctx.quadraticCurveTo(x - size / 2, y - size / 2, x, y - size / 3); // Top curve
+                ctx.lineTo(x + size * 0.8, y - size / 4); // Head
+                ctx.quadraticCurveTo(x + size, y, x + size * 0.8, y + size / 4); // Bottom curve
+                ctx.lineTo(x, y + size / 3); // Belly
+                ctx.quadraticCurveTo(x - size / 2, y + size / 2, x - size, y); // Bottom tail
+                ctx.closePath();
+                ctx.fillStyle = '#2E8B57'; // Green body
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Dorsal fin (orange)
+                ctx.beginPath();
+                ctx.moveTo(x - size / 4, y - size / 3);
+                ctx.lineTo(x, y - size / 2);
+                ctx.lineTo(x + size / 4, y - size / 3);
+                ctx.closePath();
+                ctx.fillStyle = '#FF4500'; // Orange fins
+                ctx.fill();
+
+                // Tail fin (orange)
+                ctx.beginPath();
+                ctx.moveTo(x - size, y);
+                ctx.lineTo(x - size * 1.3, y - size / 4);
+                ctx.lineTo(x - size * 1.3, y + size / 4);
+                ctx.closePath();
+                ctx.fillStyle = '#FF4500';
+                ctx.fill();
+
+                // Pectoral fin (orange)
+                ctx.beginPath();
+                ctx.moveTo(x + size / 4, y + size / 4);
+                ctx.lineTo(x + size / 2, y + size / 2);
+                ctx.lineTo(x + size / 2, y + size / 3);
+                ctx.closePath();
+                ctx.fillStyle = '#FF4500';
+                ctx.fill();
+
+                // Stripes (black)
+                for (let i = 1; i <= 4; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(x - size / 2 + i * (size / 3), y - size / 4);
+                    ctx.lineTo(x - size / 2 + i * (size / 3), y + size / 4);
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+
+                // Eye (white with red pupil)
+                ctx.beginPath();
+                ctx.arc(x + size * 0.6, y - size / 8, size / 8, 0, 2 * Math.PI);
+                ctx.fillStyle = '#FFF';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(x + size * 0.6, y - size / 8, size / 16, 0, 2 * Math.PI);
+                ctx.fillStyle = '#FF0000';
+                ctx.fill();
+            },
+
+            drawTideChart(adjustedTides, highTides) {
+                console.log('drawTideChart called');
+                const container = document.getElementById(this.config.containerId);
+                const canvas = container.querySelector('.tide-chart');
+                if (!canvas) {
+                    console.error('Canvas not found');
+                    this.showError('Canvas not found');
+                    return;
+                }
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    console.error('Canvas context unavailable');
+                    this.showError('Canvas context unavailable');
+                    return;
+                }
+
+                canvas.width = canvas.offsetWidth || 400;
+                canvas.height = canvas.offsetHeight || 150;
+                console.log('Canvas set:', canvas.width, canvas.height);
+
+                ctx.fillStyle = '#f0f8ff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                if (adjustedTides.length < 2) {
+                    console.warn('Not enough data for chart');
+                    ctx.fillStyle = '#333';
+                    ctx.fillText('No data to display', 50, 50);
+                    return;
+                }
+
+                const minHeight = Math.min(...adjustedTides.map(t => t.height));
+                const maxHeight = Math.max(...adjustedTides.map(t => t.height));
+                const minTime = adjustedTides[0].dt;
+                const maxTime = adjustedTides[adjustedTides.length - 1].dt;
+                const width = canvas.width;
+                const height = canvas.height;
+                const padding = 20;
+
+                ctx.beginPath();
+                ctx.strokeStyle = '#1a3c6e';
+                ctx.lineWidth = 2;
+                adjustedTides.forEach((tide, i) => {
+                    const x = padding + ((tide.dt - minTime) / (maxTime - minTime)) * (width - 2 * padding);
+                    const y = height - padding - ((tide.height - minHeight) / (maxHeight - minHeight)) * (height - 2 * padding);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                highTides.forEach(tide => {
+                    const x = padding + ((tide.tideTime - minTime) / (maxTime - minTime)) * (width - 2 * padding);
+                    const y = height - padding - ((tide.tideHeight - minHeight) / (maxHeight - minHeight)) * (height - 2 * padding);
+                    this.drawStripedBass(ctx, x, y, 12);
+                });
+
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, height - padding);
+                ctx.lineTo(width - padding, height - padding);
+                ctx.stroke();
+
+                ctx.fillStyle = '#333';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(`${maxHeight.toFixed(1)} m`, 2, padding + 10);
+                ctx.fillText(`${minHeight.toFixed(1)} m`, 2, height - padding);
+                ctx.textAlign = 'center';
+                ctx.fillText('Now', padding, height - 5);
+                ctx.fillText('+48h', width - padding, height - 5);
+            },
+
+            displayTides(highTides, currentHeight) {
+                console.log('displayTides called');
+                const container = document.getElementById(this.config.containerId);
+                if (!container) {
+                    console.error('Container missing');
+                    document.body.innerHTML = '<p>Error: Container missing</p>';
+                    return;
+                }
+                const subtitle = container.querySelector('.subtitle');
+                const depthText = container.querySelector('.depth-text');
+                const loading = container.querySelector('.loading');
+                if (!subtitle || !depthText || !loading) {
+                    console.error('DOM elements missing');
+                    container.innerHTML += '<p>Error: DOM incomplete</p>';
+                    return;
+                }
+
+                depthText.textContent = `Current Depth: ${currentHeight} m`;
+                loading.style.display = 'none';
+                container.querySelector('.table-placeholder').innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Depth (m)</th>
+                                <th>Arrive By</th>
+                                <th>Depart Springhill Jct</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${highTides.length ? highTides.map(tide => `
+                                <tr>
+                                    <td>${this.formatDate(tide.tideTime)}</td>
+                                    <td>${this.formatTime(tide.tideTime)}</td>
+                                    <td>${tide.tideHeight.toFixed(1)}</td>
+                                    <td class="reminder">${this.formatTime(tide.arriveTime)}</td>
+                                    <td>${this.formatTime(tide.arriveTime - this.config.driveTimeMinutes * 60)}</td>
+                                </tr>
+                            `).join('') : '<tr><td colspan="5">No high tides found</td></tr>'}
+                        </tbody>
+                    </table>
+                `;
+            },
+
+            showError(message) {
+                console.error('showError:', message);
+                const container = document.getElementById(this.config.containerId);
+                if (!container) {
+                    document.body.innerHTML = `<p style="color: #d32f2f;">${message}</p>`;
+                    return;
+                }
+                const errorDiv = container.querySelector('.error');
+                const loading = container.querySelector('.loading');
+                if (errorDiv && loading) {
+                    errorDiv.textContent = message;
+                    errorDiv.style.display = 'block';
+                    loading.style.display = 'none';
+                } else {
+                    container.innerHTML = `<p style="color: #d32f2f;">${message}</p>`;
+                }
+            },
+
+            updateCurrentHeight(adjustedTides) {
+                console.log('updateCurrentHeight called');
+                const container = document.getElementById(this.config.containerId);
+                if (!container) {
+                    console.error('Container not found in update');
+                    return;
+                }
+                const depthText = container.querySelector('.depth-text');
+                if (!depthText) {
+                    console.error('Depth text element missing');
+                    return;
+                }
+
+                const currentHeight = this.getCurrentHeight(adjustedTides);
+                depthText.textContent = `Current Depth: ${currentHeight} m`;
+                console.log('Updated height:', currentHeight);
+            },
+
+            updateClock() {
+                console.log('updateClock called');
+                const container = document.getElementById(this.config.containerId);
+                if (!container) {
+                    console.error('Container not found in updateClock');
+                    return;
+                }
+                const clock = container.querySelector('.clock');
+                if (!clock) {
+                    console.error('Clock element missing');
+                    return;
+                }
+
+                clock.textContent = this.formatClock();
+                console.log('Updated clock:', clock.textContent);
+            },
+
+            async fetchAndDisplayTides() {
+                console.log('fetchAndDisplayTides called');
+                try {
+                    const tides = await this.fetchTides();
+                    const adjustedTides = this.adjustTides(tides);
+                    const highTides = this.findHighTides(adjustedTides);
+                    const currentHeight = this.getCurrentHeight(adjustedTides);
+                    this.drawTideChart(adjustedTides, highTides);
+                    this.displayTides(highTides, currentHeight);
+
+                    // Initial updates
+                    this.updateCurrentHeight(adjustedTides);
+                    this.updateClock();
+                    // Update height every minute, clock every 100ms
+                    setInterval(() => this.updateCurrentHeight(adjustedTides), 60000);
+                    setInterval(() => this.updateClock(), 100);
+                } catch (error) {
+                    console.error('fetchAndDisplayTides error:', error);
+                    this.showError(`Error: ${error.message} (Check console)`);
+                }
+            }
+        };
+
+        console.log('Calling init');
+        TideWidget.init();
+    </script>
+</body>
+</html>
