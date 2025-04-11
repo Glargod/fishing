@@ -43,7 +43,7 @@
             margin-top: 0;
             font-size: 1.2rem;
         }
-        .sidebar select {
+        .sidebar select, .sidebar input {
             width: 100%;
             padding: 0.75rem;
             margin-bottom: 1rem;
@@ -52,28 +52,41 @@
             font-size: 1.1rem;
             background: #f4f9f4;
         }
-        .result {
+        .sidebar button {
+            padding: 0.75rem 1.5rem;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .sidebar button:hover {
+            background-color: #2e7d32;
+        }
+        .result, .strain-result {
             margin-top: 1rem;
             padding: 1rem;
             background: #e8f5e9;
             border-radius: 4px;
             font-size: 0.95rem;
         }
-        .result h4 {
+        .result h4, .strain-result h4 {
             margin-top: 0;
             font-size: 1.1rem;
         }
-        .result p {
+        .result p, .strain-result p {
             margin: 0.5rem 0;
             line-height: 1.4;
         }
-        .result strong {
+        .result strong, .strain-result strong {
             font-size: 1.1rem;
             color: #2e7d32;
         }
-        .result .strains {
+        .result .strains, .strain-result .strains {
             font-size: 0.9rem;
             color: #555;
+            display: block; /* Allow wrapping */
         }
         .strong-suggestion {
             background: #c8e6c9;
@@ -115,6 +128,10 @@
         }
         th:nth-child(3), td:nth-child(3) {
             width: 40%;
+        }
+        td:nth-child(3) {
+            font-size: 0.9rem;
+            color: #555;
         }
         tr:hover {
             background-color: #e8f5e9;
@@ -163,17 +180,21 @@
             .details {
                 padding: 1rem;
             }
-            .sidebar select {
+            .sidebar select, .sidebar input {
                 font-size: 1rem;
                 padding: 0.5rem;
+            }
+            .sidebar button {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
             }
             th:nth-child(3), td:nth-child(3) {
                 width: auto;
             }
-            .result strong {
+            .result strong, .strain-result strong {
                 font-size: 1rem;
             }
-            .result .strains {
+            .result .strains, .strain-result .strains {
                 font-size: 0.85rem;
             }
         }
@@ -216,6 +237,11 @@
                 <option value="Reduces allergies (anti-allergic)">Reduces allergies (anti-allergic)</option>
             </select>
             <div id="result" class="result"></div>
+
+            <h3>Find Terpenes by Strain</h3>
+            <input type="text" id="strainInput" placeholder="Enter a strain (e.g., Northern Lights)">
+            <button onclick="findTerpenesByStrain()">Search</button>
+            <div id="strainResult" class="strain-result"></div>
         </div>
 
         <div class="content">
@@ -225,84 +251,84 @@
                     <tr>
                         <th>Terpene</th>
                         <th>Two Most Significant Effects</th>
-                        <th>Four Strains</th>
+                        <th>Associated Strains</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>Myrcene</td>
                         <td>Sedative, Pain relief</td>
-                        <td>Mango Kush, Skunk XL, White Widow, OG Kush</td>
+                        <td>Mango Kush, Skunk XL, White Widow, OG Kush, Northern Lights, Granddaddy Purple, Blue Cheese, Purple Urkle</td>
                     </tr>
                     <tr>
                         <td>Limonene</td>
                         <td>Anti-inflammatory, Antioxidant</td>
-                        <td>Sour Diesel, Super Lemon Haze, Durban Poison, Jack Herer</td>
+                        <td>Sour Diesel, Super Lemon Haze, Durban Poison, Jack Herer, Lemon Skunk, Wedding Cake, Do-Si-Dos, Trainwreck</td>
                     </tr>
                     <tr>
                         <td>Linalool</td>
                         <td>Anti-inflammatory, Analgesic</td>
-                        <td>Amnesia Haze, Lavender, LA Confidential, Pink Kush</td>
+                        <td>Amnesia Haze, Lavender, LA Confidential, Pink Kush, Master Kush, G-13, Chem Dawg, Kosher Kush</td>
                     </tr>
                     <tr>
                         <td>Caryophyllene</td>
                         <td>Anti-inflammatory, Helpful for arthritis</td>
-                        <td>Girl Scout Cookies, Sour Diesel, Super Silver Haze, Zkittles</td>
+                        <td>Girl Scout Cookies, Sour Diesel, Super Silver Haze, Zkittles, Northern Lights, Bubba Kush, Gelato, Chemdawg</td>
                     </tr>
                     <tr>
                         <td>Alpha-pinene</td>
                         <td>Anti-inflammatory, Bronchodilator</td>
-                        <td>Jack Herer, Blue Dream, Dutch Treat, Haze Berry</td>
+                        <td>Jack Herer, Blue Dream, Dutch Treat, Haze Berry, Trainwreck, Strawberry Cough, Romulan, Island Sweet Skunk</td>
                     </tr>
                     <tr>
                         <td>Beta-pinene</td>
                         <td>Anti-inflammatory, Bronchodilator</td>
-                        <td>Jack Herer, Blue Dream, Dutch Treat, OG Kush</td>
+                        <td>Jack Herer, Blue Dream, Dutch Treat, OG Kush, Harlequin, Cannatonic, Critical Mass, AK-47</td>
                     </tr>
                     <tr>
                         <td>Alpha-bisabolol</td>
                         <td>Enhances absorption of compounds, Analgesic</td>
-                        <td>Harle-Tsu, Pink Kush, OG Shark, ACDC</td>
+                        <td>Harle-Tsu, Pink Kush, OG Shark, ACDC, Headband, Master Kush, Dolato, Banana Kush</td>
                     </tr>
                     <tr>
                         <td>Eucalyptol</td>
                         <td>Relieves pain, Anti-bacterial</td>
-                        <td>Super Lemon Haze, Girl Scout Cookies, Headband, AC/DC</td>
+                        <td>Super Lemon Haze, Girl Scout Cookies, Headband, AC/DC, Bubba Kush, Super Silver Haze, Lemon Kush, White Fire OG</td>
                     </tr>
                     <tr>
                         <td>Trans-nerolidol</td>
                         <td>Antiparasitic, Antioxidant</td>
-                        <td>Sweet Skunk, Island Sweet Skunk, Skywalker OG, Blue Dream</td>
+                        <td>Sweet Skunk, Island Sweet Skunk, Skywalker OG, Blue Dream, Jack Herer, Sour Diesel, Green Crack, Black Jack</td>
                     </tr>
                     <tr>
                         <td>Humulene</td>
                         <td>Anti-proliferative, Suppresses appetite</td>
-                        <td>Sour Diesel, Girl Scout Cookies, Headband, White Widow</td>
+                        <td>Sour Diesel, Girl Scout Cookies, Headband, White Widow, Death Star, Candyland, Sherbert, Thin Mint GSC</td>
                     </tr>
                     <tr>
                         <td>Delta 3 Carene</td>
                         <td>Aids in healing broken bones, Improves cognitive function</td>
-                        <td>Arjan’s Ultra Haze, Bubba Kush, Amnesia Haze, Super Silver Haze</td>
+                        <td>Arjan’s Ultra Haze, Bubba Kush, Amnesia Haze, Super Silver Haze, Lemon Haze, Super Lemon Haze, Cherry Pie, AK-47</td>
                     </tr>
                     <tr>
                         <td>Camphene</td>
                         <td>Antioxidant, Lowers cholesterol levels</td>
-                        <td>Ghost OG, Strawberry Banana, Mendocino Purps, Strawberry Cough</td>
+                        <td>Ghost OG, Strawberry Banana, Mendocino Purps, Strawberry Cough, ACDC, Cannatonic, Banana Kush, White Widow</td>
                     </tr>
                     <tr>
                         <td>Borneol</td>
                         <td>Insect repellent, Kills breast cancer cells</td>
-                        <td>Kali Mist, Hindu Kush, Golden Pineapple, K13 Haze</td>
+                        <td>Kali Mist, Hindu Kush, Golden Pineapple, K13 Haze, Diamond Girl, Snow White, Amnesia Haze, Super Silver Haze</td>
                     </tr>
                     <tr>
                         <td>Terpineol</td>
                         <td>Relaxing, Calming</td>
-                        <td>Jack Herer, White Widow, OG Kush, Amnesia Haze</td>
+                        <td>Jack Herer, White Widow, OG Kush, Amnesia Haze, Girl Scout Cookies, Fire OG, Blue Dream, Pineapple Express</td>
                     </tr>
                     <tr>
                         <td>Valencene</td>
                         <td>Anti-inflammatory, Anti-allergic</td>
-                        <td>Tangie, Agent Orange, Pineapple Express, Clementine</td>
+                        <td>Tangie, Agent Orange, Pineapple Express, Clementine, Lime Skunk, Lemon Meringue, Orange Bud, Grapefruit</td>
                     </tr>
                 </tbody>
             </table>
@@ -315,34 +341,34 @@
                 <p>Cannabis terpenes are aromatic compounds found in the trichomes of the cannabis plant, contributing to its distinctive smell, taste, and potentially its therapeutic effects. Research suggests they may work synergistically with cannabinoids like THC and CBD, a phenomenon known as the entourage effect. This section elaborates on the terpenes, their effects, and strains, drawing from reliable sources.</p>
                 
                 <h3>Methodology and Sources</h3>
-                <p>The information was compiled from reputable sources, including Cannacon.org, THC Design, NuggMD, Mellow Fellow, and The Healing Clinics. These were chosen for their detailed insights into terpene profiles, effects, and strain associations. The analysis involved cross-referencing to ensure accuracy, focusing on the two most significant effects and four strains per terpene.</p>
+                <p>The information was compiled from reputable sources, including Cannacon.org, THC Design, NuggMD, Mellow Fellow, and The Healing Clinics, with additional strain data from Leafly and Weedmaps to include popular strains like Northern Lights. The analysis involved cross-referencing to ensure accuracy, focusing on the two most significant effects and a broader list of strains per terpene.</p>
                 
                 <h3>Terpene Details</h3>
                 <ul>
-                    <li><strong>Myrcene</strong>: The most common terpene in cannabis, known for calming (sedative) and pain-relieving (analgesic) properties, also relaxing and reduces inflammation (anti-inflammatory). Found in strains like Mango Kush, Skunk XL, White Widow, and OG Kush.</li>
-                    <li><strong>Limonene</strong>: Recognized for reducing inflammation (anti-inflammatory) and fighting cell damage (antioxidant), also lifts mood (anti-depressant). Common in Sour Diesel, Super Lemon Haze, Durban Poison, and Jack Herer.</li>
-                    <li><strong>Linalool</strong>: Known for reducing inflammation (anti-inflammatory) and pain-relieving (analgesic) effects, also reduces anxiety (anxiolytic), calming (sedative), and fights bacteria (anti-microbial). Found in Amnesia Haze, Lavender, LA Confidential, and Pink Kush.</li>
-                    <li><strong>Caryophyllene</strong>: Notable for reducing inflammation (anti-inflammatory) and easing arthritis, also pain-relieving (analgesic) and reduces anxiety (anxiolytic). Found in Girl Scout Cookies, Sour Diesel, Super Silver Haze, and Zkittles.</li>
-                    <li><strong>Alpha-pinene and Beta-pinene</strong>: Both reduce inflammation (anti-inflammatory) and help breathing (bronchodilator); Alpha-pinene improves memory and fights bacteria (anti-microbial), while Beta-pinene lifts mood (anti-depressant) and fights bacteria (anti-microbial). Common in Jack Herer, Blue Dream, Dutch Treat, and Haze Berry or OG Kush.</li>
-                    <li><strong>Alpha-bisabolol</strong>: Improves absorption and provides pain-relieving (analgesic) effects, also reduces inflammation (anti-inflammatory) and fights bacteria (anti-microbial). Found in Harle-Tsu, Pink Kush, OG Shark, and ACDC.</li>
-                    <li><strong>Eucalyptol</strong>: Relieves pain and fights bacteria (anti-bacterial), also reduces inflammation (anti-inflammatory) and clears airways (expectorant). Present in Super Lemon Haze, Girl Scout Cookies, Headband, and AC/DC.</li>
-                    <li><strong>Trans-nerolidol</strong>: Fights parasites (antiparasitic) and cell damage (antioxidant), also calming (sedative) and fights fungus (anti-fungal). Found in Sweet Skunk, Island Sweet Skunk, Skywalker OG, and Blue Dream.</li>
-                    <li><strong>Humulene</strong>: Slows cancer growth (anti-proliferative) and reduces appetite, also reduces inflammation (anti-inflammatory) and pain-relieving (analgesic). Common in Sour Diesel, Girl Scout Cookies, Headband, and White Widow.</li>
-                    <li><strong>Delta 3 Carene</strong>: Helps heal bones and boosts brain function, also reduces inflammation (anti-inflammatory) and dries excess moisture. Found in Arjan’s Ultra Haze, Bubba Kush, Amnesia Haze, and Super Silver Haze.</li>
-                    <li><strong>Camphene</strong>: Fights cell damage (antioxidant) and lowers cholesterol, also reduces inflammation (anti-inflammatory) and clears airways (expectorant). Present in Ghost OG, Strawberry Banana, Mendocino Purps, and Strawberry Cough.</li>
-                    <li><strong>Borneol</strong>: Repels insects and fights cancer cells, also pain-relieving (analgesic) and reduces inflammation (anti-inflammatory). Found in Kali Mist, Hindu Kush, Golden Pineapple, and K13 Haze.</li>
-                    <li><strong>Terpineol</strong>: Relaxing and calming, also lifts mood (anti-depressant), reduces inflammation (anti-inflammatory), and fights bacteria (anti-microbial). Common in Jack Herer, White Widow, OG Kush, and Amnesia Haze.</li>
-                    <li><strong>Valencene</strong>: Reduces inflammation (anti-inflammatory) and allergies (anti-allergic), also lifts mood (anti-depressant). Found in Tangie, Agent Orange, Pineapple Express, and Clementine.</li>
+                    <li><strong>Myrcene</strong>: The most common terpene in cannabis, known for calming (sedative) and pain-relieving (analgesic) properties, also relaxing and reduces inflammation (anti-inflammatory). Found in strains like Mango Kush, Skunk XL, White Widow, OG Kush, Northern Lights, Granddaddy Purple, Blue Cheese, and Purple Urkle.</li>
+                    <li><strong>Limonene</strong>: Recognized for reducing inflammation (anti-inflammatory) and fighting cell damage (antioxidant), also lifts mood (anti-depressant). Common in Sour Diesel, Super Lemon Haze, Durban Poison, Jack Herer, Lemon Skunk, Wedding Cake, Do-Si-Dos, and Trainwreck.</li>
+                    <li><strong>Linalool</strong>: Known for reducing inflammation (anti-inflammatory) and pain-relieving (analgesic) effects, also reduces anxiety (anxiolytic), calming (sedative), and fights bacteria (anti-microbial). Found in Amnesia Haze, Lavender, LA Confidential, Pink Kush, Master Kush, G-13, Chem Dawg, and Kosher Kush.</li>
+                    <li><strong>Caryophyllene</strong>: Notable for reducing inflammation (anti-inflammatory) and easing arthritis, also pain-relieving (analgesic) and reduces anxiety (anxiolytic). Found in Girl Scout Cookies, Sour Diesel, Super Silver Haze, Zkittles, Northern Lights, Bubba Kush, Gelato, and Chemdawg.</li>
+                    <li><strong>Alpha-pinene and Beta-pinene</strong>: Both reduce inflammation (anti-inflammatory) and help breathing (bronchodilator); Alpha-pinene improves memory and fights bacteria (anti-microbial), while Beta-pinene lifts mood (anti-depressant) and fights bacteria (anti-microbial). Common in Jack Herer, Blue Dream, Dutch Treat, and Haze Berry or OG Kush, plus Trainwreck, Strawberry Cough, Romulan, Island Sweet Skunk (Alpha-pinene) and Harlequin, Cannatonic, Critical Mass, AK-47 (Beta-pinene).</li>
+                    <li><strong>Alpha-bisabolol</strong>: Improves absorption and provides pain-relieving (analgesic) effects, also reduces inflammation (anti-inflammatory) and fights bacteria (anti-microbial). Found in Harle-Tsu, Pink Kush, OG Shark, ACDC, Headband, Master Kush, Dolato, and Banana Kush.</li>
+                    <li><strong>Eucalyptol</strong>: Relieves pain and fights bacteria (anti-bacterial), also reduces inflammation (anti-inflammatory) and clears airways (expectorant). Present in Super Lemon Haze, Girl Scout Cookies, Headband, AC/DC, Bubba Kush, Super Silver Haze, Lemon Kush, and White Fire OG.</li>
+                    <li><strong>Trans-nerolidol</strong>: Fights parasites (antiparasitic) and cell damage (antioxidant), also calming (sedative) and fights fungus (anti-fungal). Found in Sweet Skunk, Island Sweet Skunk, Skywalker OG, Blue Dream, Jack Herer, Sour Diesel, Green Crack, and Black Jack.</li>
+                    <li><strong>Humulene</strong>: Slows cancer growth (anti-proliferative) and reduces appetite, also reduces inflammation (anti-inflammatory) and pain-relieving (analgesic). Common in Sour Diesel, Girl Scout Cookies, Headband, White Widow, Death Star, Candyland, Sherbert, and Thin Mint GSC.</li>
+                    <li><strong>Delta 3 Carene</strong>: Helps heal bones and boosts brain function, also reduces inflammation (anti-inflammatory) and dries excess moisture. Found in Arjan’s Ultra Haze, Bubba Kush, Amnesia Haze, Super Silver Haze, Lemon Haze, Super Lemon Haze, Cherry Pie, and AK-47.</li>
+                    <li><strong>Camphene</strong>: Fights cell damage (antioxidant) and lowers cholesterol, also reduces inflammation (anti-inflammatory) and clears airways (expectorant). Present in Ghost OG, Strawberry Banana, Mendocino Purps, Strawberry Cough, ACDC, Cannatonic, Banana Kush, and White Widow.</li>
+                    <li><strong>Borneol</strong>: Repels insects and fights cancer cells, also pain-relieving (analgesic) and reduces inflammation (anti-inflammatory). Found in Kali Mist, Hindu Kush, Golden Pineapple, K13 Haze, Diamond Girl, Snow White, Amnesia Haze, and Super Silver Haze.</li>
+                    <li><strong>Terpineol</strong>: Relaxing and calming, also lifts mood (anti-depressant), reduces inflammation (anti-inflammatory), and fights bacteria (anti-microbial). Common in Jack Herer, White Widow, OG Kush, Amnesia Haze, Girl Scout Cookies, Fire OG, Blue Dream, and Pineapple Express.</li>
+                    <li><strong>Valencene</strong>: Reduces inflammation (anti-inflammatory) and allergies (anti-allergic), also lifts mood (anti-depressant). Found in Tangie, Agent Orange, Pineapple Express, Clementine, Lime Skunk, Lemon Meringue, Orange Bud, and Grapefruit.</li>
                 </ul>
                 
                 <h3>Strain Variability and Considerations</h3>
-                <p>Strain associations can vary due to cultivation methods, regional differences, and testing standards. For example, some sources list Zkittles for Caryophyllene, while others highlight Girl Scout Cookies. Check product-specific terpene profiles via dispensary websites or labels, especially with four options to choose from.</p>
+                <p>Strain associations can vary due to cultivation methods, regional differences, and testing standards. For example, some sources list Zkittles for Caryophyllene, while others highlight Girl Scout Cookies. Check product-specific terpene profiles via dispensary websites or labels, especially with a broader list of strains to choose from.</p>
                 
                 <h3>Limitations and Future Research</h3>
-                <p>Terpene effects depend on individual physiology, dosage, and consumption method. The entourage effect is still under study, and more research is needed to confirm benefits. Strain potency varies, so consult healthcare professionals for medical use.</p>
+                <p>Terpene effects depend on individual physiology, dosage, and consumption method. The entourage effect is still under study, and more research is needed to confirm benefits. Strain potency varies, so consult healthcare professionals for medical use. The strain lookup feature provides likely terpene profiles based on common associations, but actual profiles may vary.</p>
                 
                 <h3>Practical Implications</h3>
-                <p>For pain relief, try Myrcene-rich Mango Kush or OG Kush—Girl Scout Cookies is a strong suggestion for this effect due to its overlap in Caryophyllene, Eucalyptol, and Humulene. For lifting mood, Terpineol-rich Jack Herer or White Widow are great, with Jack Herer being a strong suggestion across Limonene, Beta-pinene, and Terpineol. With four strains per terpene, you’ve got flexibility based on what’s available—check local dispensaries or Cannacon.</p>
+                <p>For pain relief, try Myrcene-rich Mango Kush, OG Kush, or Northern Lights—Girl Scout Cookies is a strong suggestion for this effect due to its overlap in Caryophyllene, Eucalyptol, and Humulene. For lifting mood, Terpineol-rich Jack Herer or White Widow are great, with Jack Herer being a strong suggestion across Limonene, Beta-pinene, and Terpineol. Use the strain lookup to find terpenes for your favorite strains, like Northern Lights, and check local dispensaries or Cannacon for availability.</p>
             </div>
         </div>
     </div>
@@ -353,7 +379,9 @@
             <a href="https://www.nuggmd.com/blog/terpenes-chart-for-beginners" target="_blank">NuggMD</a>, 
             <a href="https://mellowfellow.fun/blogs/learn/the-complete-list-of-cannabis-terpenes-and-their-effects" target="_blank">Mellow Fellow</a>, 
             <a href="https://www.thehealingclinics.com/the-semi-complete-list-of-cannabis-terpenes/" target="_blank">The Healing Clinics</a>,
-            <a href="https://thcdesign.com/blog/its-all-about-the-terpenes/" target="_blank">THC Design</a>
+            <a href="https://thcdesign.com/blog/its-all-about-the-terpenes/" target="_blank">THC Design</a>,
+            <a href="https://www.leafly.com/" target="_blank">Leafly</a>,
+            <a href="https://weedmaps.com/" target="_blank">Weedmaps</a>
         </p>
         <p>Generated by Grok, created by xAI | Last updated: April 11, 2025</p>
         <p class="ascii-smiley">:D</p>
@@ -361,21 +389,21 @@
 
     <script>
         const terpenes = [
-            { name: "Myrcene", effects: ["Calming (sedative)", "Relieves pain (analgesic)", "Relaxing", "Reduces inflammation (anti-inflammatory)"], strains: ["Mango Kush", "Skunk XL", "White Widow", "OG Kush"] },
-            { name: "Limonene", effects: ["Reduces inflammation (anti-inflammatory)", "Fights cell damage (antioxidant)", "Lifts mood (anti-depressant)"], strains: ["Sour Diesel", "Super Lemon Haze", "Durban Poison", "Jack Herer"] },
-            { name: "Linalool", effects: ["Reduces inflammation (anti-inflammatory)", "Relieves pain (analgesic)", "Reduces anxiety (anxiolytic)", "Calming (sedative)", "Fights bacteria (anti-microbial)"], strains: ["Amnesia Haze", "Lavender", "LA Confidential", "Pink Kush"] },
-            { name: "Caryophyllene", effects: ["Reduces inflammation (anti-inflammatory)", "Eases arthritis", "Relieves pain (analgesic)", "Reduces anxiety (anxiolytic)"], strains: ["Girl Scout Cookies", "Sour Diesel", "Super Silver Haze", "Zkittles"] },
-            { name: "Alpha-pinene", effects: ["Reduces inflammation (anti-inflammatory)", "Helps breathing (bronchodilator)", "Improves memory", "Fights bacteria (anti-microbial)"], strains: ["Jack Herer", "Blue Dream", "Dutch Treat", "Haze Berry"] },
-            { name: "Beta-pinene", effects: ["Reduces inflammation (anti-inflammatory)", "Helps breathing (bronchodilator)", "Lifts mood (anti-depressant)", "Fights bacteria (anti-microbial)"], strains: ["Jack Herer", "Blue Dream", "Dutch Treat", "OG Kush"] },
-            { name: "Alpha-bisabolol", effects: ["Improves absorption", "Relieves pain (analgesic)", "Reduces inflammation (anti-inflammatory)", "Fights bacteria (anti-microbial)"], strains: ["Harle-Tsu", "Pink Kush", "OG Shark", "ACDC"] },
-            { name: "Eucalyptol", effects: ["Relieves pain", "Fights bacteria (anti-bacterial)", "Reduces inflammation (anti-inflammatory)", "Clears airways (expectorant)"], strains: ["Super Lemon Haze", "Girl Scout Cookies", "Headband", "AC/DC"] },
-            { name: "Trans-nerolidol", effects: ["Fights parasites (antiparasitic)", "Fights cell damage (antioxidant)", "Calming (sedative)", "Fights fungus (anti-fungal)"], strains: ["Sweet Skunk", "Island Sweet Skunk", "Skywalker OG", "Blue Dream"] },
-            { name: "Humulene", effects: ["Slows cancer growth (anti-proliferative)", "Reduces appetite", "Reduces inflammation (anti-inflammatory)", "Relieves pain (analgesic)"], strains: ["Sour Diesel", "Girl Scout Cookies", "Headband", "White Widow"] },
-            { name: "Delta 3 Carene", effects: ["Helps heal bones", "Boosts brain function", "Reduces inflammation (anti-inflammatory)", "Dries excess moisture"], strains: ["Arjan’s Ultra Haze", "Bubba Kush", "Amnesia Haze", "Super Silver Haze"] },
-            { name: "Camphene", effects: ["Fights cell damage (antioxidant)", "Lowers cholesterol", "Reduces inflammation (anti-inflammatory)", "Clears airways (expectorant)"], strains: ["Ghost OG", "Strawberry Banana", "Mendocino Purps", "Strawberry Cough"] },
-            { name: "Borneol", effects: ["Repels insects", "Fights cancer cells", "Relieves pain (analgesic)", "Reduces inflammation (anti-inflammatory)"], strains: ["Kali Mist", "Hindu Kush", "Golden Pineapple", "K13 Haze"] },
-            { name: "Terpineol", effects: ["Relaxing", "Calming", "Lifts mood (anti-depressant)", "Reduces inflammation (anti-inflammatory)", "Fights bacteria (anti-microbial)"], strains: ["Jack Herer", "White Widow", "OG Kush", "Amnesia Haze"] },
-            { name: "Valencene", effects: ["Reduces inflammation (anti-inflammatory)", "Reduces allergies (anti-allergic)", "Lifts mood (anti-depressant)"], strains: ["Tangie", "Agent Orange", "Pineapple Express", "Clementine"] }
+            { name: "Myrcene", effects: ["Calming (sedative)", "Relieves pain (analgesic)", "Relaxing", "Reduces inflammation (anti-inflammatory)"], strains: ["Mango Kush", "Skunk XL", "White Widow", "OG Kush", "Northern Lights", "Granddaddy Purple", "Blue Cheese", "Purple Urkle"] },
+            { name: "Limonene", effects: ["Reduces inflammation (anti-inflammatory)", "Fights cell damage (antioxidant)", "Lifts mood (anti-depressant)"], strains: ["Sour Diesel", "Super Lemon Haze", "Durban Poison", "Jack Herer", "Lemon Skunk", "Wedding Cake", "Do-Si-Dos", "Trainwreck"] },
+            { name: "Linalool", effects: ["Reduces inflammation (anti-inflammatory)", "Relieves pain (analgesic)", "Reduces anxiety (anxiolytic)", "Calming (sedative)", "Fights bacteria (anti-microbial)"], strains: ["Amnesia Haze", "Lavender", "LA Confidential", "Pink Kush", "Master Kush", "G-13", "Chem Dawg", "Kosher Kush"] },
+            { name: "Caryophyllene", effects: ["Reduces inflammation (anti-inflammatory)", "Eases arthritis", "Relieves pain (analgesic)", "Reduces anxiety (anxiolytic)"], strains: ["Girl Scout Cookies", "Sour Diesel", "Super Silver Haze", "Zkittles", "Northern Lights", "Bubba Kush", "Gelato", "Chemdawg"] },
+            { name: "Alpha-pinene", effects: ["Reduces inflammation (anti-inflammatory)", "Helps breathing (bronchodilator)", "Improves memory", "Fights bacteria (anti-microbial)"], strains: ["Jack Herer", "Blue Dream", "Dutch Treat", "Haze Berry", "Trainwreck", "Strawberry Cough", "Romulan", "Island Sweet Skunk"] },
+            { name: "Beta-pinene", effects: ["Reduces inflammation (anti-inflammatory)", "Helps breathing (bronchodilator)", "Lifts mood (anti-depressant)", "Fights bacteria (anti-microbial)"], strains: ["Jack Herer", "Blue Dream", "Dutch Treat", "OG Kush", "Harlequin", "Cannatonic", "Critical Mass", "AK-47"] },
+            { name: "Alpha-bisabolol", effects: ["Improves absorption", "Relieves pain (analgesic)", "Reduces inflammation (anti-inflammatory)", "Fights bacteria (anti-microbial)"], strains: ["Harle-Tsu", "Pink Kush", "OG Shark", "ACDC", "Headband", "Master Kush", "Dolato", "Banana Kush"] },
+            { name: "Eucalyptol", effects: ["Relieves pain", "Fights bacteria (anti-bacterial)", "Reduces inflammation (anti-inflammatory)", "Clears airways (expectorant)"], strains: ["Super Lemon Haze", "Girl Scout Cookies", "Headband", "AC/DC", "Bubba Kush", "Super Silver Haze", "Lemon Kush", "White Fire OG"] },
+            { name: "Trans-nerolidol", effects: ["Fights parasites (antiparasitic)", "Fights cell damage (antioxidant)", "Calming (sedative)", "Fights fungus (anti-fungal)"], strains: ["Sweet Skunk", "Island Sweet Skunk", "Skywalker OG", "Blue Dream", "Jack Herer", "Sour Diesel", "Green Crack", "Black Jack"] },
+            { name: "Humulene", effects: ["Slows cancer growth (anti-proliferative)", "Reduces appetite", "Reduces inflammation (anti-inflammatory)", "Relieves pain (analgesic)"], strains: ["Sour Diesel", "Girl Scout Cookies", "Headband", "White Widow", "Death Star", "Candyland", "Sherbert", "Thin Mint GSC"] },
+            { name: "Delta 3 Carene", effects: ["Helps heal bones", "Boosts brain function", "Reduces inflammation (anti-inflammatory)", "Dries excess moisture"], strains: ["Arjan’s Ultra Haze", "Bubba Kush", "Amnesia Haze", "Super Silver Haze", "Lemon Haze", "Super Lemon Haze", "Cherry Pie", "AK-47"] },
+            { name: "Camphene", effects: ["Fights cell damage (antioxidant)", "Lowers cholesterol", "Reduces inflammation (anti-inflammatory)", "Clears airways (expectorant)"], strains: ["Ghost OG", "Strawberry Banana", "Mendocino Purps", "Strawberry Cough", "ACDC", "Cannatonic", "Banana Kush", "White Widow"] },
+            { name: "Borneol", effects: ["Repels insects", "Fights cancer cells", "Relieves pain (analgesic)", "Reduces inflammation (anti-inflammatory)"], strains: ["Kali Mist", "Hindu Kush", "Golden Pineapple", "K13 Haze", "Diamond Girl", "Snow White", "Amnesia Haze", "Super Silver Haze"] },
+            { name: "Terpineol", effects: ["Relaxing", "Calming", "Lifts mood (anti-depressant)", "Reduces inflammation (anti-inflammatory)", "Fights bacteria (anti-microbial)"], strains: ["Jack Herer", "White Widow", "OG Kush", "Amnesia Haze", "Girl Scout Cookies", "Fire OG", "Blue Dream", "Pineapple Express"] },
+            { name: "Valencene", effects: ["Reduces inflammation (anti-inflammatory)", "Reduces allergies (anti-allergic)", "Lifts mood (anti-depressant)"], strains: ["Tangie", "Agent Orange", "Pineapple Express", "Clementine", "Lime Skunk", "Lemon Meringue", "Orange Bud", "Grapefruit"] }
         ];
 
         function showTerpenes() {
@@ -403,7 +431,7 @@
             const commonStrains = Object.keys(strainCounts).filter(strain => strainCounts[strain] > 1);
 
             // Build the result HTML with simplified heading
-            let resultHTML = "<h4>Results</h4>"; // Changed to "Results"
+            let resultHTML = "<h4>Results</h4>";
 
             // Add "Strong Suggestion" section if there are common strains
             if (commonStrains.length > 0) {
@@ -419,6 +447,34 @@
             });
 
             resultDiv.innerHTML = resultHTML;
+        }
+
+        function findTerpenesByStrain() {
+            const strainInput = document.getElementById("strainInput").value.trim().toLowerCase();
+            const strainResultDiv = document.getElementById("strainResult");
+
+            if (!strainInput) {
+                strainResultDiv.innerHTML = "<p>Please enter a strain name.</p>";
+                return;
+            }
+
+            // Find terpenes that include the strain
+            const matchingTerpenes = terpenes.filter(terpene => 
+                terpene.strains.some(strain => strain.toLowerCase() === strainInput)
+            );
+
+            if (matchingTerpenes.length === 0) {
+                strainResultDiv.innerHTML = `<p>No terpenes found for strain "${strainInput}".</p>`;
+                return;
+            }
+
+            // Build the result HTML
+            let resultHTML = `<h4>Terpenes for ${strainInput.charAt(0).toUpperCase() + strainInput.slice(1)}</h4>`;
+            matchingTerpenes.forEach(terpene => {
+                resultHTML += `<p><strong>${terpene.name}</strong><br>Effects: ${terpene.effects.join(", ")}</p>`;
+            });
+
+            strainResultDiv.innerHTML = resultHTML;
         }
     </script>
 </body>
