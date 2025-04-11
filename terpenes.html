@@ -86,7 +86,7 @@
         .result .strains, .strain-result .strains {
             font-size: 0.9rem;
             color: #555;
-            display: block; /* Allow wrapping */
+            display: block;
         }
         .strong-suggestion {
             background: #c8e6c9;
@@ -341,7 +341,7 @@
                 <p>Cannabis terpenes are aromatic compounds found in the trichomes of the cannabis plant, contributing to its distinctive smell, taste, and potentially its therapeutic effects. Research suggests they may work synergistically with cannabinoids like THC and CBD, a phenomenon known as the entourage effect. This section elaborates on the terpenes, their effects, and strains, drawing from reliable sources.</p>
                 
                 <h3>Methodology and Sources</h3>
-                <p>The information was compiled from reputable sources, including Cannacon.org, THC Design, NuggMD, Mellow Fellow, and The Healing Clinics, with additional strain data from Leafly and Weedmaps to include popular strains like Northern Lights. The analysis involved cross-referencing to ensure accuracy, focusing on the two most significant effects and a broader list of strains per terpene.</p>
+                <p>The information was compiled from reputable sources, including Cannacon.org, THC Design, NuggMD, Mellow Fellow, and The Healing Clinics, with additional strain data from Leafly and Weedmaps to include popular strains like Northern Lights and AK-47. The analysis involved cross-referencing to ensure accuracy, focusing on the two most significant effects and a broader list of strains per terpene.</p>
                 
                 <h3>Terpene Details</h3>
                 <ul>
@@ -368,7 +368,7 @@
                 <p>Terpene effects depend on individual physiology, dosage, and consumption method. The entourage effect is still under study, and more research is needed to confirm benefits. Strain potency varies, so consult healthcare professionals for medical use. The strain lookup feature provides likely terpene profiles based on common associations, but actual profiles may vary.</p>
                 
                 <h3>Practical Implications</h3>
-                <p>For pain relief, try Myrcene-rich Mango Kush, OG Kush, or Northern Lights—Girl Scout Cookies is a strong suggestion for this effect due to its overlap in Caryophyllene, Eucalyptol, and Humulene. For lifting mood, Terpineol-rich Jack Herer or White Widow are great, with Jack Herer being a strong suggestion across Limonene, Beta-pinene, and Terpineol. Use the strain lookup to find terpenes for your favorite strains, like Northern Lights, and check local dispensaries or Cannacon for availability.</p>
+                <p>For pain relief, try Myrcene-rich Mango Kush, OG Kush, or Northern Lights—Girl Scout Cookies is a strong suggestion for this effect due to its overlap in Caryophyllene, Eucalyptol, and Humulene. For lifting mood, Terpineol-rich Jack Herer or White Widow are great, with Jack Herer being a strong suggestion across Limonene, Beta-pinene, and Terpineol. Use the strain lookup to find terpenes for your favorite strains, like Northern Lights or AK-47, and check local dispensaries or Cannacon for availability.</p>
             </div>
         </div>
     </div>
@@ -422,7 +422,6 @@
                 return;
             }
 
-            // Find common strains across matching terpenes
             const allStrains = matchingTerpenes.flatMap(terpene => terpene.strains);
             const strainCounts = {};
             allStrains.forEach(strain => {
@@ -430,10 +429,7 @@
             });
             const commonStrains = Object.keys(strainCounts).filter(strain => strainCounts[strain] > 1);
 
-            // Build the result HTML with simplified heading
             let resultHTML = "<h4>Results</h4>";
-
-            // Add "Strong Suggestion" section if there are common strains
             if (commonStrains.length > 0) {
                 resultHTML += `<div class="strong-suggestion">
                     <h5>Strong Suggestion</h5>
@@ -441,7 +437,6 @@
                 </div>`;
             }
 
-            // List all matching terpenes and their strains
             matchingTerpenes.forEach(terpene => {
                 resultHTML += `<p><strong>${terpene.name}</strong><br><span class="strains">${terpene.strains.join(", ")}</span></p>`;
             });
@@ -450,7 +445,7 @@
         }
 
         function findTerpenesByStrain() {
-            const strainInput = document.getElementById("strainInput").value.trim().toLowerCase();
+            const strainInput = document.getElementById("strainInput").value.trim();
             const strainResultDiv = document.getElementById("strainResult");
 
             if (!strainInput) {
@@ -458,9 +453,15 @@
                 return;
             }
 
-            // Find terpenes that include the strain
+            // Normalize the input: remove hyphens, extra spaces, and convert to lowercase
+            const normalizedInput = strainInput.toLowerCase().replace(/[-\s]+/g, '');
+
+            // Find terpenes that include the strain (partial match)
             const matchingTerpenes = terpenes.filter(terpene => 
-                terpene.strains.some(strain => strain.toLowerCase() === strainInput)
+                terpene.strains.some(strain => {
+                    const normalizedStrain = strain.toLowerCase().replace(/[-\s]+/g, '');
+                    return normalizedStrain.includes(normalizedInput);
+                })
             );
 
             if (matchingTerpenes.length === 0) {
@@ -468,8 +469,7 @@
                 return;
             }
 
-            // Build the result HTML
-            let resultHTML = `<h4>Terpenes for ${strainInput.charAt(0).toUpperCase() + strainInput.slice(1)}</h4>`;
+            let resultHTML = `<h4>Terpenes for ${strainInput}</h4>`;
             matchingTerpenes.forEach(terpene => {
                 resultHTML += `<p><strong>${terpene.name}</strong><br>Effects: ${terpene.effects.join(", ")}</p>`;
             });
