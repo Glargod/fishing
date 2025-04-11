@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cannabis Terpenes and Their Effects</title>
+    <link rel="icon" href="leaf.ico" type="image/x-icon">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -24,10 +25,51 @@
             margin: 0;
             font-size: 2.5rem;
         }
-        .container {
-            max-width: 1200px;
+        .main-container {
+            display: flex;
+            max-width: 1400px;
             margin: 2rem auto;
             padding: 0 1rem;
+        }
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 1rem;
+            height: fit-content;
+        }
+        .sidebar h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        .sidebar select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar li {
+            margin-bottom: 0.5rem;
+        }
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 4px;
+        }
+        .content {
+            flex: 1;
+            margin-left: 2rem;
         }
         table {
             width: 100%;
@@ -70,8 +112,6 @@
             padding: 1rem;
             background-color: #2e7d32;
             color: white;
-            position: relative;
-            bottom: 0;
             width: 100%;
             margin-top: 2rem;
         }
@@ -88,6 +128,17 @@
             margin-top: 1rem;
         }
         @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 1rem;
+            }
+            .content {
+                margin-left: 0;
+            }
             table, th, td {
                 font-size: 0.9rem;
             }
@@ -106,131 +157,186 @@
         <p>A comprehensive guide to the most common terpenes, their effects, and associated strains.</p>
     </header>
 
-    <div class="container">
-        <h2>Terpenes Overview</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Terpene</th>
-                    <th>Two Most Significant Effects</th>
-                    <th>Two Strains</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Myrcene</td>
-                    <td>Pain relief, Reduces inflammation</td>
-                    <td>Mango Kush, Skunk XL</td>
-                </tr>
-                <tr>
-                    <td>Limonene</td>
-                    <td>Anti-inflammatory, Reduces stress</td>
-                    <td>Sour Diesel, Super Lemon Haze</td>
-                </tr>
-                <tr>
-                    <td>Linalool</td>
-                    <td>Anti-inflammatory, Anxiolytic (reduces anxiety)</td>
-                    <td>Amnesia Haze, Lavender</td>
-                </tr>
-                <tr>
-                    <td>Caryophyllene</td>
-                    <td>Anti-inflammatory, Helpful for arthritis</td>
-                    <td>Girl Scout Cookies, Sour Diesel</td>
-                </tr>
-                <tr>
-                    <td>Alpha-pinene</td>
-                    <td>Anti-inflammatory, Bronchodilator (treats respiratory diseases)</td>
-                    <td>Jack Herer, Blue Dream</td>
-                </tr>
-                <tr>
-                    <td>Beta-pinene</td>
-                    <td>Anti-inflammatory, Bronchodilator (treats respiratory diseases)</td>
-                    <td>Jack Herer, Blue Dream</td>
-                </tr>
-                <tr>
-                    <td>Alpha-bisabolol</td>
-                    <td>Enhances absorption of other compounds, Analgesic</td>
-                    <td>Harle-Tsu, Pink Kush</td>
-                </tr>
-                <tr>
-                    <td>Eucalyptol</td>
-                    <td>Relieves pain, Reduces inflammation</td>
-                    <td>Super Lemon Haze, Girl Scout Cookies</td>
-                </tr>
-                <tr>
-                    <td>Trans-nerolidol</td>
-                    <td>Antiparasitic, Antioxidant</td>
-                    <td>Sweet Skunk, Island Sweet Skunk</td>
-                </tr>
-                <tr>
-                    <td>Humulene</td>
-                    <td>Anti-proliferative (prevents cancer cell growth), Suppresses appetite</td>
-                    <td>Sour Diesel, Girl Scout Cookies</td>
-                </tr>
-                <tr>
-                    <td>Delta 3 Carene</td>
-                    <td>Aids in healing broken bones, Improves cognitive function</td>
-                    <td>Arjan’s Ultra Haze, Bubba Kush</td>
-                </tr>
-                <tr>
-                    <td>Camphene</td>
-                    <td>Antioxidant (with vitamin C), Lowers cholesterol levels</td>
-                    <td>Ghost OG, Strawberry Banana</td>
-                </tr>
-                <tr>
-                    <td>Borneol</td>
-                    <td>Insect repellent, Kills breast cancer cells</td>
-                    <td>Kali Mist, Hindu Kush</td>
-                </tr>
-                <tr>
-                    <td>Terpineol</td>
-                    <td>Anti-depressant, Neuroprotective</td>
-                    <td>Jack Herer, White Widow</td>
-                </tr>
-                <tr>
-                    <td>Valencene</td>
-                    <td>Anti-inflammatory, Anti-allergic</td>
-                    <td>Tangie, Agent Orange</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="details">
-            <h2>Detailed Terpene Profiles</h2>
-            <p>The following section provides a deeper dive into the cannabis terpenes listed above, including their significance, effects, and associated strains, based on current research as of April 11, 2025.</p>
-            
-            <h3>Background and Context</h3>
-            <p>Cannabis terpenes are aromatic compounds found in the trichomes of the cannabis plant, contributing to its distinctive smell, taste, and potentially its therapeutic effects. Research suggests they may work synergistically with cannabinoids like THC and CBD, a phenomenon known as the entourage effect. This section elaborates on the terpenes, their effects, and strains, drawing from reliable sources.</p>
-            
-            <h3>Methodology and Sources</h3>
-            <p>The information was compiled from reputable sources, including Cannacon.org, NuggMD, Mellow Fellow, and The Healing Clinics. These were chosen for their detailed insights into terpene profiles, effects, and strain associations. The analysis involved cross-referencing to ensure accuracy, focusing on the two most significant effects and two strains per terpene.</p>
-            
-            <h3>Terpene Details</h3>
+    <div class="main-container">
+        <div class="sidebar">
+            <h3>All Effects</h3>
             <ul>
-                <li><strong>Myrcene</strong>: The most common terpene in cannabis, known for sedative and anti-inflammatory properties. Found in strains like Mango Kush, Skunk XL, Grand Daddy Purple, and OG Kush, it’s noted for pain relief and inflammation reduction.</li>
-                <li><strong>Limonene</strong>: Recognized for mood-enhancing and stress-relieving effects, with anti-inflammatory benefits. Common in Sour Diesel and Super Lemon Haze, it’s associated with stress reduction.</li>
-                <li><strong>Linalool</strong>: Known for calming and anti-anxiety effects, found in Amnesia Haze and Lavender. It’s valued for its anxiolytic and anti-inflammatory properties.</li>
-                <li><strong>Caryophyllene</strong>: Notable for anti-inflammatory effects and aiding arthritis or gastrointestinal issues. Found in Girl Scout Cookies, Sour Diesel, Zkittles, and Bubba Kush.</li>
-                <li><strong>Alpha-pinene and Beta-pinene</strong>: Both offer anti-inflammatory and bronchodilator effects, common in Jack Herer and Blue Dream, aiding respiratory health.</li>
-                <li><strong>Alpha-bisabolol</strong>: Enhances absorption and provides analgesic effects, found in Harle-Tsu and Pink Kush.</li>
-                <li><strong>Eucalyptol</strong>: Relieves pain and reduces inflammation, present in Super Lemon Haze and Girl Scout Cookies.</li>
-                <li><strong>Trans-nerolidol</strong>: Offers antiparasitic and antioxidant properties, found in Sweet Skunk and Island Sweet Skunk.</li>
-                <li><strong>Humulene</strong>: Known for anti-proliferative effects and appetite suppression, common in Sour Diesel and Girl Scout Cookies.</li>
-                <li><strong>Delta 3 Carene</strong>: Aids bone healing and cognitive function, found in Arjan’s Ultra Haze and Bubba Kush.</li>
-                <li><strong>Camphene</strong>: Acts as an antioxidant and lowers cholesterol, present in Ghost OG and Strawberry Banana.</li>
-                <li><strong>Borneol</strong>: Serves as an insect repellent and has anti-cancer properties, found in Kali Mist and Hindu Kush.</li>
-                <li><strong>Terpineol</strong>: Offers anti-depressant and neuroprotective effects, common in Jack Herer and White Widow.</li>
-                <li><strong>Valencene</strong>: Provides anti-inflammatory and anti-allergic benefits, found in Tangie and Agent Orange.</li>
+                <li>Pain relief</li>
+                <li>Reduces inflammation</li>
+                <li>Anti-inflammatory</li>
+                <li>Reduces stress</li>
+                <li>Anxiolytic (reduces anxiety)</li>
+                <li>Helpful for arthritis</li>
+                <li>Bronchodilator (treats respiratory diseases)</li>
+                <li>Enhances absorption of other compounds</li>
+                <li>Analgesic</li>
+                <li>Antiparasitic</li>
+                <li>Antioxidant</li>
+                <li>Anti-proliferative (prevents cancer cell growth)</li>
+                <li>Suppresses appetite</li>
+                <li>Aids in healing broken bones</li>
+                <li>Improves cognitive function</li>
+                <li>Lowers cholesterol levels</li>
+                <li>Insect repellent</li>
+                <li>Kills breast cancer cells</li>
+                <li>Anti-depressant</li>
+                <li>Neuroprotective</li>
+                <li>Anti-allergic</li>
             </ul>
-            
-            <h3>Strain Variability and Considerations</h3>
-            <p>Strain associations can vary due to cultivation methods, regional differences, and testing standards. For example, some sources list Zkittles for Caryophyllene, while others highlight Girl Scout Cookies. Users should check product-specific terpene profiles via dispensary websites or labels.</p>
-            
-            <h3>Limitations and Future Research</h3>
-            <p>Terpene effects are not universal and depend on individual physiology, dosage, and consumption method. The entourage effect is still under study, and more research is needed to confirm benefits. Strain potency varies, so consulting healthcare professionals is advised for medical use.</p>
-            
-            <h3>Practical Implications</h3>
-            <p>Understanding terpene profiles can guide strain selection. For pain relief, consider Myrcene-rich Mango Kush; for stress, Limonene-rich Sour Diesel. Availability and legal status vary, so check local dispensaries or resources like Cannacon.</p>
+            <h3>Find Terpenes by Effect</h3>
+            <select id="effectSelect" onchange="showTerpenes()">
+                <option value="">Select an effect...</option>
+                <option value="Pain relief">Pain relief</option>
+                <option value="Reduces inflammation">Reduces inflammation</option>
+                <option value="Anti-inflammatory">Anti-inflammatory</option>
+                <option value="Reduces stress">Reduces stress</option>
+                <option value="Anxiolytic (reduces anxiety)">Anxiolytic (reduces anxiety)</option>
+                <option value="Helpful for arthritis">Helpful for arthritis</option>
+                <option value="Bronchodilator (treats respiratory diseases)">Bronchodilator (treats respiratory diseases)</option>
+                <option value="Enhances absorption of other compounds">Enhances absorption of other compounds</option>
+                <option value="Analgesic">Analgesic</option>
+                <option value="Antiparasitic">Antiparasitic</option>
+                <option value="Antioxidant">Antioxidant</option>
+                <option value="Anti-proliferative (prevents cancer cell growth)">Anti-proliferative (prevents cancer cell growth)</option>
+                <option value="Suppresses appetite">Suppresses appetite</option>
+                <option value="Aids in healing broken bones">Aids in healing broken bones</option>
+                <option value="Improves cognitive function">Improves cognitive function</option>
+                <option value="Lowers cholesterol levels">Lowers cholesterol levels</option>
+                <option value="Insect repellent">Insect repellent</option>
+                <option value="Kills breast cancer cells">Kills breast cancer cells</option>
+                <option value="Anti-depressant">Anti-depressant</option>
+                <option value="Neuroprotective">Neuroprotective</option>
+                <option value="Anti-allergic">Anti-allergic</option>
+            </select>
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="content">
+            <h2>Terpenes Overview</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Terpene</th>
+                        <th>Two Most Significant Effects</th>
+                        <th>Two Strains</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Myrcene</td>
+                        <td>Pain relief, Reduces inflammation</td>
+                        <td>Mango Kush, Skunk XL</td>
+                    </tr>
+                    <tr>
+                        <td>Limonene</td>
+                        <td>Anti-inflammatory, Reduces stress</td>
+                        <td>Sour Diesel, Super Lemon Haze</td>
+                    </tr>
+                    <tr>
+                        <td>Linalool</td>
+                        <td>Anti-inflammatory, Anxiolytic (reduces anxiety)</td>
+                        <td>Amnesia Haze, Lavender</td>
+                    </tr>
+                    <tr>
+                        <td>Caryophyllene</td>
+                        <td>Anti-inflammatory, Helpful for arthritis</td>
+                        <td>Girl Scout Cookies, Sour Diesel</td>
+                    </tr>
+                    <tr>
+                        <td>Alpha-pinene</td>
+                        <td>Anti-inflammatory, Bronchodilator (treats respiratory diseases)</td>
+                        <td>Jack Herer, Blue Dream</td>
+                    </tr>
+                    <tr>
+                        <td>Beta-pinene</td>
+                        <td>Anti-inflammatory, Bronchodilator (treats respiratory diseases)</td>
+                        <td>Jack Herer, Blue Dream</td>
+                    </tr>
+                    <tr>
+                        <td>Alpha-bisabolol</td>
+                        <td>Enhances absorption of other compounds, Analgesic</td>
+                        <td>Harle-Tsu, Pink Kush</td>
+                    </tr>
+                    <tr>
+                        <td>Eucalyptol</td>
+                        <td>Relieves pain, Reduces inflammation</td>
+                        <td>Super Lemon Haze, Girl Scout Cookies</td>
+                    </tr>
+                    <tr>
+                        <td>Trans-nerolidol</td>
+                        <td>Antiparasitic, Antioxidant</td>
+                        <td>Sweet Skunk, Island Sweet Skunk</td>
+                    </tr>
+                    <tr>
+                        <td>Humulene</td>
+                        <td>Anti-proliferative (prevents cancer cell growth), Suppresses appetite</td>
+                        <td>Sour Diesel, Girl Scout Cookies</td>
+                    </tr>
+                    <tr>
+                        <td>Delta 3 Carene</td>
+                        <td>Aids in healing broken bones, Improves cognitive function</td>
+                        <td>Arjan’s Ultra Haze, Bubba Kush</td>
+                    </tr>
+                    <tr>
+                        <td>Camphene</td>
+                        <td>Antioxidant (with vitamin C), Lowers cholesterol levels</td>
+                        <td>Ghost OG, Strawberry Banana</td>
+                    </tr>
+                    <tr>
+                        <td>Borneol</td>
+                        <td>Insect repellent, Kills breast cancer cells</td>
+                        <td>Kali Mist, Hindu Kush</td>
+                    </tr>
+                    <tr>
+                        <td>Terpineol</td>
+                        <td>Anti-depressant, Neuroprotective</td>
+                        <td>Jack Herer, White Widow</td>
+                    </tr>
+                    <tr>
+                        <td>Valencene</td>
+                        <td>Anti-inflammatory, Anti-allergic</td>
+                        <td>Tangie, Agent Orange</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="details">
+                <h2>Detailed Terpene Profiles</h2>
+                <p>The following section provides a deeper dive into the cannabis terpenes listed above, including their significance, effects, and associated strains, based on current research as of April 11, 2025.</p>
+                
+                <h3>Background and Context</h3>
+                <p>Cannabis terpenes are aromatic compounds found in the trichomes of the cannabis plant, contributing to its distinctive smell, taste, and potentially its therapeutic effects. Research suggests they may work synergistically with cannabinoids like THC and CBD, a phenomenon known as the entourage effect. This section elaborates on the terpenes, their effects, and strains, drawing from reliable sources.</p>
+                
+                <h3>Methodology and Sources</h3>
+                <p>The information was compiled from reputable sources, including Cannacon.org, NuggMD, Mellow Fellow, and The Healing Clinics. These were chosen for their detailed insights into terpene profiles, effects, and strain associations. The analysis involved cross-referencing to ensure accuracy, focusing on the two most significant effects and two strains per terpene.</p>
+                
+                <h3>Terpene Details</h3>
+                <ul>
+                    <li><strong>Myrcene</strong>: The most common terpene in cannabis, known for sedative and anti-inflammatory properties. Found in strains like Mango Kush, Skunk XL, Grand Daddy Purple, and OG Kush, it’s noted for pain relief and inflammation reduction.</li>
+                    <li><strong>Limonene</strong>: Recognized for mood-enhancing and stress-relieving effects, with anti-inflammatory benefits. Common in Sour Diesel and Super Lemon Haze, it’s associated with stress reduction.</li>
+                    <li><strong>Linalool</strong>: Known for calming and anti-anxiety effects, found in Amnesia Haze and Lavender. It’s valued for its anxiolytic and anti-inflammatory properties.</li>
+                    <li><strong>Caryophyllene</strong>: Notable for anti-inflammatory effects and aiding arthritis or gastrointestinal issues. Found in Girl Scout Cookies, Sour Diesel, Zkittles, and Bubba Kush.</li>
+                    <li><strong>Alpha-pinene and Beta-pinene</strong>: Both offer anti-inflammatory and bronchodilator effects, common in Jack Herer and Blue Dream, aiding respiratory health.</li>
+                    <li><strong>Alpha-bisabolol</strong>: Enhances absorption and provides analgesic effects, found in Harle-Tsu and Pink Kush.</li>
+                    <li><strong>Eucalyptol</strong>: Relieves pain and reduces inflammation, present in Super Lemon Haze and Girl Scout Cookies.</li>
+                    <li><strong>Trans-nerolidol</strong>: Offers antiparasitic and antioxidant properties, found in Sweet Skunk and Island Sweet Skunk.</li>
+                    <li><strong>Humulene</strong>: Known for anti-proliferative effects and appetite suppression, common in Sour Diesel and Girl Scout Cookies.</li>
+                    <li><strong>Delta 3 Carene</strong>: Aids bone healing and cognitive function, found in Arjan’s Ultra Haze and Bubba Kush.</li>
+                    <li><strong>Camphene</strong>: Acts as an antioxidant and lowers cholesterol, present in Ghost OG and Strawberry Banana.</li>
+                    <li><strong>Borneol</strong>: Serves as an insect repellent and has anti-cancer properties, found in Kali Mist and Hindu Kush.</li>
+                    <li><strong>Terpineol</strong>: Offers anti-depressant and neuroprotective effects, common in Jack Herer and White Widow.</li>
+                    <li><strong>Valencene</strong>: Provides anti-inflammatory and anti-allergic benefits, found in Tangie and Agent Orange.</li>
+                </ul>
+                
+                <h3>Strain Variability and Considerations</h3>
+                <p>Strain associations can vary due to cultivation methods, regional differences, and testing standards. For example, some sources list Zkittles for Caryophyllene, while others highlight Girl Scout Cookies. Users should check product-specific terpene profiles via dispensary websites or labels.</p>
+                
+                <h3>Limitations and Future Research</h3>
+                <p>Terpene effects are not universal and depend on individual physiology, dosage, and consumption method. The entourage effect is still under study, and more research is needed to confirm benefits. Strain potency varies, so consulting healthcare professionals is advised for medical use.</p>
+                
+                <h3>Practical Implications</h3>
+                <p>Understanding terpene profiles can guide strain selection. For pain relief, consider Myrcene-rich Mango Kush; for stress, Limonene-rich Sour Diesel. Availability and legal status vary, so check local dispensaries or resources like Cannacon.</p>
+            </div>
         </div>
     </div>
 
@@ -244,5 +350,48 @@
         <p>Generated by Grok, created by xAI | Last updated: April 11, 2025</p>
         <p class="ascii-smiley">:D</p>
     </footer>
+
+    <script>
+        const terpenes = [
+            { name: "Myrcene", effects: ["Pain relief", "Reduces inflammation"], strains: ["Mango Kush", "Skunk XL"] },
+            { name: "Limonene", effects: ["Anti-inflammatory", "Reduces stress"], strains: ["Sour Diesel", "Super Lemon Haze"] },
+            { name: "Linalool", effects: ["Anti-inflammatory", "Anxiolytic (reduces anxiety)"], strains: ["Amnesia Haze", "Lavender"] },
+            { name: "Caryophyllene", effects: ["Anti-inflammatory", "Helpful for arthritis"], strains: ["Girl Scout Cookies", "Sour Diesel"] },
+            { name: "Alpha-pinene", effects: ["Anti-inflammatory", "Bronchodilator (treats respiratory diseases)"], strains: ["Jack Herer", "Blue Dream"] },
+            { name: "Beta-pinene", effects: ["Anti-inflammatory", "Bronchodilator (treats respiratory diseases)"], strains: ["Jack Herer", "Blue Dream"] },
+            { name: "Alpha-bisabolol", effects: ["Enhances absorption of other compounds", "Analgesic"], strains: ["Harle-Tsu", "Pink Kush"] },
+            { name: "Eucalyptol", effects: ["Relieves pain", "Reduces inflammation"], strains: ["Super Lemon Haze", "Girl Scout Cookies"] },
+            { name: "Trans-nerolidol", effects: ["Antiparasitic", "Antioxidant"], strains: ["Sweet Skunk", "Island Sweet Skunk"] },
+            { name: "Humulene", effects: ["Anti-proliferative (prevents cancer cell growth)", "Suppresses appetite"], strains: ["Sour Diesel", "Girl Scout Cookies"] },
+            { name: "Delta 3 Carene", effects: ["Aids in healing broken bones", "Improves cognitive function"], strains: ["Arjan’s Ultra Haze", "Bubba Kush"] },
+            { name: "Camphene", effects: ["Antioxidant (with vitamin C)", "Lowers cholesterol levels"], strains: ["Ghost OG", "Strawberry Banana"] },
+            { name: "Borneol", effects: ["Insect repellent", "Kills breast cancer cells"], strains: ["Kali Mist", "Hindu Kush"] },
+            { name: "Terpineol", effects: ["Anti-depressant", "Neuroprotective"], strains: ["Jack Herer", "White Widow"] },
+            { name: "Valencene", effects: ["Anti-inflammatory", "Anti-allergic"], strains: ["Tangie", "Agent Orange"] }
+        ];
+
+        function showTerpenes() {
+            const select = document.getElementById("effectSelect");
+            const resultDiv = document.getElementById("result");
+            const selectedEffect = select.value;
+
+            if (!selectedEffect) {
+                resultDiv.innerHTML = "";
+                return;
+            }
+
+            const matchingTerpenes = terpenes.filter(terpene => terpene.effects.includes(selectedEffect));
+            if (matchingTerpenes.length === 0) {
+                resultDiv.innerHTML = "<p>No terpenes found for this effect.</p>";
+                return;
+            }
+
+            let resultHTML = "<h4>Terpenes with " + selectedEffect + "</h4>";
+            matchingTerpenes.forEach(terpene => {
+                resultHTML += `<p><strong>${terpene.name}</strong>: ${terpene.strains.join(", ")}</p>`;
+            });
+            resultDiv.innerHTML = resultHTML;
+        }
+    </script>
 </body>
 </html>
