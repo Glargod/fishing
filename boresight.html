@@ -34,23 +34,25 @@
       position: absolute;
       display: flex;
       align-items: center;
-      justify-content: center; /* Ensure centering of all elements */
+      justify-content: center;
     }
     #crosshair .vertical {
       width: 4px;
       height: 40px;
       background: #ff3333;
       position: absolute;
-      left: 50%; /* Center horizontally */
-      transform: translateX(-50%); /* Fine-tune centering */
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 0;
     }
     #crosshair .horizontal {
       width: 40px;
       height: 4px;
       background: #ff3333;
       position: absolute;
-      top: 50%; /* Center vertically */
-      transform: translateY(-50%); /* Fine-tune centering */
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 0;
     }
     #crosshair .outer-circle {
       width: 80px;
@@ -61,6 +63,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
+      z-index: 0;
     }
     #crosshair .pinpoint {
       width: 10px;
@@ -71,7 +74,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      z-index: 1; /* Ensure pinpoint is on top */
+      z-index: 2;
     }
     #crosshair .range-label {
       position: absolute;
@@ -80,6 +83,11 @@
       font-size: 14px;
       color: #fff;
       transform: translateY(-50%);
+      z-index: 1;
+    }
+    #elevationArcContainer {
+      position: absolute;
+      z-index: 1;
     }
     #controls {
       padding: 10px;
@@ -168,6 +176,53 @@
     #calibration-done:hover {
       background: #666;
     }
+    #calibration-verify-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+    }
+    #calibration-verify-line {
+      width: 96px;
+      height: 6px;
+      background: #fff;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+    #calibration-verify-buttons {
+      width: 100%;
+      padding: 10px;
+      background: #444;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #calibration-verify-instructions {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    #calibration-verify-buttons button {
+      margin: 5px;
+      padding: 5px 10px;
+      background: #555;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #calibration-verify-buttons button:hover {
+      background: #666;
+    }
   </style>
 </head>
 <body>
@@ -180,13 +235,28 @@
       <div class="pinpoint"></div>
       <div class="range-label" id="rangeLabel"></div>
     </div>
+    <div id="elevationArcContainer">
+      <svg id="elevationArc">
+        <path id="arcPath" fill="none" stroke="#ffffff" stroke-width="2"/>
+      </svg>
+    </div>
   </div>
   <div id="calibration-container">
     <div id="calibration-line"></div>
     <div id="calibration-slider-container">
       <div id="calibration-instructions">Adjust the slider to match the white line to a 1-inch object, then click Done.</div>
       <input type="range" id="calibration-slider" min="50" max="300" value="100">
-      <button id="calibration-done" onclick="finishCalibration()">Done</button>
+      <button id="calibration-done" onclick="verifyCalibration()">Done</button>
+    </div>
+  </div>
+  <div id="calibration-verify-container">
+    <div id="calibration-verify-line"></div>
+    <div id="calibration-verify-buttons">
+      <div id="calibration-verify-instructions">Verify the white line is 1 inch wide. If correct, click Confirm. If not, click Redo.</div>
+      <div>
+        <button onclick="confirmCalibration()">Confirm</button>
+        <button onclick="redoCalibration()">Redo</button>
+      </div>
     </div>
   </div>
   <div id="controls">
@@ -195,12 +265,16 @@
       <input type="range" id="barrelSize" min="50" max="200" value="100">
     </div>
     <div class="control-group">
-      <label>Scope Elevation (in)</label>
+      <label>Elevation Offset (in)</label>
       <input type="number" id="scopeElevation" value="1.5" step="0.1">
     </div>
     <div class="control-group">
+      <label>Horizontal Offset (in)</label>
+      <input type="number" id="horizontalOffset" value="0" step="0.1">
+    </div>
+    <div class="control-group">
       <label>Zero Range (m)</label>
-      <input type="range" id="zeroRange" min="25" max="300" value="100">
+      <input type="range" id="zeroRange" min="10" max="300" value="100">
     </div>
     <div class="control-group">
       <label>Bullet Weight (grains)</label>
@@ -208,7 +282,7 @@
     </div>
     <div class="control-group">
       <label>Ballistic Coefficient</label>
-      <input type="number" id="bc" value="0.3" step="0.01">
+      <input type="number" id="bc" value="0.3" step="0.1">
     </div>
     <div class="control-group">
       <label>Muzzle Velocity (fps)</label>
@@ -220,12 +294,16 @@
   </div>
 
   <script>
-    let PPI = 96; // Default PPI (to be calibrated)
+    let PPI = 96;
     const barrel = document.getElementById('barrel');
     const crosshair = document.getElementById('crosshair');
+    const elevationArcContainer = document.getElementById('elevationArcContainer');
+    const elevationArc = document.getElementById('elevationArc');
+    const arcPath = document.getElementById('arcPath');
     const rangeLabel = document.getElementById('rangeLabel');
     const barrelSize = document.getElementById('barrelSize');
     const scopeElevation = document.getElementById('scopeElevation');
+    const horizontalOffset = document.getElementById('horizontalOffset');
     const zeroRange = document.getElementById('zeroRange');
     const bulletWeight = document.getElementById('bulletWeight');
     const bc = document.getElementById('bc');
@@ -234,42 +312,111 @@
     const calibrationContainer = document.getElementById('calibration-container');
     const calibrationLine = document.getElementById('calibration-line');
     const calibrationSlider = document.getElementById('calibration-slider');
+    const calibrationVerifyContainer = document.getElementById('calibration-verify-container');
+    const calibrationVerifyLine = document.getElementById('calibration-verify-line');
+
+    const devicePPIMap = {
+      'Pixel 4': 444,
+      'Pixel 7': 416,
+      'Galaxy S22': 425,
+      'Moto G': 401
+    };
+
+    function detectDeviceType() {
+      const userAgent = navigator.userAgent;
+      let deviceType = 'Unknown';
+      if (userAgent.includes('Pixel 4')) deviceType = 'Pixel 4';
+      else if (userAgent.includes('Pixel 7')) deviceType = 'Pixel 7';
+      else if (userAgent.includes('SM-S901')) deviceType = 'Galaxy S22';
+      else if (userAgent.includes('Moto G')) deviceType = 'Moto G';
+      return deviceType;
+    }
+
+    function autoCalibrate() {
+      const deviceType = detectDeviceType();
+      if (devicePPIMap[deviceType]) {
+        PPI = devicePPIMap[deviceType];
+        console.log(`Auto-calibrated for ${deviceType} with PPI: ${PPI}`);
+      } else {
+        console.log(`Device type ${deviceType} not recognized. Using default PPI: ${PPI}. Please calibrate manually.`);
+      }
+    }
 
     function calculateBulletDrop(range, velocity, bc) {
-      const rangeYards = range * 1.09361; // Convert meters to yards
-      const timeOfFlight = rangeYards / (velocity * 3); // Time of flight (seconds)
-      const gravity = 32.174 * 12; // Gravity in in/s^2
-      let drop = 0.5 * gravity * timeOfFlight * timeOfFlight; // Gravitational drop
-      drop *= (1 - bc * 0.5); // Simplified drag adjustment
-      return drop; // Drop in inches
+      const rangeYards = range * 1.09361;
+      const timeOfFlight = rangeYards / (velocity * 3);
+      const gravity = 32.174 * 12;
+      let drop = 0.5 * gravity * timeOfFlight * timeOfFlight;
+      drop *= (1 - bc * 0.5);
+      return drop;
     }
 
     function updateDisplay() {
       const visualsHeight = visuals.clientHeight;
       const visualsWidth = visuals.clientWidth;
 
-      // Update barrel size and position
       const barrelDiameter = parseFloat(barrelSize.value);
       barrel.style.width = `${barrelDiameter}px`;
       barrel.style.height = `${barrelDiameter}px`;
-      barrel.style.left = `${visualsWidth / 2 - barrelDiameter / 2}px`;
-      barrel.style.top = `${visualsHeight * 0.75 - barrelDiameter / 2}px`;
+      const barrelCenterX = visualsWidth / 2;
+      const barrelCenterY = visualsHeight * 0.75;
+      barrel.style.left = `${barrelCenterX - barrelDiameter / 2}px`;
+      barrel.style.top = `${barrelCenterY - barrelDiameter / 2}px`;
 
-      // Calculate bullet drop
       const range = parseFloat(zeroRange.value);
       const drop = calculateBulletDrop(range, parseFloat(velocity.value), parseFloat(bc.value));
       const elevation = parseFloat(scopeElevation.value) * PPI;
       const dropAdjustment = drop * PPI;
 
-      // Position crosshair
       const crosshairOffset = elevation + dropAdjustment;
+      const crosshairLeftOffset = parseFloat(horizontalOffset.value) * PPI;
       const crosshairTop = visualsHeight * 0.75 - crosshairOffset;
+      const crosshairLeft = visualsWidth / 2 + crosshairLeftOffset;
 
-      crosshair.style.left = `${visualsWidth / 2}px`;
+      crosshair.style.left = `${crosshairLeft}px`;
       crosshair.style.top = `${Math.max(20, Math.min(visualsHeight - 20, crosshairTop))}px`;
 
-      // Update the range label
-      rangeLabel.textContent = `${parseFloat(zeroRange.value)}m`;
+      const yellowDotX = crosshairLeft;
+      const yellowDotY = crosshairTop;
+
+      const arcWidthInches = 1.57;
+      const arcWidthPixels = arcWidthInches * PPI;
+      const halfArcWidth = arcWidthPixels / 2;
+
+      const radius = Math.abs(barrelCenterY - yellowDotY);
+
+      const svgWidth = radius * 2;
+      const svgHeight = radius * 2;
+      elevationArc.setAttribute('width', svgWidth);
+      elevationArc.setAttribute('height', svgHeight);
+
+      elevationArcContainer.style.left = `${barrelCenterX - svgWidth / 2}px`;
+      elevationArcContainer.style.top = `${barrelCenterY - svgHeight / 2}px`;
+
+      const svgCenterX = svgWidth / 2;
+      const svgCenterY = svgHeight / 2;
+
+      const yellowDotXInSvg = yellowDotX - (barrelCenterX - svgWidth / 2);
+      const yellowDotYInSvg = yellowDotY - (barrelCenterY - svgHeight / 2);
+
+      const startX = yellowDotXInSvg - halfArcWidth;
+      const endX = yellowDotXInSvg + halfArcWidth;
+
+      let startY, endY;
+      try {
+        const yOffset = Math.sqrt(radius * radius - halfArcWidth * halfArcWidth);
+        startY = svgCenterY - yOffset;
+        endY = svgCenterY - yOffset;
+
+        const pathD = `M ${startX},${startY} A ${radius},${radius} 0 0 1 ${endX},${endY}`;
+        arcPath.setAttribute('d', pathD);
+      } catch (error) {
+        console.error('Error drawing arc:', error);
+        const pathD = `M ${startX},${yellowDotYInSvg} L ${endX},${yellowDotYInSvg}`;
+        arcPath.setAttribute('d', pathD);
+      }
+
+      rangeLabel.textContent = `${range}m`;
     }
 
     function calibrate() {
@@ -279,33 +426,46 @@
       controls.style.display = 'none';
     }
 
-    function finishCalibration() {
+    function verifyCalibration() {
       const pixelSize = parseFloat(calibrationSlider.value);
-      PPI = pixelSize / 1; // 1 inch
+      PPI = pixelSize / 1;
+      console.log(`Calibrated PPI: ${PPI}`);
 
       calibrationContainer.style.display = 'none';
+      calibrationVerifyContainer.style.display = 'flex';
+
+      const verifyLineWidth = 1 * PPI;
+      calibrationVerifyLine.style.width = `${verifyLineWidth}px`;
+    }
+
+    function confirmCalibration() {
+      calibrationVerifyContainer.style.display = 'none';
       barrel.style.display = 'block';
       crosshair.style.display = 'flex';
       controls.style.display = 'block';
       updateDisplay();
     }
 
+    function redoCalibration() {
+      calibrationVerifyContainer.style.display = 'none';
+      calibrationContainer.style.display = 'flex';
+    }
+
     calibrationSlider.addEventListener('input', () => {
       calibrationLine.style.height = `${calibrationSlider.value}px`;
     });
 
-    // Event listeners
     barrelSize.addEventListener('input', updateDisplay);
     scopeElevation.addEventListener('input', updateDisplay);
+    horizontalOffset.addEventListener('input', updateDisplay);
     zeroRange.addEventListener('input', updateDisplay);
     bulletWeight.addEventListener('input', updateDisplay);
     bc.addEventListener('input', updateDisplay);
     velocity.addEventListener('input', updateDisplay);
 
-    // Initial render
+    autoCalibrate();
     updateDisplay();
 
-    // Update on window resize
     window.addEventListener('resize', updateDisplay);
   </script>
 </body>
