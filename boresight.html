@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boresight App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      overflow: auto;
+    }
+    #visuals {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: visible;
+    }
+    #barrel {
+      position: absolute;
+      border: 3px solid red;
+      border-radius: 50%;
+    }
+    #crosshair {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Ensure centering of all elements */
+    }
+    #crosshair .vertical {
+      width: 4px;
+      height: 40px;
+      background: #ff3333;
+      position: absolute;
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%); /* Fine-tune centering */
+    }
+    #crosshair .horizontal {
+      width: 40px;
+      height: 4px;
+      background: #ff3333;
+      position: absolute;
+      top: 50%; /* Center vertically */
+      transform: translateY(-50%); /* Fine-tune centering */
+    }
+    #crosshair .outer-circle {
+      width: 80px;
+      height: 80px;
+      border: 3px solid #ff3333;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #crosshair .pinpoint {
+      width: 10px;
+      height: 10px;
+      background: #ffff00;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1; /* Ensure pinpoint is on top */
+    }
+    #crosshair .range-label {
+      position: absolute;
+      left: 50px;
+      top: 50%;
+      font-size: 14px;
+      color: #fff;
+      transform: translateY(-50%);
+    }
+    #controls {
+      padding: 10px;
+      width: 100%;
+      max-width: 400px;
+      background: #333;
+      border-radius: 10px;
+      margin: 5px;
+    }
+    .control-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .control-group label {
+      font-size: 12px;
+      margin-right: 10px;
+      white-space: nowrap;
+    }
+    .control-group input, .control-group button {
+      flex: 1;
+      padding: 5px;
+      font-size: 12px;
+      border-radius: 5px;
+      border: none;
+      box-sizing: border-box;
+    }
+    .control-group input[type="range"] {
+      padding: 0;
+    }
+    .control-group button {
+      background: #555;
+      color: #fff;
+      cursor: pointer;
+    }
+    .control-group button:hover {
+      background: #666;
+    }
+    #calibration-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+    }
+    #calibration-line {
+      width: 6px;
+      height: 100px;
+      background: #fff;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+    #calibration-slider-container {
+      width: 100%;
+      padding: 10px;
+      background: #444;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #calibration-slider {
+      width: 80%;
+    }
+    #calibration-instructions {
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    #calibration-done {
+      margin-top: 5px;
+      padding: 5px 10px;
+      background: #555;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #calibration-done:hover {
+      background: #666;
+    }
+  </style>
+</head>
+<body>
+  <div id="visuals">
+    <div id="barrel"></div>
+    <div id="crosshair">
+      <div class="outer-circle"></div>
+      <div class="vertical"></div>
+      <div class="horizontal"></div>
+      <div class="pinpoint"></div>
+      <div class="range-label" id="rangeLabel"></div>
+    </div>
+  </div>
+  <div id="calibration-container">
+    <div id="calibration-line"></div>
+    <div id="calibration-slider-container">
+      <div id="calibration-instructions">Adjust the slider to match the white line to a 1-inch object, then click Done.</div>
+      <input type="range" id="calibration-slider" min="50" max="300" value="100">
+      <button id="calibration-done" onclick="finishCalibration()">Done</button>
+    </div>
+  </div>
+  <div id="controls">
+    <div class="control-group">
+      <label>Barrel Size</label>
+      <input type="range" id="barrelSize" min="50" max="200" value="100">
+    </div>
+    <div class="control-group">
+      <label>Scope Elevation (in)</label>
+      <input type="number" id="scopeElevation" value="1.5" step="0.1">
+    </div>
+    <div class="control-group">
+      <label>Zero Range (m)</label>
+      <input type="range" id="zeroRange" min="25" max="300" value="100">
+    </div>
+    <div class="control-group">
+      <label>Bullet Weight (grains)</label>
+      <input type="number" id="bulletWeight" value="150">
+    </div>
+    <div class="control-group">
+      <label>Ballistic Coefficient</label>
+      <input type="number" id="bc" value="0.3" step="0.01">
+    </div>
+    <div class="control-group">
+      <label>Muzzle Velocity (fps)</label>
+      <input type="number" id="velocity" value="2800">
+    </div>
+    <div class="control-group">
+      <button onclick="calibrate()">Calibrate Screen</button>
+    </div>
+  </div>
+
+  <script>
+    let PPI = 96; // Default PPI (to be calibrated)
+    const barrel = document.getElementById('barrel');
+    const crosshair = document.getElementById('crosshair');
+    const rangeLabel = document.getElementById('rangeLabel');
+    const barrelSize = document.getElementById('barrelSize');
+    const scopeElevation = document.getElementById('scopeElevation');
+    const zeroRange = document.getElementById('zeroRange');
+    const bulletWeight = document.getElementById('bulletWeight');
+    const bc = document.getElementById('bc');
+    const velocity = document.getElementById('velocity');
+    const visuals = document.getElementById('visuals');
+    const calibrationContainer = document.getElementById('calibration-container');
+    const calibrationLine = document.getElementById('calibration-line');
+    const calibrationSlider = document.getElementById('calibration-slider');
+
+    function calculateBulletDrop(range, velocity, bc) {
+      const rangeYards = range * 1.09361; // Convert meters to yards
+      const timeOfFlight = rangeYards / (velocity * 3); // Time of flight (seconds)
+      const gravity = 32.174 * 12; // Gravity in in/s^2
+      let drop = 0.5 * gravity * timeOfFlight * timeOfFlight; // Gravitational drop
+      drop *= (1 - bc * 0.5); // Simplified drag adjustment
+      return drop; // Drop in inches
+    }
+
+    function updateDisplay() {
+      const visualsHeight = visuals.clientHeight;
+      const visualsWidth = visuals.clientWidth;
+
+      // Update barrel size and position
+      const barrelDiameter = parseFloat(barrelSize.value);
+      barrel.style.width = `${barrelDiameter}px`;
+      barrel.style.height = `${barrelDiameter}px`;
+      barrel.style.left = `${visualsWidth / 2 - barrelDiameter / 2}px`;
+      barrel.style.top = `${visualsHeight * 0.75 - barrelDiameter / 2}px`;
+
+      // Calculate bullet drop
+      const range = parseFloat(zeroRange.value);
+      const drop = calculateBulletDrop(range, parseFloat(velocity.value), parseFloat(bc.value));
+      const elevation = parseFloat(scopeElevation.value) * PPI;
+      const dropAdjustment = drop * PPI;
+
+      // Position crosshair
+      const crosshairOffset = elevation + dropAdjustment;
+      const crosshairTop = visualsHeight * 0.75 - crosshairOffset;
+
+      crosshair.style.left = `${visualsWidth / 2}px`;
+      crosshair.style.top = `${Math.max(20, Math.min(visualsHeight - 20, crosshairTop))}px`;
+
+      // Update the range label
+      rangeLabel.textContent = `${parseFloat(zeroRange.value)}m`;
+    }
+
+    function calibrate() {
+      calibrationContainer.style.display = 'flex';
+      barrel.style.display = 'none';
+      crosshair.style.display = 'none';
+      controls.style.display = 'none';
+    }
+
+    function finishCalibration() {
+      const pixelSize = parseFloat(calibrationSlider.value);
+      PPI = pixelSize / 1; // 1 inch
+
+      calibrationContainer.style.display = 'none';
+      barrel.style.display = 'block';
+      crosshair.style.display = 'flex';
+      controls.style.display = 'block';
+      updateDisplay();
+    }
+
+    calibrationSlider.addEventListener('input', () => {
+      calibrationLine.style.height = `${calibrationSlider.value}px`;
+    });
+
+    // Event listeners
+    barrelSize.addEventListener('input', updateDisplay);
+    scopeElevation.addEventListener('input', updateDisplay);
+    zeroRange.addEventListener('input', updateDisplay);
+    bulletWeight.addEventListener('input', updateDisplay);
+    bc.addEventListener('input', updateDisplay);
+    velocity.addEventListener('input', updateDisplay);
+
+    // Initial render
+    updateDisplay();
+
+    // Update on window resize
+    window.addEventListener('resize', updateDisplay);
+  </script>
+</body>
+</html>
