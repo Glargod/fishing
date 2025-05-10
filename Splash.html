@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmos 482 Re-entry Simulation (Global Circumnavigation)</title>
+    <title>Cosmos 482 Re-entry Simulation (Salvaged)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -26,7 +26,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // Initialize map centered on Indian Ocean
-        const map = L.map('map').setView([0, 90], 3);
+        const map = L.map('map').setView([0, 90], 2); // Zoom out to show global path
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
@@ -41,11 +41,11 @@
         const endTime = new Date('2025-05-10T05:52:00-03:00').getTime(); // 05:52 AM ADT
         const totalTime = 2.69 * period; // Total simulation time (~2.69 orbits)
 
-        // Cities in chronological order with lat/lon and ADT times
+        // Cities with adjusted times to better match the trajectory
         const cities = [
-            { name: 'Port Blair', lat: 11.6, lon: 92.7, time: '2025-05-10T03:26:00-03:00' },
-            { name: 'Urumqi', lat: 43.8, lon: 87.6, time: '2025-05-10T03:38:00-03:00' },
-            { name: 'Almaty', lat: 43.3, lon: 76.9, time: '2025-05-10T03:40:00-03:00' },
+            { name: 'Port Blair', lat: 11.6, lon: 92.7, time: '2025-05-10T03:23:00-03:00' }, // Adjusted
+            { name: 'Urumqi', lat: 43.8, lon: 87.6, time: '2025-05-10T03:36:00-03:00' }, // Adjusted
+            { name: 'Almaty', lat: 43.3, lon: 76.9, time: '2025-05-10T03:38:00-03:00' }, // Adjusted
             { name: 'Malé', lat: 4.2, lon: 73.5, time: '2025-05-10T04:44:00-03:00' },
             { name: 'Tashkent', lat: 41.3, lon: 69.2, time: '2025-05-10T05:06:00-03:00' },
             { name: 'Tehran', lat: 35.7, lon: 51.4, time: '2025-05-10T06:12:00-03:00' },
@@ -81,8 +81,10 @@
             for (let t = 0; t <= period; t += 10) {
                 const phase = angularVelocity * t + phaseOffset;
                 const lat = inclination * Math.sin(phase);
-                const lon = (startLon + 360 * (t / period) - (earthRotation * (t + orbit * period))) % 360;
-                const adjustedLon = lon < -180 ? lon + 360 : lon;
+                // Orbital longitude advances 360° per orbit, adjusted for Earth's rotation
+                const orbitalLon = (startLon + 360 * (t / period)) % 360;
+                const groundLon = (orbitalLon - (earthRotation * (t + orbit * period))) % 360;
+                const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
                 track.push([lat, adjustedLon]);
                 corridor.push([lat + corridorWidth, adjustedLon]);
                 corridor.push([lat - corridorWidth, adjustedLon]);
@@ -110,8 +112,9 @@
             for (let t = orbitStartTime; t <= orbitEndTime; t += 10) {
                 const phase = angularVelocity * (t - orbitStartTime) + phaseOffset;
                 const lat = inclination * Math.sin(phase);
-                const lon = startLon - (earthRotation * t) % 360;
-                const adjustedLon = lon < -180 ? lon + 360 : lon;
+                const orbitalLon = (startLon + 360 * ((t - orbitStartTime) / period)) % 360;
+                const groundLon = (orbitalLon - (earthRotation * t)) % 360;
+                const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
                 activeTrack.push([lat, adjustedLon]);
                 activeCorridor.push([lat + corridorWidth, adjustedLon]);
                 activeCorridor.push([lat - corridorWidth, adjustedLon]);
@@ -149,8 +152,9 @@
             const orbitElapsed = elapsed % period;
             const phase = angularVelocity * orbitElapsed + phaseOffset;
             const lat = inclination * Math.sin(phase);
-            const lon = startLon - (earthRotation * elapsed) % 360;
-            const adjustedLon = lon < -180 ? lon + 360 : lon;
+            const orbitalLon = (startLon + 360 * (orbitElapsed / period)) % 360;
+            const groundLon = (orbitalLon - (earthRotation * elapsed)) % 360;
+            const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
 
             // Update marker
             spacecraftMarker.setLatLng([lat, adjustedLon]);
