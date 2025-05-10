@@ -102,7 +102,7 @@
             const elapsed = (now - startTime) / 1000; // Seconds since 03:18 AM ADT
             const phase = angularVelocity * elapsed;
             // Bias latitude toward perigee (equator) using eccentricity effect
-            const lat = inclination * Math.sin(phase) * (1 - 0.3 * Math.cos(phase)); // Adjusted for perigee
+            const lat = inclination * Math.sin(phase) * (1 - 0.7 * Math.cos(phase)); // Further adjusted for perigee
             const lon = startLon - (earthRotation * elapsed) % 360; // Current longitude
             const adjustedLon = lon < -180 ? lon + 360 : lon;
 
