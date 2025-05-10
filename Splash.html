@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmos 482 Re-entry Simulation (Intersects Cities)</title>
+    <title>Cosmos 482 Re-entry Simulation (Restored Orbital Pattern)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -43,9 +43,9 @@
 
         // Cities with adjusted times to match trajectory intersections
         const cities = [
-            { name: 'Port Blair', lat: 11.6, lon: 92.7, time: '2025-05-10T03:31:00-03:00' }, // t = 790 s
-            { name: 'Urumqi', lat: 43.8, lon: 87.6, time: '2025-05-10T03:42:00-03:00' }, // t = 1440 s
-            { name: 'Almaty', lat: 43.3, lon: 76.9, time: '2025-05-10T03:45:00-03:00' }, // t = 1620 s
+            { name: 'Port Blair', lat: 11.6, lon: 92.7, time: '2025-05-10T03:33:00-03:00' }, // Adjusted
+            { name: 'Urumqi', lat: 43.8, lon: 87.6, time: '2025-05-10T03:35:00-03:00' }, // Adjusted
+            { name: 'Almaty', lat: 43.3, lon: 76.9, time: '2025-05-10T03:38:00-03:00' },
             { name: 'Malé', lat: 4.2, lon: 73.5, time: '2025-05-10T04:45:00-03:00' },
             { name: 'Tashkent', lat: 41.3, lon: 69.2, time: '2025-05-10T05:07:00-03:00' },
             { name: 'Tehran', lat: 35.7, lon: 51.4, time: '2025-05-10T06:13:00-03:00' },
@@ -65,7 +65,7 @@
         });
 
         // Generate full ground tracks for each orbit
-        const startLon = 96; // Adjusted to hit 92.7°E at Port Blair
+        const startLon = 100.5; // Adjusted to align with re-entry
         const corridorWidth = 2;
         const orbits = Math.ceil(totalTime / period);
         const groundTracks = [];
@@ -81,7 +81,8 @@
             for (let t = 0; t <= period; t += 10) {
                 const phase = angularVelocity * t + phaseOffset;
                 const lat = inclination * Math.sin(phase);
-                const groundLon = (startLon - (earthRotation * (t + orbit * period))) % 360;
+                const orbitalLon = (startLon + 360 * (t / period)) % 360;
+                const groundLon = (orbitalLon - (earthRotation * (t + orbit * period))) % 360;
                 const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
                 track.push([lat, adjustedLon]);
                 corridor.push([lat + corridorWidth, adjustedLon]);
@@ -110,7 +111,8 @@
             for (let t = orbitStartTime; t <= orbitEndTime; t += 10) {
                 const phase = angularVelocity * (t - orbitStartTime) + phaseOffset;
                 const lat = inclination * Math.sin(phase);
-                const groundLon = (startLon - (earthRotation * t)) % 360;
+                const orbitalLon = (startLon + 360 * ((t - orbitStartTime) / period)) % 360;
+                const groundLon = (orbitalLon - (earthRotation * t)) % 360;
                 const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
                 activeTrack.push([lat, adjustedLon]);
                 activeCorridor.push([lat + corridorWidth, adjustedLon]);
@@ -149,7 +151,8 @@
             const orbitElapsed = elapsed % period;
             const phase = angularVelocity * orbitElapsed + phaseOffset;
             const lat = inclination * Math.sin(phase);
-            const groundLon = (startLon - (earthRotation * elapsed)) % 360;
+            const orbitalLon = (startLon + 360 * (orbitElapsed / period)) % 360;
+            const groundLon = (orbitalLon - (earthRotation * elapsed)) % 360;
             const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
 
             // Update marker
