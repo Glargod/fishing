@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos 482 Re-entry Simulation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: 100%; }
+        #info { position: absolute; top: 10px; left: 10px; background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 5px; }
+        .uct-effect { color: #ff4500; font-weight: bold; }
+        .city-marker { background: #00ff00; border-radius: 50%; width: 10px; height: 10px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="info">
+        <h3>Cosmos 482 Re-entry Simulation</h3>
+        <p>Time (ADT): <span id="current-time"></span></p>
+        <p>Position: <span id="position"></span></p>
+        <p>Status: <span id="status">Orbiting</span></p>
+        <p class="uct-effect">UCT Effects: Magnetic bias (±50°), Charge-heat trail</p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map centered on Indian Ocean
+        const map = L.map('map').setView([0, 90], 3);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Orbital parameters
+        const inclination = 51.95; // degrees
+        const period = 88 * 60; // seconds (~88 minutes)
+        const angularVelocity = (2 * Math.PI) / period; // radians/second
+        const earthRotation = 15 / 3600; // degrees/second (15°/hour)
+        const startTime = new Date('2025-05-10T03:18:00-03:00').getTime(); // 03:18 AM ADT
+        const nominalTime = new Date('2025-05-10T03:28:00-03:00').getTime(); // 03:28 AM ADT
+        const endTime = new Date('2025-05-10T05:52:00-03:00').getTime(); // 05:52 AM ADT
+
+        // Cities in chronological order with lat/lon and ADT times
+        const cities = [
+            { name: 'Port Blair', lat: 11.6, lon: 92.7, time: '2025-05-10T03:20:00-03:00' },
+            { name: 'Urumqi', lat: 43.8, lon: 87.6, time: '2025-05-10T03:38:00-03:00' },
+            { name: 'Almaty', lat: 43.3, lon: 76.9, time: '2025-05-10T03:40:00-03:00' },
+            { name: 'Malé', lat: 4.2, lon: 73.5, time: '2025-05-10T04:44:00-03:00' },
+            { name: 'Tashkent', lat: 41.3, lon: 69.2, time: '2025-05-10T05:06:00-03:00' },
+            { name: 'Tehran', lat: 35.7, lon: 51.4, time: '2025-05-10T06:12:00-03:00' },
+            { name: 'Mogadishu', lat: 2.0, lon: 45.3, time: '2025-05-10T06:58:00-03:00' },
+            { name: 'Nairobi', lat: -1.3, lon: 36.8, time: '2025-05-10T07:00:00-03:00' },
+            { name: 'Kyiv', lat: 50.4, lon: 30.5, time: '2025-05-10T07:14:00-03:00' }
+        ];
+
+        // Plot cities
+        cities.forEach(city => {
+            const marker = L.circleMarker([city.lat, city.lon], {
+                radius: 5,
+                color: '#00ff00',
+                fillOpacity: 0.8
+            }).addTo(map);
+            marker.bindTooltip(`${city.name}<br>${new Date(city.time).toLocaleTimeString('en-US', { timeZone: 'America/Halifax' })} ADT`);
+        });
+
+        // Generate ground track (sinusoidal path)
+        const groundTrack = [];
+        const startLon = 100; // Starting longitude at 03:18 AM ADT (~100°E)
+        for (let t = 0; t <= 2.69 * period; t += 10) { // Cover ~2.69 orbits
+            const phase = angularVelocity * t;
+            const lat = inclination * Math.sin(phase); // Sinusoidal latitude
+            const lon = startLon - (earthRotation * t) % 360; // Westward shift
+            groundTrack.push([lat, lon < -180 ? lon + 360 : lon]);
+        }
+        L.polyline(groundTrack, { color: '#0000ff', weight: 2 }).addTo(map); // Blue track
+        L.polyline(groundTrack, { color: '#ff4500', weight: 4, opacity: 0.3 }).addTo(map); // UCT charge-heat trail
+
+        // Nominal re-entry marker
+        const nominalLat = 0; // Assume equatorial crossing at nominal time
+        const nominalLon = 98; // ~98°E at 03:28 AM ADT
+        L.marker([nominalLat, nominalLon], {
+            icon: L.divIcon({ className: 'uct-effect', html: '<div style="color:red;font-size:20px;">🔥</div>' })
+        }).addTo(map).bindTooltip('Nominal Re-entry: 03:28 AM ADT');
+
+        // Real-time spacecraft marker
+        let spacecraftMarker = L.circleMarker([0, startLon], {
+            radius: 7,
+            color: '#ff0000',
+            fillOpacity: 1
+        }).addTo(map).bindTooltip('Cosmos 482');
+
+        // Real-time simulation
+        function updateSimulation() {
+            const now = new Date().getTime();
+            const elapsed = (now - startTime) / 1000; // Seconds since 03:18 AM ADT
+            const phase = angularVelocity * elapsed;
+            const lat = inclination * Math.sin(phase); // Current latitude
+            const lon = startLon - (earthRotation * elapsed) % 360; // Current longitude
+            const adjustedLon = lon < -180 ? lon + 360 : lon;
+
+            // Update marker
+            spacecraftMarker.setLatLng([lat, adjustedLon]);
+            spacecraftMarker.setTooltipContent(`Cosmos 482<br>Lat: ${lat.toFixed(2)}°<br>Lon: ${adjustedLon.toFixed(2)}°`);
+
+            // Update info panel
+            document.getElementById('current-time').textContent = new Date().toLocaleString('en-US', { timeZone: 'America/Halifax' });
+            document.getElementById('position').textContent = `Lat: ${lat.toFixed(2)}°, Lon: ${adjustedLon.toFixed(2)}°`;
+            document.getElementById('status').textContent = now < nominalTime ? 'Orbiting' : now < endTime ? 'Re-entering' : 'Landed';
+
+            // Stop if past window
+            if (now > new Date('2025-05-10T07:15:00-03:00').getTime()) {
+                document.getElementById('status').textContent = 'Simulation Ended';
+                clearInterval(interval);
+            }
+        }
+
+        // Run every second
+        updateSimulation();
+        const interval = setInterval(updateSimulation, 1000);
+    </script>
+</body>
+</html>
