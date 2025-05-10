@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmos 482 Re-entry Simulation (Limited Window, Red Zone Cities)</title>
+    <title>Cosmos 482 Re-entry Simulation (Revised Orbital Track)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -36,18 +36,19 @@
         const period = 88 * 60; // seconds (~88 minutes)
         const angularVelocity = (2 * Math.PI) / period; // radians/second
         const earthRotation = 15 / 3600; // degrees/second (15°/hour)
-        const adjustedEarthRotation = 0.00987; // Adjusted to hit cities' longitudes
+        const adjustedEarthRotation = 0.00987; // Adjusted for red zone
         const startTime = new Date('2025-05-10T03:18:00-03:00').getTime(); // Simulation start
         const windowStart = new Date('2025-05-10T04:30:00-03:00').getTime(); // 04:30 AM ADT
         const windowEnd = new Date('2025-05-10T06:52:00-03:00').getTime(); // 06:52 AM ADT
-        const totalTime = 2.69 * period; // Total simulation time (~2.69 orbits)
+        const totalTime = (new Date('2025-05-10T05:52:00-03:00').getTime() - startTime) / 1000; // Total simulation time
 
-        // Cities in the red zone (04:30 AM ADT to 06:52 AM ADT)
+        // Revised cities in the red zone (04:30 AM ADT to 06:52 AM ADT)
         const cities = [
-            { name: 'Cairo', lat: 30.0, lon: 31.2, time: '2025-05-10T04:36:00-03:00' }, // t = 4680 s
-            { name: 'Riyadh', lat: 24.7, lon: 46.7, time: '2025-05-10T04:48:00-03:00' }, // t = 5400 s
-            { name: 'Addis Ababa', lat: 9.0, lon: 38.8, time: '2025-05-10T05:02:00-03:00' }, // t = 6240 s
-            { name: 'Nairobi', lat: -1.3, lon: 36.8, time: '2025-05-10T05:05:00-03:00' } // t = 6420 s
+            { name: 'Kyiv', lat: 50.4, lon: 30.5, time: '2025-05-10T04:30:00-03:00' }, // t = 4320 s
+            { name: 'Tabriz', lat: 38.1, lon: 46.3, time: '2025-05-10T04:48:00-03:00' }, // t = 5400 s
+            { name: 'Jeddah', lat: 21.5, lon: 39.2, time: '2025-05-10T05:02:00-03:00' }, // t = 6240 s
+            { name: 'Medina', lat: 24.5, lon: 39.6, time: '2025-05-10T05:05:00-03:00' }, // t = 6420 s
+            { name: 'Recife', lat: -8.0, lon: -34.9, time: '2025-05-10T06:52:00-03:00' } // t = 12840 s
         ];
 
         // Plot cities (red markers for red zone)
@@ -60,20 +61,19 @@
             marker.bindTooltip(`${city.name}<br>${new Date(city.time).toLocaleTimeString('en-US', { timeZone: 'America/Halifax' })} ADT`);
         });
 
-        // Generate full ground tracks for each orbit (for context, faded)
-        const startLon = 100.5; // Adjusted to align with re-entry
+        // Generate full ground tracks (limited to total simulation orbits)
+        const startLon = 100.5;
         const corridorWidth = 2;
-        const orbits = Math.ceil(totalTime / period);
+        const orbits = Math.ceil(totalTime / period); // ~2.69 orbits
         const groundTracks = [];
         const corridors = [];
-        const phaseOffset = -0.714; // Align perigee with 03:28 AM ADT
+        const phaseOffset = -0.714;
 
         for (let orbit = 0; orbit < orbits; orbit++) {
             const track = [];
             const corridor = [];
             const lonOffset = earthRotation * (orbit * period);
 
-            // Plot full 360° orbit
             for (let t = 0; t <= period; t += 10) {
                 const phase = angularVelocity * t + phaseOffset;
                 const lat = inclination * Math.sin(phase);
@@ -89,14 +89,14 @@
             corridors.push(corridor);
         }
 
-        // Plot each orbit's ground track and corridor (faded for context)
+        // Plot full ground tracks (faded for context)
         groundTracks.forEach((track, index) => {
             L.polyline(track, { color: '#0000ff', weight: 2, opacity: 0.2 }).addTo(map);
             L.polyline(track, { color: '#ff4500', weight: 4, opacity: 0.1 }).addTo(map);
             L.polygon(corridors[index], { color: '#0000ff', fillOpacity: 0.02 }).addTo(map);
         });
 
-        // Plot active segment within the time window (04:30 AM ADT to 06:52 AM ADT)
+        // Plot active segment within the time window (04:30 AM ADT to 06:52 AM ADT, ~1.61 orbits)
         const activeTracks = [];
         const activeCorridors = [];
         const tStart = 4320; // 04:30 AM ADT
@@ -124,7 +124,7 @@
             L.polygon(activeCorridors[index], { color: '#0000ff', fillOpacity: 0.1 }).addTo(map);
         });
 
-        // Nominal re-entry marker (for reference, even though it's before the window)
+        // Nominal re-entry marker (for reference)
         const nominalLat = 0;
         const nominalLon = 98;
         L.marker([nominalLat, nominalLon], {
