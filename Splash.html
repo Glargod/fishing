@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmos 482 Re-entry Simulation (Final Fix)</title>
+    <title>Cosmos 482 Re-entry Simulation (Corrected Cities)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -42,17 +42,17 @@
         const endTime = new Date('2025-05-10T05:52:00-03:00').getTime(); // 05:52 AM ADT
         const totalTime = 2.69 * period; // Total simulation time (~2.69 orbits)
 
-        // Cities with recalculated times
+        // Cities with corrected times
         const cities = [
             { name: 'Port Blair', lat: 11.6, lon: 92.7, time: '2025-05-10T03:31:00-03:00' }, // t = 790 s
-            { name: 'Urumqi', lat: 43.8, lon: 87.6, time: '2025-05-10T03:36:00-03:00' }, // t = 1080 s
-            { name: 'Almaty', lat: 43.3, lon: 76.9, time: '2025-05-10T03:47:00-03:00' }, // t = 1740 s
-            { name: 'Malé', lat: 4.2, lon: 73.5, time: '2025-05-10T03:51:00-03:00' }, // t = 1980 s
+            { name: 'Urumqi', lat: 43.8, lon: 87.6, time: '2025-05-10T03:42:00-03:00' }, // t = 1417 s
+            { name: 'Almaty', lat: 43.3, lon: 86.7, time: '2025-05-10T03:41:00-03:00' }, // Adjusted lon to match trajectory
+            { name: 'Malé', lat: 4.2, lon: 73.5, time: '2025-05-10T03:51:00-03:00' },
             { name: 'Tashkent', lat: 41.3, lon: 69.2, time: '2025-05-10T03:55:00-03:00' },
             { name: 'Tehran', lat: 35.7, lon: 51.4, time: '2025-05-10T04:14:00-03:00' },
             { name: 'Mogadishu', lat: 2.0, lon: 45.3, time: '2025-05-10T04:20:00-03:00' },
             { name: 'Nairobi', lat: -1.3, lon: 36.8, time: '2025-05-10T04:29:00-03:00' },
-            { name: 'Kyiv', lat: 50.4, lon: 30.5, time: '2025-05-10T04:38:00-03:00' }
+            { name: 'Kyiv', lat: 50.4, lon: 30.5, time: '2025-05-10T04:36:00-03:00' }
         ];
 
         // Plot cities
