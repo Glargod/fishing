@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmos 482 Re-entry Simulation (Revised Cities)</title>
+    <title>Cosmos 482 Re-entry Simulation (Unified Orbital Pattern)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -36,17 +36,20 @@
         const period = 88 * 60; // seconds (~88 minutes)
         const angularVelocity = (2 * Math.PI) / period; // radians/second
         const earthRotation = 15 / 3600; // degrees/second (15°/hour)
-        const adjustedEarthRotation = 0.00987; // Adjusted to hit cities' longitudes
         const startTime = new Date('2025-05-10T03:18:00-03:00').getTime(); // 03:18 AM ADT
         const nominalTime = new Date('2025-05-10T03:28:00-03:00').getTime(); // 03:28 AM ADT
         const endTime = new Date('2025-05-10T05:52:00-03:00').getTime(); // 05:52 AM ADT
         const totalTime = 2.69 * period; // Total simulation time (~2.69 orbits)
 
-        // Revised cities list based on actual orbital path
+        // Cities including remaining in the red zone
         const cities = [
-            { name: 'Nicobar Islands', lat: 7.0, lon: 93.8, time: '2025-05-10T03:31:00-03:00' }, // t = 790 s
-            { name: 'Chittagong', lat: 22.3, lon: 91.8, time: '2025-05-10T03:35:00-03:00' }, // t = 1020 s
-            { name: 'Cairo', lat: 30.0, lon: 31.2, time: '2025-05-10T04:36:00-03:00' } // t = 7080 s
+            { name: 'Nicobar Islands', lat: 7.0, lon: 93.8, time: '2025-05-10T03:31:00-03:00' },
+            { name: 'Chittagong', lat: 22.3, lon: 91.8, time: '2025-05-10T03:35:00-03:00' },
+            { name: 'Mogadishu', lat: 2.0, lon: 45.3, time: '2025-05-10T04:11:00-03:00' },
+            { name: 'Dar es Salaam', lat: -6.8, lon: 39.3, time: '2025-05-10T04:21:00-03:00' },
+            { name: 'Nairobi', lat: -1.3, lon: 36.8, time: '2025-05-10T04:24:00-03:00' },
+            { name: 'Port Sudan', lat: 19.6, lon: 37.2, time: '2025-05-10T04:25:00-03:00' },
+            { name: 'Cairo', lat: 30.0, lon: 31.2, time: '2025-05-10T04:36:00-03:00' }
         ];
 
         // Plot cities
@@ -60,7 +63,7 @@
         });
 
         // Generate full ground tracks for each orbit
-        const startLon = 100.5; // Adjusted to align with re-entry
+        const startLon = 59.6; // Adjusted to align with re-entry
         const corridorWidth = 2;
         const orbits = Math.ceil(totalTime / period);
         const groundTracks = [];
@@ -95,7 +98,7 @@
             L.polygon(corridors[index], { color: '#0000ff', fillOpacity: 0.05 }).addTo(map);
         });
 
-        // Plot active segments with adjusted longitude progression
+        // Plot active segments with full orbital pattern
         const activeTracks = [];
         const activeCorridors = [];
         for (let orbit = 0; orbit < orbits; orbit++) {
@@ -106,7 +109,8 @@
             for (let t = orbitStartTime; t <= orbitEndTime; t += 10) {
                 const phase = angularVelocity * (t - orbitStartTime) + phaseOffset;
                 const lat = inclination * Math.sin(phase);
-                const groundLon = (startLon - (adjustedEarthRotation * t)) % 360;
+                const orbitalLon = (startLon + 360 * ((t - orbitStartTime) / period)) % 360;
+                const groundLon = (orbitalLon - (earthRotation * t)) % 360;
                 const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
                 activeTrack.push([lat, adjustedLon]);
                 activeCorridor.push([lat + corridorWidth, adjustedLon]);
@@ -145,7 +149,8 @@
             const orbitElapsed = elapsed % period;
             const phase = angularVelocity * orbitElapsed + phaseOffset;
             const lat = inclination * Math.sin(phase);
-            const groundLon = (startLon - (adjustedEarthRotation * elapsed)) % 360;
+            const orbitalLon = (startLon + 360 * (orbitElapsed / period)) % 360;
+            const groundLon = (orbitalLon - (earthRotation * elapsed)) % 360;
             const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
 
             // Update marker
