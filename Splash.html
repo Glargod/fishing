@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmos 482 Re-entry Simulation (Fixed Orbital Track)</title>
+    <title>Cosmos 482 Re-entry Simulation (Fully Orbital Track)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -26,7 +26,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // Initialize map centered on the red zone
-        const map = L.map('map').setView([0, 90], 2);
+        const map = L.map('map').setView([0, 30], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
@@ -36,17 +36,16 @@
         const period = 88 * 60;
         const angularVelocity = (2 * Math.PI) / period;
         const earthRotation = 15 / 3600;
-        const orbitalScale = 0.3; // Scale to approximate re-entry decay
         const startTime = new Date('2025-05-10T03:18:00-03:00').getTime();
         const windowStart = new Date('2025-05-10T04:30:00-03:00').getTime();
         const windowEnd = new Date('2025-05-10T06:52:00-03:00').getTime();
         const totalTime = (new Date('2025-05-10T05:52:00-03:00').getTime() - startTime) / 1000;
 
-        // Revised cities in the red zone (04:50 AM ADT onward)
+        // Revised cities in the red zone (04:59 AM ADT onward)
         const cities = [
-            { name: 'Guam', lat: 13.4, lon: 144.8, time: '2025-05-10T04:50:00-03:00' },
-            { name: 'Saipan', lat: 15.2, lon: 145.7, time: '2025-05-10T05:05:00-03:00' },
-            { name: 'Accra', lat: 5.6, lon: -0.2, time: '2025-05-10T06:52:00-03:00' }
+            { name: 'Aswan', lat: 24.1, lon: 32.9, time: '2025-05-10T04:59:00-03:00' },
+            { name: 'Cairo', lat: 30.0, lon: 31.2, time: '2025-05-10T05:05:00-03:00' },
+            { name: 'Diego Garcia', lat: -7.3, lon: 72.4, time: '2025-05-10T06:52:00-03:00' }
         ];
 
         // Plot cities
@@ -101,7 +100,7 @@
         for (let t = tStart; t <= tEnd; t += 10) {
             const phase = angularVelocity * (t % period) + phaseOffset;
             const lat = inclination * Math.sin(phase);
-            const orbitalLon = (startLon + orbitalScale * 360 * (t / period)) % 360;
+            const orbitalLon = (startLon + 360 * (t / period)) % 360;
             const groundLon = (orbitalLon - (earthRotation * t)) % 360;
             const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
             activeTrack.push([lat, adjustedLon]);
@@ -140,7 +139,7 @@
             const orbitElapsed = elapsed % period;
             const phase = angularVelocity * orbitElapsed + phaseOffset;
             const lat = inclination * Math.sin(phase);
-            const orbitalLon = (startLon + orbitalScale * 360 * (elapsed / period)) % 360;
+            const orbitalLon = (startLon + 360 * (elapsed / period)) % 360;
             const groundLon = (orbitalLon - (earthRotation * elapsed)) % 360;
             const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
 
