@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmos 482 Re-entry Simulation (Fully Orbital Track)</title>
+    <title>Cosmos 482 Re-entry Simulation (Vector Correction)</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -25,27 +25,30 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Initialize map centered on the red zone
-        const map = L.map('map').setView([0, 30], 2);
+        // Initialize map centered on the expected path
+        const map = L.map('map').setView([0, -50], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
         // Orbital parameters
         const inclination = 51.95;
-        const period = 88 * 60;
-        const angularVelocity = (2 * Math.PI) / period;
-        const earthRotation = 15 / 3600;
+        const period = 5266; // Adjusted period at 05:04 AM ADT
+        const angularVelocity = 2 * Math.PI / period;
+        const satelliteGroundRate = 0.03877; // Adjusted to hit 75°W
+        const earthRotationRate = 15 / 3600;
+        const netWestwardRate = satelliteGroundRate - earthRotationRate;
         const startTime = new Date('2025-05-10T03:18:00-03:00').getTime();
         const windowStart = new Date('2025-05-10T04:30:00-03:00').getTime();
         const windowEnd = new Date('2025-05-10T06:52:00-03:00').getTime();
         const totalTime = (new Date('2025-05-10T05:52:00-03:00').getTime() - startTime) / 1000;
 
-        // Revised cities in the red zone (04:59 AM ADT onward)
+        // Red zone cities (05:04 AM ADT onward)
         const cities = [
-            { name: 'Aswan', lat: 24.1, lon: 32.9, time: '2025-05-10T04:59:00-03:00' },
-            { name: 'Cairo', lat: 30.0, lon: 31.2, time: '2025-05-10T05:05:00-03:00' },
-            { name: 'Diego Garcia', lat: -7.3, lon: 72.4, time: '2025-05-10T06:52:00-03:00' }
+            { name: 'Saipan', lat: 15.2, lon: 145.7, time: '2025-05-10T05:04:00-03:00' },
+            { name: 'Mogadishu', lat: 2.0, lon: 45.3, time: '2025-05-10T06:00:00-03:00' },
+            { name: 'Recife', lat: -8.0, lon: -34.9, time: '2025-05-10T06:30:00-03:00' },
+            { name: 'Lima', lat: -12.0, lon: -77.0, time: '2025-05-10T06:52:00-03:00' }
         ];
 
         // Plot cities
@@ -58,7 +61,7 @@
             marker.bindTooltip(`${city.name}<br>${new Date(city.time).toLocaleTimeString('en-US', { timeZone: 'America/Halifax' })} ADT`);
         });
 
-        // Generate full ground tracks (2.69 orbits, faded)
+        // Generate full ground tracks (for context, faded)
         const startLon = 100.5;
         const corridorWidth = 2;
         const orbits = Math.ceil(totalTime / period);
@@ -73,7 +76,7 @@
                 const phase = angularVelocity * t + phaseOffset;
                 const lat = inclination * Math.sin(phase);
                 const orbitalLon = (startLon + 360 * (t / period)) % 360;
-                const groundLon = (orbitalLon - (earthRotation * (t + orbit * period))) % 360;
+                const groundLon = (orbitalLon - (earthRotationRate * (t + orbit * period))) % 360;
                 const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
                 track.push([lat, adjustedLon]);
                 corridor.push([lat + corridorWidth, adjustedLon]);
@@ -89,27 +92,25 @@
             L.polygon(corridors[index], { color: '#0000ff', fillOpacity: 0.02 }).addTo(map);
         });
 
-        // Active segment (04:30 AM ADT to 06:52 AM ADT, ~1.61 orbits)
+        // Active segment (04:30 AM ADT to 06:52 AM ADT, vector-corrected westward shift)
         const activeTracks = [];
         const activeCorridors = [];
         const tStart = 4320;
         const tEnd = 12840;
         const activeTrack = [];
         const activeCorridor = [];
+        const startLonActive = 149.4; // Ground longitude at 05:04 AM ADT (t = 6360 s)
 
         for (let t = tStart; t <= tEnd; t += 10) {
             const phase = angularVelocity * (t % period) + phaseOffset;
             const lat = inclination * Math.sin(phase);
-            const orbitalLon = (startLon + 360 * (t / period)) % 360;
-            const groundLon = (orbitalLon - (earthRotation * t)) % 360;
+            const deltaT = t - 6360;
+            const groundLon = deltaT < 0 ? (startLon - (earthRotationRate * (6360 - t))) % 360 : (startLonActive - (netWestwardRate * deltaT)) % 360;
             const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
             activeTrack.push([lat, adjustedLon]);
             activeCorridor.push([lat + corridorWidth, adjustedLon]);
             activeCorridor.push([lat - corridorWidth, adjustedLon]);
         }
-
-        activeTracks.push(activeTrack);
-        activeCorridors.push(activeCorridor);
 
         activeTracks.forEach((track, index) => {
             L.polyline(track, { color: '#0000ff', weight: 2 }).addTo(map);
@@ -135,12 +136,10 @@
         function updateSimulation() {
             const now = new Date().getTime();
             const elapsed = (now - startTime) / 1000;
-            const orbitNumber = Math.floor(elapsed / period);
-            const orbitElapsed = elapsed % period;
-            const phase = angularVelocity * orbitElapsed + phaseOffset;
+            const phase = angularVelocity * (elapsed % period) + phaseOffset;
             const lat = inclination * Math.sin(phase);
-            const orbitalLon = (startLon + 360 * (elapsed / period)) % 360;
-            const groundLon = (orbitalLon - (earthRotation * elapsed)) % 360;
+            const deltaT = elapsed - 6360;
+            const groundLon = deltaT < 0 ? (startLon - (earthRotationRate * (6360 - elapsed))) % 360 : (startLonActive - (netWestwardRate * deltaT)) % 360;
             const adjustedLon = groundLon < -180 ? groundLon + 360 : groundLon;
 
             if (now >= windowStart && now <= windowEnd) {
