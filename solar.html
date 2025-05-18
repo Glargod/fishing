@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,87 +10,115 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background-color: #1a1a1a;
-    color: #ffffff;
-    margin: 20px;
+font-family: Arial, sans-serif;
+background-color: #1a1a1a;
+color: #ffffff;
+margin: 20px;
 }
 .container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background-color: #2c2c2c;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+max-width: 800px;
+margin: auto;
+padding: 20px;
+background-color: #2c2c2c;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 .section {
-    margin-bottom: 20px;
+margin-bottom: 20px;
 }
 .data-item {
-    margin: 5px 0;
+margin: 5px 0;
 }
 #kpChartContainer {
-    width: 300px;
-    height: 300px;
-    margin: 0 auto 20px;
+width: 300px;
+height: 300px;
+margin: 0 auto 20px;
 }
 #issFeed {
-    width: 100%;
-    height: 300px;
-    border: none;
+width: 100%;
+height: 300px;
+border: none;
 }
 .iframe-fallback {
-    color: #ffca28;
-    text-align: center;
+color: #ffca28;
+text-align: center;
 }
 .forecast-table {
-    width: 100%;
-    border-collapse: collapse;
+width: 100%;
+border-collapse: collapse;
 }
 .forecast-table th, .forecast-table td {
-    padding: 8px;
-    border: 1px solid #555;
-    text-align: left;
+padding: 8px;
+border: 1px solid #555;
+text-align: left;
 }
 .forecast-table th {
-    background-color: #3a3a3a;
+background-color: #3a3a3a;
 }
 .alert-marquee {
-    display: none;
-    background: linear-gradient(45deg, #ff0000, #00ff00, #ff0000);
-    color: #fff;
-    padding: 10px;
-    font-weight: bold;
-    text-align: center;
-    animation: flash 1s infinite, marquee 10s linear infinite;
-    border-radius: 5px;
-    margin-bottom: 20px;
+display: none;
+background: linear-gradient(45deg, #ff0000, #00ff00, #ff0000);
+color: #fff;
+padding: 10px;
+font-weight: bold;
+text-align: center;
+animation: flash 1s infinite, marquee 10s linear infinite;
+border-radius: 5px;
+margin-bottom: 20px;
 }
 @keyframes flash {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+0%, 100% { opacity: 1; }
+50% { opacity: 0.7; }
 }
 @keyframes marquee {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
+0% { transform: translateX(100%); }
+100% { transform: translateX(-100%); }
 }
 .photo-tips {
-    background-color: #3a3a3a;
-    padding: 10px;
-    border-radius: 5px;
+background-color: #3a3a3a;
+padding: 10px;
+border-radius: 5px;
 }
 #kpNumber {
-    font-size: 48px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 10px;
-    transition: text-shadow 0.3s ease;
+font-size: 48px;
+font-weight: bold;
+text-align: center;
+margin-top: 10px;
+transition: text-shadow 0.3s ease;
 }
 .kp-glow-yellow {
-    text-shadow: 0 0 10px #FFCA28, 0 0 20px #FFCA28;
+text-shadow: 0 0 10px #FFCA28, 0 0 20px #FFCA28;
 }
 .kp-glow-red {
-    text-shadow: 0 0 15px #F44336, 0 0 30px #F44336, 0 0 45px #F44336;
+text-shadow: 0 0 15px #F44336, 0 0 30px #F44336, 0 0 45px #F44336;
+}
+#cameraSection {
+display: none;
+text-align: center;
+}
+#cameraFeed {
+width: 100%;
+max-width: 640px;
+height: auto;
+border-radius: 5px;
+filter: brightness(1.2) contrast(1.1); /* Simulated night mode */
+background-color: #000;
+}
+#startCamera {
+padding: 10px 20px;
+background-color: #4CAF50;
+color: #fff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 16px;
+}
+#startCamera:hover {
+background-color: #45a049;
+}
+#cameraMessage {
+color: #ffca28;
+margin-top: 10px;
 }
 </style>
 </head>
@@ -148,6 +178,13 @@ body {
 </table>
 </div>
 
+<div class="section" id="cameraSection">
+<h2>Camera (Night Mode)</h2>
+<button id="startCamera">Start Camera</button>
+<video id="cameraFeed" autoplay playsinline></video>
+<div id="cameraMessage"></div>
+</div>
+
 <div class="section">
 <h2>Photography Tips for Celestial Events</h2>
 <div class="photo-tips" id="photoTips">
@@ -158,6 +195,13 @@ body {
 <li><strong>Settings:</strong> High ISO (800–3200), long exposure (5–30s), wide aperture (f/2.8 or lower).</li>
 <li><strong>Focus:</strong> Set to manual focus, aim at a bright star, and adjust to infinity.</li>
 <li><strong>Apps:</strong> Use Stellarium or SkySafari to locate objects.</li>
+<li><strong>Night Mode (Smartphones):</strong>
+<ul>
+<li><strong>iOS:</strong> Open Camera app, enable Night Mode (moon icon, auto or manual up to 30s).</li>
+<li><strong>Android:</strong> Use Night Sight (Google Pixel) or Night Mode in Camera settings.</li>
+<li>Stabilize phone on a tripod or flat surface for long exposures.</li>
+</ul>
+</li>
 </ul>
 <p id="eventSpecificTips"><strong>Event-Specific Tips:</strong> Detecting conditions...</p>
 </div>
@@ -165,7 +209,7 @@ body {
 
 <div class="section">
 <h2>ISS Live Feed</h2>
-<iframe id="issFeed" src="https://www.youtube.com/embed/EH999s0P1Er0" title="ISS Live Feed" allow="fullscreen" allowfullscreen></iframe>
+<iframe id="issFeed" src="https://www.youtube.com/embed/EEIk7gwjgIM" title="ISS Live Feed" allow="fullscreen" allowfullscreen></iframe>
 <div class="iframe-fallback" id="issFallback" style="display: none;">
 ISS Live Feed unavailable. Visit <a href="https://www.nasa.gov/nasalive" style="color: #ffca28;">NASA Live</a> for updates.
 </div>
@@ -179,208 +223,233 @@ ISS Live Feed unavailable. Visit <a href="https://www.nasa.gov/nasalive" style="
 
 <script>
 // Constants
-const UPDATE_INTERVAL = 10000; // 10 seconds for testing (change to 300000 for production)
+const UPDATE_INTERVAL = 300000; // 5 minutes in milliseconds
 const SATELLITES = [
-    { name: "DSCOVR", lastUpdate: "02:14 AM ADT" },
-    { name: "ACE", lastUpdate: "02:13 AM ADT" },
-    { name: "SOHO", lastUpdate: "02:12 AM ADT" },
-    { name: "SDO", lastUpdate: "02:15 AM ADT" },
-    { name: "GOES-19", lastUpdate: "02:14 AM ADT" },
-    { name: "STEREO-A", lastUpdate: "02:11 AM ADT" }
+{ name: "DSCOVR", lastUpdate: "03:20 AM ADT" },
+{ name: "ACE", lastUpdate: "03:19 AM ADT" },
+{ name: "SOHO", lastUpdate: "03:18 AM ADT" },
+{ name: "SDO", lastUpdate: "03:21 AM ADT" },
+{ name: "GOES-19", lastUpdate: "03:20 AM ADT" },
+{ name: "STEREO-A", lastUpdate: "03:17 AM ADT" }
 ];
+const DEFAULT_LAT = 44.6488; // Halifax, NS
+const DEFAULT_LON = -63.5752;
 
 // Global State
 let currentKp = 4;
 let solarWind = { speed: 458, density: 5.4, bz: -8.5 };
 let flareProbs = { c: 65, m: 25, x: 8, proton: 3 };
 let astroData = {
-    sun: { rise: "04:50 AM ADT", set: "08:10 PM ADT" },
-    moon: { rise: "12:30 AM ADT", set: "08:08 AM ADT", illum: 81 }
+sun: { rise: "04:50 AM ADT", set: "08:10 PM ADT" },
+moon: { rise: "12:30 AM ADT", set: "08:08 AM ADT", illum: 81 }
 };
 let weatherForecast = [];
-let userTimezone = "ADT";
-let userLocation = "Halifax, NS";
-let lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT";
+let userTimezone = "ADT"
+let userLocation = "Halifax, NS"
+let lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT"
+let cameraStream = null;
 
-// Chart Setup (Doughnut styled as gauge)
+// Chart Setup
+let kpChart = null;
+try {
 const ctx = document.getElementById('kpChart').getContext('2d');
-const kpChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        datasets: [{
-            data: [currentKp, 9 - currentKp],
-            backgroundColor: [getKpColor(currentKp), '#555555'],
-            borderColor: '#FFFFFF',
-            borderWidth: 2
-        }],
-        labels: ['Kp Index', 'Remaining']
-    },
-    options: {
-        responsive: true,
-        circumference: 180,
-        rotation: -90,
-        cutout: '80%',
-        plugins: {
-            title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF" },
-            legend: { display: false },
-            tooltip: { enabled: false }
-        }
-    }
+kpChart = new Chart(ctx, {
+type: 'doughnut',
+data: {
+datasets: [{
+data: [currentKp, 9 - currentKp],
+backgroundColor: [getKpColor(currentKp), '#555555'],
+borderColor: '#FFFFFF',
+borderWidth: 2
+}],
+labels: ['Kp Index', 'Remaining']
+},
+options: {
+responsive: true,
+circumference: 180,
+rotation: -90,
+cutout: '80%',
+plugins: {
+title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF" },
+legend: { display: false },
+tooltip: { enabled: false }
+}
+}
 });
+} catch (error) {
+console.error("Error initializing Chart.js:", error);
+}
 
 // Functions
 function fetchSatelliteData() {
-    let kpSum = 0, speedSum = 0, densitySum = 0, bzSum = 0;
-    let count = 0;
-
-    SATELLITES.forEach(sat => {
-        let data = simulateSatelliteReading(sat.name);
-        if (data) {
-            kpSum += data.kp;
-            speedSum += data.speed;
-            densitySum += data.density;
-            bzSum += data.bz;
-            count++;
-        }
-    });
-
-    if (count === 0) {
-        console.error("No valid satellite data. Using fallback values.");
-        currentKp = 4;
-        solarWind = { speed: 458, density: 5.4, bz: -8.5 };
-    } else {
-        currentKp = Math.round(kpSum / count);
-        solarWind.speed = Math.round(speedSum / count);
-        solarWind.density = (densitySum / count).toFixed(1);
-        solarWind.bz = (bzSum / count).toFixed(1);
-    }
-
-    flareProbs = simulateFlareProbabilities();
-    updateDisplay(); // Call updateDisplay after fetching data
+try {
+let kpSum = 0, speedSum = 0, densitySum = 0, bzSum = 0;
+let count = 0;
+SATELLITES.forEach(sat => {
+let data = simulateSatelliteReading(sat.name);
+if (data) {
+kpSum += data.kp;
+speedSum += data.speed;
+densitySum += data.density;
+bzSum += data.bz;
+count++;
+}
+});
+if (count === 0) {
+console.warn("No valid satellite data. Using fallback.");
+currentKp = 4;
+solarWind = { speed: 458, density: 5.4, bz: -8.5 };
+} else {
+currentKp = Math.round(kpSum / count);
+solarWind.speed = Math.round(speedSum / count);
+solarWind.density = Number(densitySum / count).toFixed(1);
+solarWind.bz = Number(bzSum / count).toFixed(1);
+}
+flareProbs = simulateFlareProbabilities();
+} catch (error) {
+console.error("Error fetching satellite data:", error);
+currentKp = 4;
+solarWind = { speed: 458, density: 5.4, bz: -8.5 };
+flareProbs = { c: 65, m: 25, x: 8, proton: 3 };
+}
 }
 
 function simulateSatelliteReading(satellite) {
-    let baseKp = 4, baseSpeed = 460, baseDensity = 5.5, baseBz = -9;
-    try {
-        switch (satellite) {
-            case "DSCOVR":
-                return { kp: baseKp, speed: baseSpeed, density: baseDensity, bz: baseBz };
-            case "ACE":
-                return { kp: baseKp - 0.1, speed: baseSpeed - 5, density: baseDensity - 0.2, bz: baseBz + 0.5 };
-            case "SOHO":
-                return { kp: baseKp + 0.2, speed: baseSpeed + 3, density: baseDensity + 0.1, bz: baseBz - 0.3 };
-            case "SDO":
-                return { kp: baseKp - 0.05, speed: baseSpeed - 1, density: baseDensity - 0.1, bz: baseBz + 0.2 };
-            case "GOES-19":
-                return { kp: baseKp, speed: baseSpeed - 2, density: baseDensity - 0.1, bz: baseBz + 0.25 };
-            case "STEREO-A":
-                return { kp: baseKp + 0.1, speed: baseSpeed + 5, density: baseDensity + 0.2, bz: baseBz - 0.5 };
-            default:
-                return null;
-        }
-    } catch (error) {
-        console.error(`Error simulating data for ${satellite}:`, error);
-        return null;
-    }
+try {
+let baseKp = 4, baseSpeed = 460, baseDensity = 5.5, baseBz = -9;
+switch (satellite) {
+case "DSCOVR": return { kp: baseKp, speed: baseSpeed, density: baseDensity, bz: baseBz };
+case "ACE": return { kp: baseKp - 0.1, speed: baseSpeed - 5, density: baseDensity - 0.2, bz: baseBz + 0.5 };
+case "SOHO": return { kp: baseKp + 0.2, speed: baseSpeed + 3, density: baseDensity + 0.1, bz: baseBz - 0.3 };
+case "SDO": return { kp: baseKp - 0.05, speed: baseSpeed - 1, density: baseDensity - 0.1, bz: baseBz + 0.2 };
+case "GOES-19": return { kp: baseKp, speed: baseSpeed - 2, density: baseDensity - 0.1, bz: baseBz + 0.25 };
+case "STEREO-A": return { kp: baseKp + 0.1, speed: baseSpeed + 5, density: baseDensity + 0.2, bz: baseBz - 0.5 };
+default: return null;
+}
+} catch (error) {
+console.error(`Error simulating data for ${satellite}:`, error);
+return null;
+}
 }
 
 function simulateFlareProbabilities() {
-    try {
-        return {
-            c: 65 - Math.floor(Math.random() * 5),
-            m: 25 - Math.floor(Math.random() * 5),
-            x: 8 + Math.floor(Math.random() * 3),
-            proton: 3 - Math.floor(Math.random() * 2)
-        };
-    } catch (error) {
-        console.error("Error simulating flare probabilities:", error);
-        return { c: 65, m: 25, x: 8, proton: 3 };
-    }
+try {
+return {
+c: 65 - Math.floor(Math.random() * 5),
+m: 25 - Math.floor(Math.random() * 5),
+x: 8 + Math.floor(Math.random() * 3),
+proton: 3 - Math.floor(Math.random() * 2)
+};
+} catch (error) {
+console.error("Error simulating flare probabilities:", error);
+return { c: 65, m: 25, x: 8, proton: 3 };
+}
 }
 
 function simulateWeatherForecast(lat, lon) {
-    const conditions = ["Sunny", "Cloudy", "Rain", "Snow", "Partly Cloudy"];
-    const forecast = [];
-    const baseDate = new Date();
-    for (let i = 0; i < 5; i++) {
-        const date = new Date(baseDate);
-        date.setDate(baseDate.getDate() + i);
-        const tempHigh = Math.round(10 + Math.random() * 15 - (lat > 50 ? 5 : 0));
-        const tempLow = tempHigh - Math.round(5 + Math.random() * 5);
-        const precipChance = Math.round(Math.random() * 60);
-        const windSpeed = Math.round(10 + Math.random() * 20);
-        forecast.push({
-            date: date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
-            condition: conditions[Math.floor(Math.random() * conditions.length)],
-            high: tempHigh,
-            low: tempLow,
-            precipitation: precipChance,
-            wind: windSpeed
-        });
-    }
-    return forecast;
+try {
+const conditions = ["Sunny", "Cloudy", "Rain", "Snow", "Partly Cloudy"];
+const forecast = [];
+const baseDate = new Date();
+for (let i = 0; i < 5; i++) {
+const date = new Date(baseDate);
+date.setDate(baseDate.getDate() + i);
+const tempHigh = Math.round(10 + Math.random() * 15 - (lat > 50 ? 5 : 0));
+const tempLow = tempHigh - Math.round(5 + Math.random() * 5);
+const precipChance = Math.round(Math.random() * 60);
+const windSpeed = Math.round(10 + Math.random() * 20);
+forecast.push({
+date: date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
+condition: conditions[Math.floor(Math.random() * conditions.length)],
+high: tempHigh,
+low: tempLow,
+precipitation: precipChance,
+wind: windSpeed
+});
+}
+return forecast;
+} catch (error) {
+console.error("Error simulating weather forecast:", error);
+return [];
+}
 }
 
-function formatTime(date) {
-    return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }) + ` ${userTimezone}`;
+function formatTime(date, timezone) {
+try {
+return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: timezone }) + ` ${timezone}`;
+} catch (error) {
+console.error("Error formatting time:", error);
+return "N/A"
+}
 }
 
 function getAstroData(lat, lon) {
-    try {
-        const now = new Date();
-        const sunTimes = SunCalc.getTimes(now, lat, lon);
-        const moonTimes = SunCalc.getMoonTimes(now, lat, lon);
-        const moonIllum = SunCalc.getMoonIllumination(now);
-
-        return {
-            sun: {
-                rise: sunTimes.sunrise ? formatTime(sunTimes.sunrise) : "N/A",
-                set: sunTimes.sunset ? formatTime(sunTimes.sunset) : "N/A"
-            },
-            moon: {
-                rise: moonTimes.rise ? formatTime(moonTimes.rise) : "N/A",
-                set: moonTimes.set ? formatTime(moonTimes.set) : "N/A",
-                illum: Math.round(moonIllum.fraction * 100)
-            }
-        };
-    } catch (error) {
-        console.error("Error calculating astronomical data:", error);
-        return astroData;
-    }
+try {
+if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+throw new Error("Invalid coordinates");
+}
+const now = new Date();
+const sunTimes = SunCalc.getTimes(now, lat, lon);
+const moonTimes = SunCalc.getMoonTimes(now, lat, lon);
+const moonIllum = SunCalc.getMoonIllumination(now);
+return {
+sun: {
+rise: sunTimes.sunrise ? formatTime(sunTimes.sunrise, userTimezone) : "N/A",
+set: sunTimes.sunset ? formatTime(sunTimes.sunset, userTimezone) : "N/A"
+},
+moon: {
+rise: moonTimes.rise ? formatTime(moonTimes.rise, userTimezone) : "N/A",
+set: moonTimes.set ? formatTime(moonTimes.set, userTimezone) : "N/A",
+illum: Math.round(moonIllum.fraction * 100)
+}
+};
+} catch (error) {
+console.error("Error calculating astronomical data:", error);
+return {
+sun: { rise: "04:50 AM ADT", set: "08:10 PM ADT" },
+moon: { rise: "12:30 AM ADT", set: "08:08 AM ADT", illum: 81 }
+};
+}
 }
 
 function isNightTime() {
-    try {
-        const now = new Date();
-        const sunrise = new Date(now.toDateString() + ' ' + astroData.sun.rise.split(' ')[0]);
-        const sunset = new Date(now.toDateString() + ' ' + astroData.sun.set.split(' ')[0]);
-        return now < sunrise || now > sunset;
-    } catch (error) {
-        console.error("Error checking nighttime:", error);
-        return false;
-    }
+try {
+const now = new Date();
+const sunriseStr = astroData.sun.rise.split(' ')[0];
+const sunsetStr = astroData.sun.set.split(' ')[0];
+const sunrise = new Date(`${now.toDateString()} ${sunriseStr}`);
+const sunset = new Date(`${now.toDateString()} ${sunsetStr}`);
+if (isNaN(sunrise.getTime()) || isNaN(sunset.getTime())) {
+throw new Error("Invalid sunrise/sunset time");
+}
+return now < sunrise || now > sunset;
+} catch (error) {
+console.error("Error checking nighttime:", error);
+return true; // Assume night for 03:20 AM ADT
+}
 }
 
 function areConditionsOptimal() {
-    try {
-        const isNight = isNightTime();
-        const lowMoon = astroData.moon.illum < 25;
-        const clearWeather = weatherForecast.length > 0 && (
-            (weatherForecast[0].condition === "Sunny" || weatherForecast[0].condition === "Partly Cloudy") &&
-            weatherForecast[0].precipitation < 10
-        );
-        const highKp = currentKp >= 5;
-        return isNight && (lowMoon || highKp) && clearWeather;
-    } catch (error) {
-        console.error("Error checking optimal conditions:", error);
-        return false;
-    }
+try {
+const isNight = isNightTime();
+const lowMoon = astroData.moon.illum < 25;
+const clearWeather = weatherForecast.length > 0 && (
+(weatherForecast[0].condition === "Sunny" || weatherForecast[0].condition === "Partly Cloudy") &&
+weatherForecast[0].precipitation < 10
+);
+const highKp = currentKp >= 5;
+return isNight && (lowMoon || highKp) && clearWeather;
+} catch (error) {
+console.error("Error checking optimal conditions:", error);
+return false;
+}
 }
 
 function getPhotographyTips() {
-    const isAurora = currentKp >= 5;
-    if (isAurora) {
-        return `
+try {
+const isAurora = currentKp >= 5;
+if (isAurora) {
+return `
 <strong>Aurora Photography:</strong>
 <ul>
 <li>Use a wide-angle lens (14–24mm) for broad sky coverage.</li>
@@ -390,8 +459,8 @@ function getPhotographyTips() {
 <li>Check aurora apps like Aurora Alerts for real-time Kp updates.</li>
 </ul>
 `;
-    } else {
-        return `
+} else {
+return `
 <strong>Stargazing Photography:</strong>
 <ul>
 <li>Use a 24–50mm lens for stars or deep-sky objects.</li>
@@ -401,147 +470,223 @@ function getPhotographyTips() {
 <li>Use a red flashlight to preserve night vision.</li>
 </ul>
 `;
-    }
+}
+} catch (error) {
+console.error("Error generating photography tips:", error);
+return "<strong>Event-Specific Tips:</strong> Unable to load tips."
+}
+}
+
+async function startCamera() {
+try {
+if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+throw new Error("Camera not supported");
+}
+const constraints = {
+video: {
+facingMode: "environment", // Rear camera
+width: { ideal: 1280 },
+height: { ideal: 720 }
+}
+};
+cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+const video = document.getElementById('cameraFeed');
+video.srcObject = cameraStream;
+document.getElementById('cameraMessage').textContent = "Camera active. Use your phone's Night Mode for best results."
+} catch (error) {
+console.error("Error accessing camera:", error);
+document.getElementById('cameraMessage').textContent = "Camera access denied. Enable Night Mode in your Camera app (iOS: moon icon; Android: Night Sight)."
+}
+}
+
+function stopCamera() {
+try {
+if (cameraStream) {
+cameraStream.getTracks().forEach(track => track.stop());
+cameraStream = null;
+document.getElementById('cameraFeed').srcObject = null;
+document.getElementById('cameraMessage').textContent = ""
+}
+} catch (error) {
+console.error("Error stopping camera:", error);
+}
 }
 
 async function getUserLocation() {
-    // Initialize defaults
-    userTimezone = "ADT";
-    userLocation = "Halifax, NS";
-    astroData = getAstroData(44.6488, -63.5752); // Default to Halifax coordinates
-    weatherForecast = simulateWeatherForecast(44.6488, -63.5752);
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop();
-                userLocation = await getLocationName(latitude, longitude);
-                astroData = getAstroData(latitude, longitude);
-                weatherForecast = simulateWeatherForecast(latitude, longitude);
-                updateDisplay();
-            },
-            (error) => {
-                console.error("Geolocation error:", error);
-                updateDisplay(); // Call updateDisplay even on error
-            }
-        );
-    } else {
-        console.error("Geolocation not supported.");
-        updateDisplay(); // Call updateDisplay for unsupported browsers
-    }
+try {
+// Initialize defaults
+astroData = getAstroData(DEFAULT_LAT, DEFAULT_LON);
+weatherForecast = simulateWeatherForecast(DEFAULT_LAT, DEFAULT_LON);
+if (navigator.geolocation) {
+navigator.geolocation.getCurrentPosition(
+async (position) => {
+try {
+const { latitude, longitude } = position.coords;
+userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop() || "ADT"
+userLocation = await getLocationName(latitude, longitude);
+astroData = getAstroData(latitude, longitude);
+weatherForecast = simulateWeatherForecast(latitude, longitude);
+updateDisplay();
+} catch (error) {
+console.error("Error processing geolocation:", error);
+updateDisplay();
+}
+},
+(error) => {
+console.warn("Geolocation denied:", error.message);
+updateDisplay();
+}
+);
+} else {
+console.warn("Geolocation not supported.");
+updateDisplay();
+}
+} catch (error) {
+console.error("Error in getUserLocation:", error);
+updateDisplay();
+}
 }
 
 async function getLocationName(lat, lon) {
-    return "User Location";
+try {
+return "User Location"
+} catch (error) {
+console.error("Error getting location name:", error);
+return "Unknown"
+}
 }
 
 function getKpColor(kp) {
-    if (kp <= 3) return "#4CAF50";
-    if (kp <= 5) return "#FFCA28";
-    return "#F44336";
+try {
+if (kp <= 3) return "#4CAF50"
+if (kp <= 5) return "#FFCA28"
+return "#F44336"
+} catch (error) {
+console.error("Error in getKpColor:", error);
+return "#4CAF50"
+}
 }
 
 function updateDisplay() {
-    try {
-        document.getElementById('timestamp').textContent = `As of: ${lastUpdateTime || "N/A"}`;
-        document.getElementById('timezone').textContent = userTimezone || "Unknown";
-        document.getElementById('location').textContent = userLocation || "Unknown";
-        document.getElementById('speed').textContent = solarWind.speed || "N/A";
-        document.getElementById('density').textContent = solarWind.density || "N/A";
-        document.getElementById('bz').textContent = solarWind.bz || "N/A";
-        document.getElementById('cFlare').textContent = flareProbs.c || "N/A";
-        document.getElementById('mFlare').textContent = flareProbs.m || "N/A";
-        document.getElementById('xFlare').textContent = flareProbs.x || "N/A";
-        document.getElementById('proton').textContent = flareProbs.proton || "N/A";
-        document.getElementById('sunRise').textContent = astroData.sun.rise || "N/A";
-        document.getElementById('sunSet').textContent = astroData.sun.set || "N/A";
-        document.getElementById('moonRise').textContent = astroData.moon.rise || "N/A";
-        document.getElementById('moonSet').textContent = astroData.moon.set || "N/A";
-        document.getElementById('moonIllum').textContent = astroData.moon.illum || "N/A";
+try {
+console.debug("Updating display...");
+document.getElementById('timestamp').textContent = `As of: ${lastUpdateTime}`;
+document.getElementById('timezone').textContent = userTimezone || "ADT"
+document.getElementById('location').textContent = userLocation || "Halifax, NS"
+document.getElementById('speed').textContent = solarWind.speed || "N/A"
+document.getElementById('density').textContent = solarWind.density || "N/A"
+document.getElementById('bz').textContent = solarWind.bz || "N/A"
+document.getElementById('cFlare').textContent = flareProbs.c || "N/A"
+document.getElementById('mFlare').textContent = flareProbs.m || "N/A"
+document.getElementById('xFlare').textContent = flareProbs.x || "N/A"
+document.getElementById('proton').textContent = flareProbs.proton || "N/A"
+document.getElementById('sunRise').textContent = astroData.sun.rise || "N/A"
+document.getElementById('sunSet').textContent = astroData.sun.set || "N/A"
+document.getElementById('moonRise').textContent = astroData.moon.rise || "N/A"
+document.getElementById('moonSet').textContent = astroData.moon.set || "N/A"
+document.getElementById('moonIllum').textContent = astroData.moon.illum || "N/A"
 
-        // Update Weather Forecast
-        const forecastBody = document.getElementById('forecastBody');
-        forecastBody.innerHTML = '';
-        if (weatherForecast.length > 0) {
-            weatherForecast.forEach(day => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${day.date || "N/A"}</td>
-                    <td>${day.condition || "N/A"}</td>
-                    <td>${day.high || "N/A"}</td>
-                    <td>${day.low || "N/A"}</td>
-                    <td>${day.precipitation || "N/A"}%</td>
-                    <td>${day.wind || "N/A"}</td>
-                `;
-                forecastBody.appendChild(row);
-            });
-        } else {
-            forecastBody.innerHTML = '<tr><td colspan="6">No forecast available</td></tr>';
-        }
-
-        // Update Optimal Conditions Alert
-        const alertDiv = document.getElementById('optimalAlert');
-        alertDiv.style.display = areConditionsOptimal() ? 'block' : 'none';
-
-        // Update Photography Tips
-        document.getElementById('eventSpecificTips').innerHTML = getPhotographyTips();
-
-        // Update Kp Number
-        const kpNumber = document.getElementById('kpNumber');
-        kpNumber.textContent = currentKp || "0";
-        kpNumber.style.color = getKpColor(currentKp);
-        kpNumber.classList.remove('kp-glow-yellow', 'kp-glow-red');
-        if (currentKp > 3 && currentKp <= 5) {
-            kpNumber.classList.add('kp-glow-yellow');
-        } else if (currentKp > 5) {
-            kpNumber.classList.add('kp-glow-red');
-        }
-
-        // Update Satellite Updates
-        document.getElementById('satUpdates').textContent = SATELLITES.map(s => `${s.name}: ${s.lastUpdate}`).join(", ") || "No satellite data";
-
-        // Update Chart
-        kpChart.data.datasets[0].data = [currentKp || 0, 9 - (currentKp || 0)];
-        kpChart.data.datasets[0].backgroundColor = [getKpColor(currentKp), '#555555'];
-        kpChart.update();
-
-        // Debugging logs (uncomment for testing)
-        // console.log("Updated display:", { solarWind, currentKp, flareProbs, userTimezone, userLocation, astroData, weatherForecast });
-    } catch (error) {
-        console.error("Error updating display:", error);
-    }
+// Update Weather Forecast
+const forecastBody = document.getElementById('forecastBody');
+forecastBody.innerHTML = '';
+if (weatherForecast.length === 0) {
+forecastBody.innerHTML = '<tr><td colspan="6">No forecast data</td></tr>';
+} else {
+weatherForecast.forEach(day => {
+const row = document.createElement('tr');
+row.innerHTML = `
+<td>${day.date || "N/A"}</td>
+<td>${day.condition || "N/A"}</td>
+<td>${day.high || "N/A"}</td>
+<td>${day.low || "N/A"}</td>
+<td>${day.precipitation || "N/A"}%</td>
+<td>${day.wind || "N/A"}</td>
+`;
+forecastBody.appendChild(row);
+});
 }
 
-// Check ISS Feed Load
+// Update Optimal Conditions Alert and Camera Section
+const alertDiv = document.getElementById('optimalAlert');
+const cameraSection = document.getElementById('cameraSection');
+if (areConditionsOptimal()) {
+alertDiv.style.display = 'block';
+cameraSection.style.display = 'block';
+} else {
+alertDiv.style.display = 'none';
+cameraSection.style.display = 'none';
+stopCamera();
+}
+
+// Update Photography Tips
+document.getElementById('eventSpecificTips').innerHTML = getPhotographyTips();
+
+// Update Kp Number
+const kpNumber = document.getElementById('kpNumber');
+kpNumber.textContent = currentKp || 0;
+kpNumber.style.color = getKpColor(currentKp);
+kpNumber.classList.remove('kp-glow-yellow', 'kp-glow-red');
+if (currentKp > 3 && currentKp <= 5) {
+kpNumber.classList.add('kp-glow-yellow');
+} else if (currentKp > 5) {
+kpNumber.classList.add('kp-glow-red');
+}
+
+// Update Satellite Updates
+document.getElementById('satUpdates').textContent = SATELLITES.map(s => `${s.name}: ${s.lastUpdate}`).join(", ") || "No satellite data"
+
+// Update Chart
+if (kpChart) {
+kpChart.data.datasets[0].data = [currentKp || 0, 9 - (currentKp || 0)];
+kpChart.data.datasets[0].backgroundColor = [getKpColor(currentKp), '#555555'];
+kpChart.update();
+}
+console.debug("Display updated successfully.");
+} catch (error) {
+console.error("Error in updateDisplay:", error);
+}
+}
+
+// Camera Button Event
+document.getElementById('startCamera').addEventListener('click', () => {
+startCamera();
+});
+
+// ISS Feed Handlers
 const issIframe = document.getElementById('issFeed');
 issIframe.onload = () => {
-    document.getElementById('issFallback').style.display = 'none';
+document.getElementById('issFallback').style.display = 'none';
 };
 issIframe.onerror = () => {
-    document.getElementById('issFallback').style.display = 'block';
+document.getElementById('issFallback').style.display = 'block';
 };
 
 // Initial Setup
 try {
-    fetchSatelliteData();
-    getUserLocation();
-    updateDisplay(); // Call immediately to show initial data
+fetchSatelliteData();
+astroData = getAstroData(DEFAULT_LAT, DEFAULT_LON);
+weatherForecast = simulateWeatherForecast(DEFAULT_LAT, DEFAULT_LON);
+updateDisplay();
+getUserLocation();
 } catch (error) {
-    console.error("Initial setup failed:", error);
-    updateDisplay();
+console.error("Initial setup failed:", error);
+updateDisplay();
 }
 
 // Update Loop
 setInterval(() => {
-    try {
-        lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT";
-        fetchSatelliteData();
-        // updateDisplay is called within fetchSatelliteData
-    } catch (error) {
-        console.error("Update loop error:", error);
-    }
+try {
+lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT"
+fetchSatelliteData();
+updateDisplay();
+} catch (error) {
+console.error("Update loop error:", error);
+}
 }, UPDATE_INTERVAL);
 </script>
 </body>
 </html>
+
+Andrew Ross
+
+
