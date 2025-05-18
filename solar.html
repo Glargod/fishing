@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,15 +62,22 @@ text-shadow: 0 0 10px #FFCA28, 0 0 20px #FFCA28;
 .kp-glow-red {
 text-shadow: 0 0 15px #F44336, 0 0 30px #F44336, 0 0 45px #F44336;
 }
-#ovationMap {
+.ovation-map-container {
 width: 100%;
 max-width: 100%;
-height: 400px;
+height: 300px;
 margin: 15px auto;
-display: block;
 border: 2px solid #555;
 border-radius: 8px;
 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+overflow: hidden;
+}
+#ovationMap {
+width: 100%;
+height: 100%;
+object-fit: contain;
+object-position: center;
+display: block;
 }
 #issFeed {
 width: 100%;
@@ -131,7 +136,7 @@ height: 40px;
 cursor: pointer;
 margin: 10px auto;
 display: block;
-transition: process.env 0.3s;
+transition: transform 0.3s;
 }
 #cameraIcon:hover {
 transform: scale(1.1);
@@ -157,7 +162,7 @@ padding: 10px;
 #kpChartContainer {
 max-width: 250px;
 }
-#ovationMap {
+.ovation-map-container {
 height: 300px;
 }
 .section {
@@ -184,7 +189,9 @@ font-size: 12px;
 <div class="section" id="kpChartContainer">
 <canvas id="kpChart"></canvas>
 <div id="kpNumber">0</div>
-<iframe id="ovationMap" src="https://services.swpc.noaa.gov/experimental/images/aurora_dashboard/tonights_static_viewline_forecast.png" title="Ovation Aurora Map" style="width: 100%; height: 300px;" allowfullscreen></iframe>
+<div class="ovation-map-container">
+<img id="ovationMap" src="https://services.swpc.noaa.gov/experimental/images/aurora_dashboard/tonights_static_viewline_forecast.png" alt="Ovation Aurora Map">
+</div>
 </div>
 
 <div class="section">
@@ -323,7 +330,7 @@ cutout: '80%',
 plugins: {
 title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF", font: { size: 18 } },
 legend: { display: false },
-tooltip: { enabled: false }
+tooltip: { enabled: false ctooltip: { enabled: false }
 }
 }
 });
@@ -736,7 +743,3 @@ console.error("Update loop error:", error);
 </script>
 </body>
 </html>
-
-Andrew Ross
-
-
