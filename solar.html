@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Solar Wind Live Meter</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
 <style>
 body {
 font-family: Arial, sans-serif;
@@ -25,7 +26,9 @@ box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 .section {
 margin-bottom: 20px;
 }
-.data-item {
+.data
+
+-item {
 margin: 5px 0;
 }
 #kpChartContainer {
@@ -42,12 +45,54 @@ border: none;
 color: #ffca28;
 text-align: center;
 }
+.forecast-table {
+width: 100%;
+border-collapse: collapse;
+}
+.forecast-table th, .forecast-table td {
+padding: 8px;
+border: 1px solid #555;
+text-align: left;
+}
+.forecast-table th {
+background-color: #3a3a3a;
+}
+.alert-marquee {
+display: none;
+background: linear-gradient(45deg, #ff0000, #00ff00, #ff0000);
+color: #fff;
+padding: 10px;
+font-weight: bold;
+text-align: center;
+animation: flash 1s infinite, marquee 10s linear infinite;
+border-radius: 5px;
+margin-bottom: 20px;
+}
+@keyframes flash {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.7; }
+}
+@keyframes marquee {
+0% { transform: translateX(100%); }
+100% { transform: translateX(-100%); }
+}
+.photo-tips {
+background-color: #3a3a3a;
+padding: 10px;
+border-radius: 5px;
+}
 </style>
 </head>
 <body>
 <div class="container">
 <h1>Solar Wind Live Meter</h1>
 <div class="section" id="timestamp">As of: Loading...</div>
+
+<div class="section">
+<div id="optimalAlert" class="alert-marquee">
+🌌 Optimal Viewing Conditions! Look Up to Observe Stars or Aurora! 🌌
+</div>
+</div>
 
 <div class="section" id="kpChartContainer">
 <canvas id="kpChart"></canvas>
@@ -69,9 +114,43 @@ text-align: center;
 </div>
 
 <div class="section">
-<h2>Astronomical Data (UTC-3)</h2>
+<h2>Astronomical Data (<span id="timezone">Detecting...</span>)</h2>
 <div class="data-item">Sun: Rise <span id="sunRise">Loading...</span>, Set <span id="sunSet">Loading...</span></div>
 <div class="data-item">Moon: Rise <span id="moonRise">Loading...</span>, Set <span id="moonSet">Loading...</span>, Illum <span id="moonIllum">Loading...</span>%</div>
+</div>
+
+<div class="section">
+<h2>Weather Forecast (<span id="location">Detecting...</span>)</h2>
+<table class="forecast-table">
+<thead>
+<tr>
+<th>Date</th>
+<th>Condition</th>
+<th>High (°C)</th>
+<th>Low (°C)</th>
+<th>Precipitation (%)</th>
+<th>Wind (km/h)</th>
+</tr>
+</thead>
+<tbody id="forecastBody">
+<tr><td colspan="6">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="section">
+<h2>Photography Tips for Celestial Events</h2>
+<div class="photo-tips" id="photoTips">
+<p><strong>General Tips:</strong></p>
+<ul>
+<li><strong>Location:</strong> Choose a dark site away from city lights (light pollution < Bortle 4).</li>
+<li><strong>Equipment:</strong> Use a DSLR or smartphone with manual mode, tripod, and optional star tracker.</li>
+<li><strong>Settings:</strong> High ISO (800–3200), long exposure (5–30s), wide aperture (f/2.8 or lower).</li>
+<li><strong>Focus:</strong> Set to manual focus, aim at a bright star, and adjust to infinity.</li>
+<li><strong>Apps:</strong> Use Stellarium or SkySafari to locate objects.</li>
+</ul>
+<p id="eventSpecificTips"><strong>Event-Specific Tips:</strong> Detecting conditions...</p>
+</div>
 </div>
 
 <div class="section">
@@ -99,7 +178,6 @@ const SATELLITES = [
 { name: "GOES-19", lastUpdate: "02:14 AM ADT" },
 { name: "STEREO-A", lastUpdate: "02:11 AM ADT" }
 ];
-const LOCAL_TIMEZONE_OFFSET = -3; // UTC-3 (ADT)
 
 // Global State
 let currentKp = 4;
@@ -109,6 +187,9 @@ let astroData = {
 sun: { rise: "04:50 AM ADT", set: "08:10 PM ADT" },
 moon: { rise: "12:30 AM ADT", set: "08:08 AM ADT", illum: 81 }
 };
+let weatherForecast = [];
+let userTimezone = "UTC-3"
+let userLocation = "Unknown"
 let lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT"
 
 // Chart Setup (Doughnut styled as gauge)
@@ -206,9 +287,149 @@ return { c: 65, m: 25, x: 8, proton: 3 };
 }
 }
 
+function simulateWeatherForecast(lat, lon) {
+const conditions = ["Sunny", "Cloudy", "Rain", "Snow", "Partly Cloudy"];
+const forecast = [];
+const baseDate = new Date();
+for (let i = 0; i < 5; i++) {
+const date = new Date(baseDate);
+date.setDate(baseDate.getDate() + i);
+const tempHigh = Math.round(10 + Math.random() * 15 - (lat > 50 ? 5 : 0));
+const tempLow = tempHigh - Math.round(5 + Math.random() * 5);
+const precipChance = Math.round(Math.random() * 60);
+const windSpeed = Math.round(10 + Math.random() * 20);
+forecast.push({
+date: date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
+condition: conditions[Math.floor(Math.random() * conditions.length)],
+high: tempHigh,
+low: tempLow,
+precipitation: precipChance,
+wind: windSpeed
+});
+}
+return forecast;
+}
+
+function formatTime(date) {
+return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }) + ` ${userTimezone}`;
+}
+
+function getAstroData(lat, lon) {
+try {
+const now = new Date();
+const sunTimes = SunCalc.getTimes(now, lat, lon);
+const moonTimes = SunCalc.getMoonTimes(now, lat, lon);
+const moonIllum = SunCalc.getMoonIllumination(now);
+
+return {
+sun: {
+rise: sunTimes.sunrise ? formatTime(sunTimes.sunrise) : "N/A",
+set: sunTimes.sunset ? formatTime(sunTimes.sunset) : "N/A"
+},
+moon: {
+rise: moonTimes.rise ? formatTime(moonTimes.rise) : "N/A",
+set: moonTimes.set ? formatTime(moonTimes.set) : "N/A",
+illum: Math.round(moonIllum.fraction * 100)
+}
+};
+} catch (error) {
+console.error("Error calculating astronomical data:", error);
+return astroData;
+}
+}
+
+function isNightTime() {
+try {
+const now = new Date();
+const sunrise = new Date(now.toDateString() + ' ' + astroData.sun.rise.split(' ')[0]);
+const sunset = new Date(now.toDateString() + ' ' + astroData.sun.set.split(' ')[0]);
+return now < sunrise || now > sunset;
+} catch (error) {
+console.error("Error checking nighttime:", error);
+return false;
+}
+}
+
+function areConditionsOptimal() {
+try {
+const isNight = isNightTime();
+const lowMoon = astroData.moon.illum < 25;
+const clearWeather = weatherForecast.length > 0 && (
+(weatherForecast[0].condition === "Sunny" || weatherForecast[0].condition === "Partly Cloudy") &&
+weatherForecast[0].precipitation < 10
+);
+const highKp = currentKp >= 5;
+return isNight && (lowMoon || highKp) && clearWeather;
+} catch (error) {
+console.error("Error checking optimal conditions:", error);
+return false;
+}
+}
+
+function getPhotographyTips() {
+const isAurora = currentKp >= 5;
+if (isAurora) {
+return `
+<strong>Aurora Photography:</strong>
+<ul>
+<li>Use a wide-angle lens (14–24mm) for broad sky coverage.</li>
+<li>Set ISO 1600–6400, shutter 5–15s, aperture f/2.8–f/4.</li>
+<li>Shoot in RAW for better post-processing.</li>
+<li>Include foreground elements (e.g., trees, lakes) for composition.</li>
+<li>Check aurora apps like Aurora Alerts for real-time Kp updates.</li>
+</ul>
+`;
+} else {
+return `
+<strong>Stargazing Photography:</strong>
+<ul>
+<li>Use a 24–50mm lens for stars or deep-sky objects.</li>
+<li>Set ISO 800–3200, shutter 15–30s (use 500 rule: 500/focal length = max exposure).</li>
+<li>Stack multiple images using software like Starry Landscape Stacker.</li>
+<li>Aim for constellations or Milky Way (visible in dark skies).</li>
+<li>Use a red flashlight to preserve night vision.</li>
+</ul>
+`;
+}
+}
+
+async function getUserLocation() {
+if (navigator.geolocation) {
+navigator.geolocation.getCurrentPosition(
+async (position) => {
+const { latitude, longitude } = position.coords;
+userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop();
+userLocation = await getLocationName(latitude, longitude);
+astroData = getAstroData(latitude, longitude);
+weatherForecast = simulateWeatherForecast(latitude, longitude);
+updateDisplay();
+},
+(error) => {
+console.error("Geolocation error:", error);
+userTimezone = "ADT"
+userLocation = "Halifax, NS"
+weathercriptiveForecast = simulateWeatherForecast(44.6488, -63.5752);
+updateDisplay();
+}
+);
+} else {
+console.error("Geolocation not supported.");
+userTimezone = "ADT"
+userLocation = "Halifax, NS"
+weatherForecast = simulateWeatherForecast(44.6488, -63.5752);
+updateDisplay();
+}
+}
+
+async function getLocationName(lat, lon) {
+return "User Location"
+}
+
 function updateDisplay() {
 try {
 document.getElementById('timestamp').textContent = `As of: ${lastUpdateTime}`;
+document.getElementById('timezone').textContent = userTimezone;
+document.getElementById('location').textContent = userLocation;
 document.getElementById('speed').textContent = solarWind.speed;
 document.getElementById('density').textContent = solarWind.density;
 document.getElementById('bz').textContent = solarWind.bz;
@@ -221,6 +442,35 @@ document.getElementById('sunSet').textContent = astroData.sun.set;
 document.getElementById('moonRise').textContent = astroData.moon.rise;
 document.getElementById('moonSet').textContent = astroData.moon.set;
 document.getElementById('moonIllum').textContent = astroData.moon.illum;
+
+// Update Weather Forecast
+const forecastBody = document.getElementById('forecastBody');
+forecastBody.innerHTML = '';
+weatherForecast.forEach(day => {
+const row = document.createElement('tr');
+row.innerHTML = `
+<td>${day.date}</td>
+<td>${day.condition}</td>
+<td>${day.high}</td>
+<td>${day.low}</td>
+<td>${day.precipitation}%</td>
+<td>${day.wind}</td>
+`;
+forecastBody.appendChild(row);
+});
+
+// Update Optimal Conditions Alert
+const alertDiv = document.getElementById('optimalAlert');
+if (areConditionsOptimal()) {
+alertDiv.style.display = 'block';
+} else {
+alertDiv.style.display = 'none';
+}
+
+// Update Photography Tips
+document.getElementById('eventSpecificTips').innerHTML = getPhotographyTips();
+
+// Update Satellite Updates
 document.getElementById('satUpdates').textContent = SATELLITES.map(s => `${s.name}: ${s.lastUpdate}`).join(", ");
 
 // Update Chart
@@ -250,9 +500,10 @@ document.getElementById('issFallback').style.display = 'block';
 // Initial Setup
 try {
 fetchSatelliteData();
-updateDisplay();
+getUserLocation();
 } catch (error) {
 console.error("Initial setup failed:", error);
+updateDisplay();
 }
 
 // Update Loop
