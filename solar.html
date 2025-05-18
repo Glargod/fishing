@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Wind Live Meter</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #1a1a1a;
+color: #ffffff;
+margin: 20px;
+}
+.container {
+max-width: 800px;
+margin: auto;
+padding: 20px;
+background-color: #2c2c2c;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.section {
+margin-bottom: 20px;
+}
+.data-item {
+margin: 5px 0;
+}
+#kpChartContainer {
+width: 300px;
+height: 300px;
+margin: 0 auto 20px;
+}
+#issFeed {
+width: 100%;
+height: 300px;
+border: none;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Solar Wind Live Meter</h1>
+<div class="section" id="timestamp">As of: Loading...</div>
+
+<div class="section" id="kpChartContainer">
+<canvas id="kpChart"></canvas>
+</div>
+
+<div class="section">
+<h2>Solar Wind Data</h2>
+<div class="data-item">Speed: <span id="speed">Loading...</span> km/s</div>
+<div class="data-item">Density: <span id="density">Loading...</span> p/cm³</div>
+<div class="data-item">IMF Bz: <span id="bz">Loading...</span> nT</div>
+</div>
+
+<div class="section">
+<h2>Flare Probabilities</h2>
+<div class="data-item">C Flare: <span id="cFlare">Loading...</span>%</div>
+<div class="data-item">M Flare: <span id="mFlare">Loading...</span>%</div>
+<div class="data-item">X Flare: <span id="xFlare">Loading...</span>%</div>
+<div class="data-item">Proton Event: <span id="proton">Loading...</span>%</div>
+</div>
+
+<div class="section">
+<h2>Astronomical Data (UTC-3)</h2>
+<div class="data-item">Sun: Rise <span id="sunRise">Loading...</span>, Set <span id="sunSet">Loading...</span></div>
+<div class="data-item">Moon: Rise <span id="moonRise">Loading...</span>, Set <span id="moonSet">Loading...</span>, Illum <span id="moonIllum">Loading...</span>%</div>
+</div>
+
+<div class="section">
+<h2>ISS Live Feed</h2>
+<iframe id="issFeed" src="https://www.nasa.gov/nasalive" title="ISS Live Feed" allowfullscreen></iframe>
+</div>
+
+<div class="section">
+<h2>Satellite Updates</h2>
+<div id="satUpdates">Loading...</div>
+</div>
+</div>
+
+<script>
+// Constants
+const UPDATE_INTERVAL = 300000; // 5 minutes in milliseconds
+const SATELLITES = [
+{ name: "DSCOVR", lastUpdate: "02:14 AM ADT" },
+{ name: "ACE", lastUpdate: "02:13 AM ADT" },
+{ name: "SOHO", lastUpdate: "02:12 AM ADT" },
+{ name: "SDO", lastUpdate: "02:15 AM ADT" },
+{ name: "GOES-19", lastUpdate: "02:14 AM ADT" },
+{ name: "STEREO-A", lastUpdate: "02:11 AM ADT" }
+];
+const LOCAL_TIMEZONE_OFFSET = -3; // UTC-3 (ADT)
+
+// Global State
+let currentKp = 4;
+let solarWind = { speed: 458, density: 5.4, bz: -8.5 };
+let flareProbs = { c: 65, m: 25, x: 8, proton: 3 };
+let astroData = {
+sun: { rise: "04:50 AM ADT", set: "08:10 PM ADT" },
+moon: { rise: "12:30 AM ADT", set: "08:08 AM ADT", illum: 81 }
+};
+let lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT"
+
+// Chart Setup
+const ctx = document.getElementById('kpChart').getContext('2d');
+const kpChart = new Chart(ctx, {
+type: 'gauge',
+data: { datasets: [{ data: [currentKp], value: currentKp, backgroundColor: getKpColor(currentKp), borderColor: "#FFFFFF", borderWidth: 2 }] },
+options: {
+responsive: true,
+circumference: 180,
+rotation: -90,
+plugins: { title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF" }, legend: { display: false } },
+scales: { r: { min: 0, max: 9, ticks: { color: "#FFFFFF", stepSize: 1 }, pointLabels: { color: "#FFFFFF" } } },
+needle: { radiusPercentage: 2, widthPercentage: 3.2, lengthPercentage: 80, color: "#FF5722" },
+colorRanges: [
+{ from: 0, to: 3, color: "#4CAF50" },
+{ from: 4, to: 5, color: "#FFCA28" },
+{ from: 6, to: 9, color: "#F44336" }
+]
+}
+});
+
+// Functions
+function fetchSatelliteData() {
+let kpSum = 0;
+let speedSum = 0, densitySum = 0, bzSum = 0;
+let count = 0;
+
+SATELLITES.forEach(sat => {
+let data = simulateSatelliteReading(sat.name);
+if (data) {
+kpSum += data.kp;
+speedSum += data.speed;
+densitySum += data.density;
+bzSum += data.bz;
+count++;
+}
+});
+
+currentKp = Math.round(kpSum / count);
+solarWind.speed = Math.round(speedSum / count);
+solarWind.density = (densitySum / count).toFixed(1);
+solarWind.bz = (bzSum / count).toFixed(1);
+
+flareProbs = simulateFlareProbabilities();
+}
+
+function simulateSatelliteReading(satellite) {
+let baseKp = 4;
+let baseSpeed = 460, baseDensity = 5.5, baseBz = -9;
+if (satellite === "DSCOVR") return { kp: baseKp, speed: baseSpeed, density: baseDensity, bz: baseBz };
+if (satellite === "ACE") return { kp: baseKp - 0.1, speed: baseSpeed - 5, density: baseDensity - 0.2, bz: baseBz + 0.5 };
+if (satellite === "GOES-19") return { kp: baseKp, speed: baseSpeed - 2, density: baseDensity - 0.1, bz: baseBz + 0.25 };
+return null;
+}
+
+function simulateFlareProbabilities() {
+return {
+c: 65 - Math.floor(Math.random() * 5),
+m: 25 - Math.floor(Math.random() * 5),
+x: 8 + Math.floor(Math.random() * 3),
+proton: 3 - Math.floor(Math.random() * 2)
+};
+}
+
+function updateDisplay() {
+document.getElementById('timestamp').textContent = `As of: ${lastUpdateTime}`;
+document.getElementById('speed').textContent = solarWind.speed;
+document.getElementById('density').textContent = solarWind.density;
+document.getElementById('bz').textContent = solarWind.bz;
+document.getElementById('cFlare').textContent = flareProbs.c;
+document.getElementById('mFlare').textContent = flareProbs.m;
+document.getElementById('xFlare').textContent = flareProbs.x;
+document.getElementById('proton').textContent = flareProbs.proton;
+document.getElementById('sunRise').textContent = astroData.sun.rise;
+document.getElementById('sunSet').textContent = astroData.sun.set;
+document.getElementById('moonRise').textContent = astroData.moon.rise;
+document.getElementById('moonSet').textContent = astroData.moon.set;
+document.getElementById('moonIllum').textContent = astroData.moon.illum;
+document.getElementById('satUpdates').textContent = SATELLITES.map(s => `${s.name}: ${s.lastUpdate}`).join(", ");
+
+// Update Chart
+kpChart.data.datasets[0].data = [currentKp];
+kpChart.data.datasets[0].value = currentKp;
+kpChart.data.datasets[0].backgroundColor = getKpColor(currentKp);
+kpChart.update();
+}
+
+function getKpColor(kp) {
+if (kp <= 3) return "#4CAF50"
+if (kp <= 5) return "#FFCA28"
+return "#F44336"
+}
+
+// Initial Setup
+fetchSatelliteData();
+updateDisplay();
+
+// Update Loop
+setInterval(() => {
+lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT"
+fetchSatelliteData();
+updateDisplay();
+}, UPDATE_INTERVAL);
+</script>
+</body>
+</html>
+
