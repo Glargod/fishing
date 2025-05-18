@@ -11,7 +11,7 @@
 <style>
 body {
 font-family: Arial, sans-serif;
-background-color: #1a1a1a;
+background-color: #1 doctype: html;
 color: #ffffff;
 margin: 20px;
 }
@@ -26,9 +26,7 @@ box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 .section {
 margin-bottom: 20px;
 }
-.data
-
--item {
+.data-item {
 margin: 5px 0;
 }
 #kpChartContainer {
@@ -81,6 +79,19 @@ background-color: #3a3a3a;
 padding: 10px;
 border-radius: 5px;
 }
+#kpNumber {
+font-size: 48px;
+font-weight: bold;
+text-align: center;
+margin-top: 10px;
+transition: text-shadow 0.3s ease;
+}
+.kp-glow-yellow {
+text-shadow: 0 0 10px #FFCA28, 0 0 20px #FFCA28;
+}
+.kp-glow-red {
+text-shadow: 0 0 15px #F44336, 0 0 30px #F44336, 0 0 45px #F44336;
+}
 </style>
 </head>
 <body>
@@ -96,6 +107,7 @@ border-radius: 5px;
 
 <div class="section" id="kpChartContainer">
 <canvas id="kpChart"></canvas>
+<div id="kpNumber">0</div>
 </div>
 
 <div class="section">
@@ -155,7 +167,7 @@ border-radius: 5px;
 
 <div class="section">
 <h2>ISS Live Feed</h2>
-<iframe id="issFeed" src="https://www.youtube.com/embed/H999s0P1Er0" title="ISS Live Feed" allow="fullscreen" allowfullscreen></iframe>
+<iframe id="issFeed" src="https://www.youtube.com/embed/EEIk7gwjgIM" title="ISS Live Feed" allow="fullscreen" allowfullscreen></iframe>
 <div class="iframe-fallback" id="issFallback" style="display: none;">
 ISS Live Feed unavailable. Visit <a href="https://www.nasa.gov/nasalive" style="color: #ffca28;">NASA Live</a> for updates.
 </div>
@@ -239,7 +251,7 @@ console.error("No valid satellite data. Using fallback values.");
 currentKp = 4;
 solarWind = { speed: 458, density: 5.4, bz: -8.5 };
 } else {
-currentKp = Math.round(kpSum / count);
+currentKp = Math.round(k toplamSum / count);
 solarWind.speed = Math.round(speedSum / count);
 solarWind.density = (densitySum / count).toFixed(1);
 solarWind.bz = (bzSum / count).toFixed(1);
@@ -408,7 +420,7 @@ updateDisplay();
 console.error("Geolocation error:", error);
 userTimezone = "ADT"
 userLocation = "Halifax, NS"
-weathercriptiveForecast = simulateWeatherForecast(44.6488, -63.5752);
+weatherForecast = simulateWeatherForecast(44.6488, -63.5752);
 updateDisplay();
 }
 );
@@ -423,6 +435,12 @@ updateDisplay();
 
 async function getLocationName(lat, lon) {
 return "User Location"
+}
+
+function getKpColor(kp) {
+if (kp <= 3) return "#4CAF50"
+if (kp <= 5) return "#FFCA28"
+return "#F44336"
 }
 
 function updateDisplay() {
@@ -470,6 +488,17 @@ alertDiv.style.display = 'none';
 // Update Photography Tips
 document.getElementById('eventSpecificTips').innerHTML = getPhotographyTips();
 
+// Update Kp Number
+const kpNumber = document.getElementById('kpNumber');
+kpNumber.textContent = currentKp;
+kpNumber.style.color = getKpColor(currentKp);
+kpNumber.classList.remove('kp-glow-yellow', 'kp-glow-red');
+if (currentKp > 3 && currentKp <= 5) {
+kpNumber.classList.add('kp-glow-yellow');
+} else if (currentKp > 5) {
+kpNumber.classList.add('kp-glow-red');
+}
+
 // Update Satellite Updates
 document.getElementById('satUpdates').textContent = SATELLITES.map(s => `${s.name}: ${s.lastUpdate}`).join(", ");
 
@@ -480,12 +509,6 @@ kpChart.update();
 } catch (error) {
 console.error("Error updating display:", error);
 }
-}
-
-function getKpColor(kp) {
-if (kp <= 3) return "#4CAF50"
-if (kp <= 5) return "#FFCA28"
-return "#F44336"
 }
 
 // Check ISS Feed Load
