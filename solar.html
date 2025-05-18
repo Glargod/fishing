@@ -1,11 +1,12 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Solar Wind Live Meter</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
 <style>
 body {
 font-family: Arial, sans-serif;
@@ -36,6 +37,10 @@ margin: 0 auto 20px;
 width: 100%;
 height: 300px;
 border: none;
+}
+.iframe-fallback {
+color: #ffca28;
+text-align: center;
 }
 </style>
 </head>
@@ -71,7 +76,10 @@ border: none;
 
 <div class="section">
 <h2>ISS Live Feed</h2>
-<iframe id="issFeed" src="https://www.nasa.gov/nasalive" title="ISS Live Feed" allowfullscreen></iframe>
+<iframe id="issFeed" src="https://www.youtube.com/embed/EEIk7gwjgIM" title="ISS Live Feed" allow="fullscreen" allowfullscreen></iframe>
+<div class="iframe-fallback" id="issFallback" style="display: none;">
+ISS Live Feed unavailable. Visit <a href="https://www.nasa.gov/nasalive" style="color: #ffca28;">NASA Live</a> for updates.
+</div>
 </div>
 
 <div class="section">
@@ -103,30 +111,35 @@ moon: { rise: "12:30 AM ADT", set: "08:08 AM ADT", illum: 81 }
 };
 let lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT"
 
-// Chart Setup
+// Chart Setup (Doughnut styled as gauge)
 const ctx = document.getElementById('kpChart').getContext('2d');
 const kpChart = new Chart(ctx, {
-type: 'gauge',
-data: { datasets: [{ data: [currentKp], value: currentKp, backgroundColor: getKpColor(currentKp), borderColor: "#FFFFFF", borderWidth: 2 }] },
+type: 'doughnut',
+data: {
+datasets: [{
+data: [currentKp, 9 - currentKp],
+backgroundColor: [getKpColor(currentKp), '#555555'],
+borderColor: '#FFFFFF',
+borderWidth: 2
+}],
+labels: ['Kp Index', 'Remaining']
+},
 options: {
 responsive: true,
 circumference: 180,
 rotation: -90,
-plugins: { title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF" }, legend: { display: false } },
-scales: { r: { min: 0, max: 9, ticks: { color: "#FFFFFF", stepSize: 1 }, pointLabels: { color: "#FFFFFF" } } },
-needle: { radiusPercentage: 2, widthPercentage: 3.2, lengthPercentage: 80, color: "#FF5722" },
-colorRanges: [
-{ from: 0, to: 3, color: "#4CAF50" },
-{ from: 4, to: 5, color: "#FFCA28" },
-{ from: 6, to: 9, color: "#F44336" }
-]
+cutout: '80%',
+plugins: {
+title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF" },
+legend: { display: false },
+tooltip: { enabled: false }
+}
 }
 });
 
 // Functions
 function fetchSatelliteData() {
-let kpSum = 0;
-let speedSum = 0, densitySum = 0, bzSum = 0;
+let kpSum = 0, speedSum = 0, densitySum = 0, bzSum = 0;
 let count = 0;
 
 SATELLITES.forEach(sat => {
@@ -140,33 +153,61 @@ count++;
 }
 });
 
+if (count === 0) {
+console.error("No valid satellite data. Using fallback values.");
+currentKp = 4;
+solarWind = { speed: 458, density: 5.4, bz: -8.5 };
+} else {
 currentKp = Math.round(kpSum / count);
 solarWind.speed = Math.round(speedSum / count);
 solarWind.density = (densitySum / count).toFixed(1);
 solarWind.bz = (bzSum / count).toFixed(1);
+}
 
 flareProbs = simulateFlareProbabilities();
 }
 
 function simulateSatelliteReading(satellite) {
-let baseKp = 4;
-let baseSpeed = 460, baseDensity = 5.5, baseBz = -9;
-if (satellite === "DSCOVR") return { kp: baseKp, speed: baseSpeed, density: baseDensity, bz: baseBz };
-if (satellite === "ACE") return { kp: baseKp - 0.1, speed: baseSpeed - 5, density: baseDensity - 0.2, bz: baseBz + 0.5 };
-if (satellite === "GOES-19") return { kp: baseKp, speed: baseSpeed - 2, density: baseDensity - 0.1, bz: baseBz + 0.25 };
+let baseKp = 4, baseSpeed = 460, baseDensity = 5.5, baseBz = -9;
+try {
+switch (satellite) {
+case "DSCOVR":
+return { kp: baseKp, speed: baseSpeed, density: baseDensity, bz: baseBz };
+case "ACE":
+return { kp: baseKp - 0.1, speed: baseSpeed - 5, density: baseDensity - 0.2, bz: baseBz + 0.5 };
+case "SOHO":
+return { kp: baseKp + 0.2, speed: baseSpeed + 3, density: baseDensity + 0.1, bz: baseBz - 0.3 };
+case "SDO":
+return { kp: baseKp - 0.05, speed: baseSpeed - 1, density: baseDensity - 0.1, bz: baseBz + 0.2 };
+case "GOES-19":
+return { kp: baseKp, speed: baseSpeed - 2, density: baseDensity - 0.1, bz: baseBz + 0.25 };
+case "STEREO-A":
+return { kp: baseKp + 0.1, speed: baseSpeed + 5, density: baseDensity + 0.2, bz: baseBz - 0.5 };
+default:
 return null;
+}
+} catch (error) {
+console.error(`Error simulating data for ${satellite}:`, error);
+return null;
+}
 }
 
 function simulateFlareProbabilities() {
+try {
 return {
 c: 65 - Math.floor(Math.random() * 5),
 m: 25 - Math.floor(Math.random() * 5),
 x: 8 + Math.floor(Math.random() * 3),
 proton: 3 - Math.floor(Math.random() * 2)
 };
+} catch (error) {
+console.error("Error simulating flare probabilities:", error);
+return { c: 65, m: 25, x: 8, proton: 3 };
+}
 }
 
 function updateDisplay() {
+try {
 document.getElementById('timestamp').textContent = `As of: ${lastUpdateTime}`;
 document.getElementById('speed').textContent = solarWind.speed;
 document.getElementById('density').textContent = solarWind.density;
@@ -183,10 +224,12 @@ document.getElementById('moonIllum').textContent = astroData.moon.illum;
 document.getElementById('satUpdates').textContent = SATELLITES.map(s => `${s.name}: ${s.lastUpdate}`).join(", ");
 
 // Update Chart
-kpChart.data.datasets[0].data = [currentKp];
-kpChart.data.datasets[0].value = currentKp;
-kpChart.data.datasets[0].backgroundColor = getKpColor(currentKp);
+kpChart.data.datasets[0].data = [currentKp, 9 - currentKp];
+kpChart.data.datasets[0].backgroundColor = [getKpColor(currentKp), '#555555'];
 kpChart.update();
+} catch (error) {
+console.error("Error updating display:", error);
+}
 }
 
 function getKpColor(kp) {
@@ -195,17 +238,37 @@ if (kp <= 5) return "#FFCA28"
 return "#F44336"
 }
 
+// Check ISS Feed Load
+const issIframe = document.getElementById('issFeed');
+issIframe.onload = () => {
+document.getElementById('issFallback').style.display = 'none';
+};
+issIframe.onerror = () => {
+document.getElementById('issFallback').style.display = 'block';
+};
+
 // Initial Setup
+try {
 fetchSatelliteData();
 updateDisplay();
+} catch (error) {
+console.error("Initial setup failed:", error);
+}
 
 // Update Loop
 setInterval(() => {
+try {
 lastUpdateTime = new Date().toLocaleTimeString("en-US", { timeZone: "America/Halifax", hour12: true }) + " ADT"
 fetchSatelliteData();
 updateDisplay();
+} catch (error) {
+console.error("Update loop error:", error);
+}
 }, UPDATE_INTERVAL);
 </script>
 </body>
 </html>
+
+Andrew Ross
+
 
