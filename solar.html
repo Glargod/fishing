@@ -8,36 +8,77 @@
 <title>Solar Wind Live Meter</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
 body {
-font-family: Arial, sans-serif;
-background-color: #1a1a1a;
+font-family: 'Roboto', sans-serif;
+background: linear-gradient(180deg, #1a1a1a, #2c2c2c);
 color: #ffffff;
-margin: 20px;
+margin: 0;
+padding: 20px;
 }
 .container {
 max-width: 800px;
-margin: auto;
-padding: 20px;
-background-color: #2c2c2c;
-border-radius: 10px;
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+margin: 0 auto;
+padding: 15px;
+background: linear-gradient(135deg, #2c2c2c, #1e1e1e);
+border-radius: 12px;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 .section {
-margin-bottom: 20px;
+margin-bottom: 25px;
+background: #3a3a3a;
+padding: 15px;
+border-radius: 8px;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+h1, h2 {
+text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 .data-item {
-margin: 5px 0;
+margin: 8px 0;
+font-size: 16px;
 }
 #kpChartContainer {
-width: 300px;
-height: 300px;
+width: 100%;
+max-width: 300px;
 margin: 0 auto 20px;
+padding: 15px;
+background: #222;
+border-radius: 10px;
+box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+#kpChart {
+transition: all 0.5s ease;
+}
+#kpNumber {
+font-size: 48px;
+font-weight: 700;
+text-align: center;
+margin: 15px 0;
+transition: all 0.5s ease;
+}
+.kp-glow-yellow {
+text-shadow: 0 0 10px #FFCA28, 0 0 20px #FFCA28;
+}
+.kp-glow-red {
+text-shadow: 0 0 15px #F44336, 0 0 30px #F44336, 0 0 45px #F44336;
+}
+#ovationMap {
+width: 100%;
+max-width: 600px;
+height: 400px;
+margin: 15px auto;
+display: block;
+border: 2px solid #555;
+border-radius: 8px;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 #issFeed {
 width: 100%;
 height: 300px;
 border: none;
+border-radius: 8px;
 }
 .iframe-fallback {
 color: #ffca28;
@@ -46,24 +87,25 @@ text-align: center;
 .forecast-table {
 width: 100%;
 border-collapse: collapse;
+font-size: 14px;
 }
 .forecast-table th, .forecast-table td {
-padding: 8px;
+padding: 10px;
 border: 1px solid #555;
 text-align: left;
 }
 .forecast-table th {
-background-color: #3a3a3a;
+background: #4a4a4a;
 }
 .alert-marquee {
 display: none;
 background: linear-gradient(45deg, #ff0000, #00ff00, #ff0000);
 color: #fff;
-padding: 10px;
+padding: 12px;
 font-weight: bold;
 text-align: center;
 animation: flash 1s infinite, marquee 10s linear infinite;
-border-radius: 5px;
+border-radius: 8px;
 margin-bottom: 20px;
 }
 @keyframes flash {
@@ -75,50 +117,56 @@ margin-bottom: 20px;
 100% { transform: translateX(-100%); }
 }
 .photo-tips {
-background-color: #3a3a3a;
-padding: 10px;
-border-radius: 5px;
-}
-#kpNumber {
-font-size: 48px;
-font-weight: bold;
-text-align: center;
-margin-top: 10px;
-transition: text-shadow 0.3s ease;
-}
-.kp-glow-yellow {
-text-shadow: 0 0 10px #FFCA28, 0 0 20px #FFCA28;
-}
-.kp-glow-red {
-text-shadow: 0 0 15px #F44336, 0 0 30px #F44336, 0 0 45px #F44336;
+background: #4a4a4a;
+padding: 15px;
+border-radius: 8px;
 }
 #cameraSection {
 display: none;
 text-align: center;
 }
+#cameraIcon {
+width: 40px;
+height: 40px;
+cursor: pointer;
+margin: 10px auto;
+display: block;
+transition: process.env 0.3s;
+}
+#cameraIcon:hover {
+transform: scale(1.1);
+}
 #cameraFeed {
 width: 100%;
 max-width: 640px;
 height: auto;
-border-radius: 5px;
-filter: brightness(1.2) contrast(1.1); /* Simulated night mode */
-background-color: #000;
-}
-#startCamera {
-padding: 10px 20px;
-background-color: #4CAF50;
-color: #fff;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-font-size: 16px;
-}
-#startCamera:hover {
-background-color: #45a049;
+border-radius: 8px;
+filter: brightness(1.2) contrast(1.1);
+background: #000;
+margin: 10px auto;
 }
 #cameraMessage {
 color: #ffca28;
 margin-top: 10px;
+font-size: 14px;
+}
+@media (max-width: 600px) {
+.container {
+padding: 10px;
+}
+#kpChartContainer {
+max-width: 250px;
+}
+#ovationMap {
+height: 300px;
+}
+.section {
+padding: 10px;
+}
+.forecast-table th, .forecast-table td {
+padding: 6px;
+font-size: 12px;
+}
 }
 </style>
 </head>
@@ -136,6 +184,7 @@ margin-top: 10px;
 <div class="section" id="kpChartContainer">
 <canvas id="kpChart"></canvas>
 <div id="kpNumber">0</div>
+<iframe id="ovationMap" src="https://www.swpc.noaa.gov/products/aurora-30-minute-forecast" title="Ovation Aurora Map" allowfullscreen></iframe>
 </div>
 
 <div class="section">
@@ -180,7 +229,9 @@ margin-top: 10px;
 
 <div class="section" id="cameraSection">
 <h2>Camera (Night Mode)</h2>
-<button id="startCamera">Start Camera</button>
+<svg id="cameraIcon" viewBox="0 0 24 24" fill="#4CAF50">
+<path d="M12 9c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm7-8H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 12H5V7h14v10z"/>
+</svg>
 <video id="cameraFeed" autoplay playsinline></video>
 <div id="cameraMessage"></div>
 </div>
@@ -190,28 +241,28 @@ margin-top: 10px;
 <div class="photo-tips" id="photoTips">
 <p><strong>General Tips:</strong></p>
 <ul>
-<li><strong>Location:</strong> Choose a dark site away from city lights (light pollution < Bortle 4).</li>
-<li><strong>Equipment:</strong> Use a DSLR or smartphone with manual mode, tripod, and optional star tracker.</li>
-<li><strong>Settings:</strong> High ISO (800–3200), long exposure (5–30s), wide aperture (f/2.8 or lower).</li>
-<li><strong>Focus:</strong> Set to manual focus, aim at a bright star, and adjust to infinity.</li>
-<li><strong>Apps:</strong> Use Stellarium or SkySafari to locate objects.</li>
+<li><strong>Location:</strong> Choose a dark site (Bortle < 4).</li>
+<li><strong>Equipment:</strong> DSLR/smartphone with manual mode, tripod.</li>
+<li><strong>Settings:</strong> ISO 800–3200, 5–30s exposure, f/2.8 or lower.</li>
+<li><strong>Focus:</strong> Manual focus to infinity on a bright star.</li>
+<li><strong>Apps:</strong> Use Stellarium or SkySafari.</li>
 <li><strong>Night Mode (Smartphones):</strong>
 <ul>
-<li><strong>iOS:</strong> Open Camera app, enable Night Mode (moon icon, auto or manual up to 30s).</li>
-<li><strong>Android:</strong> Use Night Sight (Google Pixel) or Night Mode in Camera settings.</li>
-<li>Stabilize phone on a tripod or flat surface for long exposures.</li>
+<li><strong>iOS:</strong> Enable Night Mode (moon icon, up to 30s).</li>
+<li><strong>Android:</strong> Use Night Sight or Night Mode.</li>
+<li>Use a tripod for stability.</li>
 </ul>
 </li>
 </ul>
-<p id="eventSpecificTips"><strong>Event-Specific Tips:</strong> Detecting conditions...</p>
+<p id="eventSpecificTips"><strong>Event-Specific Tips:</strong> Detecting...</p>
 </div>
 </div>
 
 <div class="section">
 <h2>ISS Live Feed</h2>
-<iframe id="issFeed" src="https://www.youtube.com/embed/EEIk7gwjgIM" title="ISS Live Feed" allow="fullscreen" allowfullscreen></iframe>
+<iframe id="issFeed" src="https://www.youtube.com/embed/H999s0P1Er0" title="ISS Live Feed" allow="fullscreen" allowfullscreen></iframe>
 <div class="iframe-fallback" id="issFallback" style="display: none;">
-ISS Live Feed unavailable. Visit <a href="https://www.nasa.gov/nasalive" style="color: #ffca28;">NASA Live</a> for updates.
+ISS Live Feed unavailable. Visit <a href="https://www.nasa.gov/nasalive" style="color: #ffca28;">NASA Live</a>.
 </div>
 </div>
 
@@ -223,14 +274,14 @@ ISS Live Feed unavailable. Visit <a href="https://www.nasa.gov/nasalive" style="
 
 <script>
 // Constants
-const UPDATE_INTERVAL = 300000; // 5 minutes in milliseconds
+const UPDATE_INTERVAL = 300000; // 5 minutes
 const SATELLITES = [
-{ name: "DSCOVR", lastUpdate: "03:20 AM ADT" },
-{ name: "ACE", lastUpdate: "03:19 AM ADT" },
-{ name: "SOHO", lastUpdate: "03:18 AM ADT" },
-{ name: "SDO", lastUpdate: "03:21 AM ADT" },
-{ name: "GOES-19", lastUpdate: "03:20 AM ADT" },
-{ name: "STEREO-A", lastUpdate: "03:17 AM ADT" }
+{ name: "DSCOVR", lastUpdate: "03:43 AM ADT" },
+{ name: "ACE", lastUpdate: "03:42 AM ADT" },
+{ name: "SOHO", lastUpdate: "03:41 AM ADT" },
+{ name: "SDO", lastUpdate: "03:44 AM ADT" },
+{ name: "GOES-19", lastUpdate: "03:43 AM ADT" },
+{ name: "STEREO-A", lastUpdate: "03:40 AM ADT" }
 ];
 const DEFAULT_LAT = 44.6488; // Halifax, NS
 const DEFAULT_LON = -63.5752;
@@ -270,7 +321,7 @@ circumference: 180,
 rotation: -90,
 cutout: '80%',
 plugins: {
-title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF" },
+title: { display: true, text: "Current Kp Index (Live)", color: "#FFFFFF", font: { size: 18 } },
 legend: { display: false },
 tooltip: { enabled: false }
 }
@@ -425,7 +476,7 @@ throw new Error("Invalid sunrise/sunset time");
 return now < sunrise || now > sunset;
 } catch (error) {
 console.error("Error checking nighttime:", error);
-return true; // Assume night for 03:20 AM ADT
+return true; // Assume night for 03:43 AM ADT
 }
 }
 
@@ -452,22 +503,22 @@ if (isAurora) {
 return `
 <strong>Aurora Photography:</strong>
 <ul>
-<li>Use a wide-angle lens (14–24mm) for broad sky coverage.</li>
-<li>Set ISO 1600–6400, shutter 5–15s, aperture f/2.8–f/4.</li>
-<li>Shoot in RAW for better post-processing.</li>
-<li>Include foreground elements (e.g., trees, lakes) for composition.</li>
-<li>Check aurora apps like Aurora Alerts for real-time Kp updates.</li>
+<li>Wide-angle lens (14–24mm) for sky coverage.</li>
+<li>ISO 1600–6400, 5–15s shutter, f/2.8–f/4.</li>
+<li>Shoot in RAW for post-processing.</li>
+<li>Include foreground (trees, lakes).</li>
+<li>Use aurora apps like Aurora Alerts.</li>
 </ul>
 `;
 } else {
 return `
 <strong>Stargazing Photography:</strong>
 <ul>
-<li>Use a 24–50mm lens for stars or deep-sky objects.</li>
-<li>Set ISO 800–3200, shutter 15–30s (use 500 rule: 500/focal length = max exposure).</li>
-<li>Stack multiple images using software like Starry Landscape Stacker.</li>
-<li>Aim for constellations or Milky Way (visible in dark skies).</li>
-<li>Use a red flashlight to preserve night vision.</li>
+<li>24–50mm lens for stars or deep-sky objects.</li>
+<li>ISO 800–3200, 15–30s shutter (500 rule).</li>
+<li>Stack images with Starry Landscape Stacker.</li>
+<li>Target constellations or Milky Way.</li>
+<li>Use red flashlight for night vision.</li>
 </ul>
 `;
 }
@@ -484,7 +535,7 @@ throw new Error("Camera not supported");
 }
 const constraints = {
 video: {
-facingMode: "environment", // Rear camera
+facingMode: "environment",
 width: { ideal: 1280 },
 height: { ideal: 720 }
 }
@@ -492,10 +543,10 @@ height: { ideal: 720 }
 cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
 const video = document.getElementById('cameraFeed');
 video.srcObject = cameraStream;
-document.getElementById('cameraMessage').textContent = "Camera active. Use your phone's Night Mode for best results."
+document.getElementById('cameraMessage').textContent = "Camera active. Use Night Mode for best results."
 } catch (error) {
 console.error("Error accessing camera:", error);
-document.getElementById('cameraMessage').textContent = "Camera access denied. Enable Night Mode in your Camera app (iOS: moon icon; Android: Night Sight)."
+document.getElementById('cameraMessage').textContent = "Camera access denied. Enable Night Mode in Camera app (iOS: moon icon; Android: Night Sight)."
 }
 }
 
@@ -514,7 +565,6 @@ console.error("Error stopping camera:", error);
 
 async function getUserLocation() {
 try {
-// Initialize defaults
 astroData = getAstroData(DEFAULT_LAT, DEFAULT_LON);
 weatherForecast = simulateWeatherForecast(DEFAULT_LAT, DEFAULT_LON);
 if (navigator.geolocation) {
@@ -606,7 +656,7 @@ forecastBody.appendChild(row);
 });
 }
 
-// Update Optimal Conditions Alert and Camera Section
+// Update Optimal Conditions and Camera
 const alertDiv = document.getElementById('optimalAlert');
 const cameraSection = document.getElementById('cameraSection');
 if (areConditionsOptimal()) {
@@ -647,8 +697,8 @@ console.error("Error in updateDisplay:", error);
 }
 }
 
-// Camera Button Event
-document.getElementById('startCamera').addEventListener('click', () => {
+// Camera Icon Event
+document.getElementById('cameraIcon').addEventListener('click', () => {
 startCamera();
 });
 
