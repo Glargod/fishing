@@ -32,72 +32,78 @@
   <script src="https://cdn.jsdelivr.net/npm/proj4@2.8.0/dist/proj4.min.js"></script>
   <script src="https://unpkg.com/mgrs@1.0.0/dist/mgrs.min.js"></script>
   <script>
+    // Log script start
+    console.log('Script started at', new Date().toLocaleString());
+
     // Initialize map with Web Mercator (EPSG:3857)
-    const map = new ol.Map({
-      target: 'map',
-      layers: [
-        new ol.layer.Tile({
-          source: new ol.source.OSM({
-            url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            projection: 'EPSG:3857',
-            tileLoadFunction: (tile, src) => {
-              const img = tile.getImage();
-              img.src = src;
-              img.onerror = () => {
-                document.getElementById('status').textContent = 'Map tiles failed. Check internet.';
-                console.error('Tile load error:', src);
-              };
-              img.onload = () => {
-                document.getElementById('status').textContent = 'Map loaded; waiting for location...';
-              };
-            }
+    let map;
+    try {
+      map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM({
+              url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              projection: 'EPSG:3857',
+              tileLoadFunction: (tile, src) => {
+                const img = tile.getImage();
+                img.src = src;
+                img.onerror = () => {
+                  console.error('Tile load error:', src);
+                  document.getElementById('status').textContent = 'Map tiles failed. Check internet.';
+                };
+                img.onload = () => {
+                  console.log('Tiles loaded successfully');
+                  document.getElementById('status').textContent = 'Map loaded; waiting for location...';
+                };
+              }
+            })
           })
+        ],
+        view: new ol.View({
+          projection: 'EPSG:3857',
+          center: ol.proj.fromLonLat([-64.35, 45.65], 'EPSG:3857'), // Springhill Junction, NS
+          zoom: 14 // Approx 1:50,000 scale
         })
-      ],
-      view: new ol.View({
-        projection: 'EPSG:3857',
-        center: ol.proj.fromLonLat([-64.35, 45.65], 'EPSG:3857'), // Springhill Junction, NS
-        zoom: 14 // Approx 1:50,000 scale
-      })
-    });
+      });
+      console.log('Map initialized successfully');
+    } catch (e) {
+      console.error('Map initialization error:', e);
+      document.getElementById('status').textContent = 'Map failed to initialize. Check console.';
+    }
 
     // Add MGRS grid (1km)
-    const gridLayer = new ol.layer.Graticule({
-      strokeStyle: new ol.style.Stroke({ color: '#4a2f1a', width: 1 }),
-      showLabels: true,
-      intervals: [1000],
-      latLabelFormatter: (lat) => {
-        try {
-          const lonLat = ol.proj.toLonLat([0, lat], 'EPSG:3857');
-          return window.mgrs.forward(lonLat, 2).slice(0, 5);
-        } catch (e) {
-          console.error('MGRS label error:', e);
-          return '';
+    try {
+      const gridLayer = new ol.layer.Graticule({
+        strokeStyle: new ol.style.Stroke({ color: '#4a2f1a', width: 1 }),
+        showLabels: true,
+        intervals: [1000],
+        latLabelFormatter: (lat) => {
+          try {
+            const lonLat = ol.proj.toLonLat([0, lat], 'EPSG:3857');
+            return window.mgrs.forward(lonLat, 2).slice(0, 5);
+          } catch (e) {
+            console.error('MGRS lat label error:', e);
+            return '';
+          }
+        },
+        lonLabelFormatter: (lon) => {
+          try {
+            const lonLat = ol.proj.toLonLat([lon, 0], 'EPSG:3857');
+            return window.mgrs.forward(lonLat, 2).slice(5, 7);
+          } catch (e) {
+            console.error('MGRS lon label error:', e);
+            return '';
+          }
         }
-      },
-      lonLabelFormatter: (lon) => {
-        try {
-          const lonLat = ol.proj.toLonLat([lon, 0], 'EPSG:3857');
-          return window.mgrs.forward(lonLat, 2).slice(5, 7);
-        } catch (e) {
-          console.error('MGRS label error:', e);
-          return '';
-        }
-      }
-    });
-    map.addLayer(gridLayer);
+      });
+      map.addLayer(gridLayer);
+      console.log('MGRS grid added');
+    } catch (e) {
+      console.error('Grid layer error:', e);
+    }
 
     // Location tracking
-    const geolocation = new ol.Geolocation({
-      tracking: true,
-      trackingOptions: {
-        enableHighAccuracy: true,
-        timeout: 7000,
-        maximumAge: 0
-      },
-      projection: 'EPSG:4326'
-    });
-
     let marker = new ol.Feature();
     const vectorLayer = new ol.layer.Vector({
       source: new ol.source.Vector({ features: [marker] }),
@@ -118,14 +124,14 @@
     // Update map with coordinates
     function updateMap(coords, isFallback = false) {
       try {
+        console.log('Updating map with coords:', coords, 'isFallback:', isFallback);
         const mercatorCoords = ol.proj.fromLonLat(coords, 'EPSG:3857');
- by
         marker.setGeometry(new ol.geom.Point(mercatorCoords));
         map.getView().setCenter(mercatorCoords);
         const mgrs = window.mgrs.forward(coords, 6);
         document.getElementById('mgrs').textContent = `MGRS${isFallback ? ' (Fallback)' : ''}: ${mgrs}`;
         document.getElementById('status').textContent = `Map and location active${isFallback ? ' (using fallback)' : ''}`;
-        console.log('Location:', coords, 'MGRS:', mgrs, isFallback ? '(Fallback)' : '');
+        console.log('Location updated:', coords, 'MGRS:', mgrs, isFallback ? '(Fallback)' : '');
         locationSet = true;
       } catch (e) {
         console.error('Error updating map:', e);
@@ -133,21 +139,22 @@
       }
     }
 
-    // Force fallback after timeout
-    setTimeout(() => {
-      if (!locationSet) {
-        console.warn('Geolocation timeout, using fallback');
-        document.getElementById('status').textContent = 'Geolocation timed out. Using fallback location.';
-        updateMap(fallbackCoords, true);
-      }
-    }, 10000); // 10-second timeout
-
     // Check geolocation support
     if (!navigator.geolocation) {
       console.error('Geolocation not supported by browser');
       document.getElementById('status').textContent = 'Geolocation not supported. Using fallback.';
       updateMap(fallbackCoords, true);
     } else {
+      const geolocation = new ol.Geolocation({
+        tracking: true,
+        trackingOptions: {
+          enableHighAccuracy: true,
+          timeout: 7000,
+          maximumAge: 0
+        },
+        projection: 'EPSG:4326'
+      });
+
       geolocation.on('change:position', () => {
         const coords = geolocation.getPosition();
         console.log('Geolocation position:', coords);
@@ -163,51 +170,58 @@
       geolocation.on('error', (error) => {
         console.error('Geolocation error:', error.message);
         document.getElementById('status').textContent = `Location error: ${error.message}. Using fallback.`;
-        document.getElementById('mgrs').textContent = 'MGRS: Location unavailable';
         updateMap(fallbackCoords, true);
       });
+
+      // Force fallback after timeout
+      setTimeout(() => {
+        if (!locationSet) {
+          console.warn('Geolocation timeout, using fallback');
+          document.getElementById('status').textContent = 'Geolocation timed out. Using fallback location.';
+          updateMap(fallbackCoords, true);
+        }
+      }, 10000);
     }
 
     // Manual fallback button
-    document.getElementById('forceFallback').addEventListener('click', () => {
-      console.log('Manual fallback triggered');
-      document.getElementById('status').textContent = 'Using fallback location (manual).';
-      geolocation.setTracking(false); // Stop geolocation attempts
-      updateMap(fallbackCoords, true);
-    });
+    try {
+      document.getElementById('forceFallback').addEventListener('click', () => {
+        console.log('Manual fallback button clicked');
+        geolocation.setTracking(false); // Stop geolocation attempts
+        document.getElementById('status').textContent = 'Using fallback location (manual).';
+        updateMap(fallbackCoords, true);
+      });
+      console.log('Fallback button listener added');
+    } catch (e) {
+      console.error('Fallback button error:', e);
+    }
 
     // Text-to-Speech setup
     const synth = window.speechSynthesis;
     function speak(message) {
-      const utterance = new SpeechSynthesisUtterance(message);
-      utterance.voice = synth.getVoices().find(voice => voice.lang.includes('en')) || synth.getVoices()[0];
-      utterance.rate = 1;
-      utterance.pitch = 1;
-      synth.speak(utterance);
+      try {
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.voice = synth.getVoices().find(voice => voice.lang.includes('en')) || synth.getVoices()[0];
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        synth.speak(utterance);
+        console.log('Speaking:', message);
+      } catch (e) {
+        console.error('Speech error:', e);
+      }
     }
 
     // Fun is Over button
-    document.getElementById('funIsOver').addEventListener('click', () => {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const lonLat = [position.coords.longitude, position.coords.latitude];
-        const mgrs = window.mgrs.forward(lonLat, 6);
-        const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
-        document.getElementById('status').textContent = `Playing voice: "${message}"`;
-        console.log('Playing TTS:', message);
-        speak(message);
-      }, (error) => {
-        console.error('Button geolocation error:', error.message);
-        const mgrs = window.mgrs.forward(fallbackCoords, 6);
-        const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
-        document.getElementById('status').textContent = `Playing voice (fallback): "${message}"`;
-        console.log('Playing TTS (fallback):', message);
-        speak(message);
-      }, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      });
-    });
-  </script>
-</body>
-</html>
+    try {
+      document.getElementById('funIsOver').addEventListener('click', () => {
+        console.log('Fun is Over button clicked');
+        navigator.geolocation.getCurrentPosition((position) => {
+          const lonLat = [position.coords.longitude, position.coords.latitude];
+          const mgrs = window.mgrs.forward(lonLat, 6);
+          const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
+          document.getElementById('status').textContent = `Playing voice: "${message}"`;
+          console.log('Playing TTS:', message);
+          speak(message);
+        }, (error) => {
+          console.error('Button geolocation error:', error.message);
+          const mgrs = window.mgrs.forward
