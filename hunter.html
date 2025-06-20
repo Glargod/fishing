@@ -9,11 +9,11 @@
     body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; }
     #map { height: 500px; width: 100%; border: 2px solid #4a2f1a; }
     #header { text-align: center; background-color: #4a2f1a; color: white; padding: 10px; }
-    #funIsOver {
+    #funIsOver, #forceFallback {
       display: block; margin: 10px auto; padding: 15px; font-size: 18px;
       background-color: #8b5a2b; color: white; border: none; cursor: pointer;
       border-radius: 5px; }
-    #funIsOver:hover { background-color: #a66c39; }
+    #funIsOver:hover, #forceFallback:hover { background-color: #a66c39; }
     #status, #mgrs { text-align: center; color: #4a2f1a; font-weight: bold; margin: 5px; }
   </style>
 </head>
@@ -25,6 +25,7 @@
   <div id="map"></div>
   <p id="mgrs">MGRS: Waiting for location...</p>
   <button id="funIsOver">Fun is Over</button>
+  <button id="forceFallback">Use Fallback Location</button>
   <p id="status">Initializing map...</p>
 
   <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.0/dist/ol.js"></script>
@@ -43,7 +44,7 @@
               const img = tile.getImage();
               img.src = src;
               img.onerror = () => {
-                document.getElementById('status').textContent = 'Map tiles failed. Check internet or try later.';
+                document.getElementById('status').textContent = 'Map tiles failed. Check internet.';
                 console.error('Tile load error:', src);
               };
               img.onload = () => {
@@ -91,7 +92,7 @@
       tracking: true,
       trackingOptions: {
         enableHighAccuracy: true,
-        timeout: 5000,
+        timeout: 7000,
         maximumAge: 0
       },
       projection: 'EPSG:4326'
@@ -118,6 +119,7 @@
     function updateMap(coords, isFallback = false) {
       try {
         const mercatorCoords = ol.proj.fromLonLat(coords, 'EPSG:3857');
+ by
         marker.setGeometry(new ol.geom.Point(mercatorCoords));
         map.getView().setCenter(mercatorCoords);
         const mgrs = window.mgrs.forward(coords, 6);
@@ -131,63 +133,30 @@
       }
     }
 
-    // Retry geolocation
-    function retryGeolocation(attempts = 1, delay = 3000) {
-      if (!locationSet && attempts > 0) {
-        console.log(`Retrying geolocation, ${attempts} attempts left`);
-        document.getElementById('status').textContent = `Retrying location (${attempts} attempts left)...`;
-        geolocation.setTracking(false);
-        geolocation.setTracking(true);
-        setTimeout(() => {
-          if (!locationSet) {
-            console.warn('Geolocation retry failed, using fallback');
-            updateMap(fallbackCoords, true);
-          }
-        }, delay);
-      } else if (!locationSet) {
-        console.warn('Geolocation exhausted retries, using fallback');
-        updateMap(fallbackCoords, true);
-      }
-    }
-
-    // Force fallback if no position after initial timeout
+    // Force fallback after timeout
     setTimeout(() => {
       if (!locationSet) {
-        console.warn('Initial geolocation timeout, using fallback');
+        console.warn('Geolocation timeout, using fallback');
         document.getElementById('status').textContent = 'Geolocation timed out. Using fallback location.';
         updateMap(fallbackCoords, true);
       }
-    }, 7000);
+    }, 10000); // 10-second timeout
 
-    // Check geolocation support and permissions
+    // Check geolocation support
     if (!navigator.geolocation) {
       console.error('Geolocation not supported by browser');
-      document.getElementById('status').textContent = 'Geolocation not supported by browser. Using fallback.';
+      document.getElementById('status').textContent = 'Geolocation not supported. Using fallback.';
       updateMap(fallbackCoords, true);
     } else {
-      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        if (result.state === 'denied') {
-          console.warn('Geolocation permission denied');
-          document.getElementById('status').textContent = 'Location permission denied. Enable in browser settings or use fallback.';
-          updateMap(fallbackCoords, true);
-        } else if (result.state === 'prompt') {
-          console.log('Geolocation permission prompt expected');
-          document.getElementById('status').textContent = 'Please allow location access when prompted...';
-        }
-      }).catch((err) => {
-        console.error('Permission query error:', err);
-        document.getElementById('status').textContent = 'Error checking permissions. Using fallback.';
-        updateMap(fallbackCoords, true);
-      });
-
       geolocation.on('change:position', () => {
         const coords = geolocation.getPosition();
-        if (coords) {
-          console.log('Geolocation success:', coords);
+        console.log('Geolocation position:', coords);
+        if (coords && coords[0] !== undefined && coords[1] !== undefined) {
           updateMap(coords);
         } else {
-          console.warn('Geolocation returned null position');
-          retryGeolocation();
+          console.warn('Geolocation returned invalid or null position');
+          document.getElementById('status').textContent = 'Invalid location data. Using fallback.';
+          updateMap(fallbackCoords, true);
         }
       });
 
@@ -198,6 +167,14 @@
         updateMap(fallbackCoords, true);
       });
     }
+
+    // Manual fallback button
+    document.getElementById('forceFallback').addEventListener('click', () => {
+      console.log('Manual fallback triggered');
+      document.getElementById('status').textContent = 'Using fallback location (manual).';
+      geolocation.setTracking(false); // Stop geolocation attempts
+      updateMap(fallbackCoords, true);
+    });
 
     // Text-to-Speech setup
     const synth = window.speechSynthesis;
