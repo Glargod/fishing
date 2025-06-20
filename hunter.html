@@ -30,12 +30,25 @@
 
   <script src="https://cdn.jsdelivr.net/npm/ol@v7.5.0/dist/ol.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/proj4@2.8.0/dist/proj4.min.js"></script>
-  <script src="https://unpkg.com/mgrs@1.0.0/dist/mgrs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mgrs@2.1.0/dist/mgrs.min.js"></script>
   <script>
-    // Log script start
-    console.log('Script started at', new Date().toLocaleString());
+    console.log('Script started at', new Date().toLocaleString('en-US', { timeZone: 'America/Halifax' }));
 
-    // Initialize map with Web Mercator (EPSG:3857)
+    // Test MGRS library
+    try {
+      if (typeof window.mgrs === 'undefined') {
+        throw new Error('MGRS library not loaded');
+      }
+      const testCoords = [-64.35, 45.65];
+      const testMgrs = window.mgrs.forward(testCoords, 6);
+      console.log('MGRS test successful:', testMgrs);
+    } catch (e) {
+      console.error('MGRS library test failed:', e.message);
+      document.getElementById('status').textContent = 'MGRS library failed to load. Using static fallback.';
+      document.getElementById('mgrs').textContent = 'MGRS (Fallback): 20T PJ 123456 789012 (static)';
+    }
+
+    // Initialize map
     let map;
     try {
       map = new ol.Map({
@@ -72,7 +85,7 @@
       document.getElementById('status').textContent = 'Map failed to initialize. Check console.';
     }
 
-    // Add MGRS grid (1km)
+    // Add MGRS grid
     try {
       const gridLayer = new ol.layer.Graticule({
         strokeStyle: new ol.style.Stroke({ color: '#4a2f1a', width: 1 }),
@@ -123,19 +136,28 @@
 
     // Update map with coordinates
     function updateMap(coords, isFallback = false) {
+      console.log('updateMap called with coords:', coords, 'isFallback:', isFallback);
       try {
-        console.log('Updating map with coords:', coords, 'isFallback:', isFallback);
+        if (!coords || coords.length !== 2 || isNaN(coords[0]) || isNaN(coords[1])) {
+          throw new Error('Invalid coordinates: ' + JSON.stringify(coords));
+        }
         const mercatorCoords = ol.proj.fromLonLat(coords, 'EPSG:3857');
+        console.log('Mercator coords:', mercatorCoords);
         marker.setGeometry(new ol.geom.Point(mercatorCoords));
         map.getView().setCenter(mercatorCoords);
+        if (typeof window.mgrs === 'undefined') {
+          throw new Error('MGRS library not loaded');
+        }
         const mgrs = window.mgrs.forward(coords, 6);
+        console.log('MGRS calculated:', mgrs);
         document.getElementById('mgrs').textContent = `MGRS${isFallback ? ' (Fallback)' : ''}: ${mgrs}`;
         document.getElementById('status').textContent = `Map and location active${isFallback ? ' (using fallback)' : ''}`;
-        console.log('Location updated:', coords, 'MGRS:', mgrs, isFallback ? '(Fallback)' : '');
         locationSet = true;
+        console.log('Map updated successfully');
       } catch (e) {
-        console.error('Error updating map:', e);
-        document.getElementById('status').textContent = 'Error updating map. Check console.';
+        console.error('updateMap error:', e.message, e.stack);
+        document.getElementById('status').textContent = 'Error updating map: ' + e.message;
+        document.getElementById('mgrs').textContent = 'MGRS: Unavailable (library error)';
       }
     }
 
@@ -158,10 +180,10 @@
       geolocation.on('change:position', () => {
         const coords = geolocation.getPosition();
         console.log('Geolocation position:', coords);
-        if (coords && coords[0] !== undefined && coords[1] !== undefined) {
+        if (coords && coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
           updateMap(coords);
         } else {
-          console.warn('Geolocation returned invalid or null position');
+          console.warn('Geolocation returned invalid position:', coords);
           document.getElementById('status').textContent = 'Invalid location data. Using fallback.';
           updateMap(fallbackCoords, true);
         }
@@ -187,8 +209,8 @@
     try {
       document.getElementById('forceFallback').addEventListener('click', () => {
         console.log('Manual fallback button clicked');
-        geolocation.setTracking(false); // Stop geolocation attempts
-        document.getElementById('status').textContent = 'Using fallback location (manual).';
+        alert('Switching to fallback location (Springhill Junction, NS)');
+        geolocation.setTracking(false);
         updateMap(fallbackCoords, true);
       });
       console.log('Fallback button listener added');
@@ -217,18 +239,33 @@
         console.log('Fun is Over button clicked');
         navigator.geolocation.getCurrentPosition((position) => {
           const lonLat = [position.coords.longitude, position.coords.latitude];
-          const mgrs = window.mgrs.forward(lonLat, 6);
-          const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
-          document.getElementById('status').textContent = `Playing voice: "${message}"`;
-          console.log('Playing TTS:', message);
-          speak(message);
+          console.log('Button geolocation success:', lonLat);
+          try {
+            const mgrs = window.mgrs.forward(lonLat, 6);
+            const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
+            document.getElementById('status').textContent = `Playing voice: "${message}"`;
+            speak(message);
+          } catch (e) {
+            console.error('MGRS error in button:', e);
+            const mgrs = '20T PJ 123456 789012 (static)';
+            const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
+            document.getElementById('status').textContent = `Playing voice (fallback): "${message}"`;
+            speak(message);
+          }
         }, (error) => {
           console.error('Button geolocation error:', error.message);
-          const mgrs = window.mgrs.forward(fallbackCoords, 6);
-          const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
-          document.getElementById('status').textContent = `Playing voice (fallback): "${message}"`;
-          console.log('Playing TTS (fallback):', message);
-          speak(message);
+          try {
+            const mgrs = window.mgrs.forward(fallbackCoords, 6);
+            const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
+            document.getElementById('status').textContent = `Playing voice (fallback): "${message}"`;
+            speak(message);
+          } catch (e) {
+            console.error('MGRS error in button fallback:', e);
+            const mgrs = '20T PJ 123456 789012 (static)';
+            const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
+            document.getElementById('status').textContent = `Playing voice (fallback): "${message}"`;
+            speak(message);
+          }
         }, {
           enableHighAccuracy: true,
           timeout: 5000,
