@@ -224,4 +224,21 @@
           speak(message);
         }, (error) => {
           console.error('Button geolocation error:', error.message);
-          const mgrs = window.mgrs.forward
+          const mgrs = window.mgrs.forward(fallbackCoords, 6);
+          const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
+          document.getElementById('status').textContent = `Playing voice (fallback): "${message}"`;
+          console.log('Playing TTS (fallback):', message);
+          speak(message);
+        }, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        });
+      });
+      console.log('Fun is Over button listener added');
+    } catch (e) {
+      console.error('Fun is Over button error:', e);
+    }
+  </script>
+</body>
+</html>
