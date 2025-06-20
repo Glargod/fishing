@@ -91,7 +91,7 @@
       tracking: true,
       trackingOptions: {
         enableHighAccuracy: true,
-        timeout: 5000, // Shorter timeout for quicker fallback
+        timeout: 5000,
         maximumAge: 0
       },
       projection: 'EPSG:4326'
@@ -132,27 +132,58 @@
     }
 
     // Retry geolocation
-    function retryGeolocation(attempts = 2, delay = 3000) {
+    function retryGeolocation(attempts = 1, delay = 3000) {
       if (!locationSet && attempts > 0) {
-        document.getElementById('status').textContent = `Retrying location (${attempts} attempts left)...`;
         console.log(`Retrying geolocation, ${attempts} attempts left`);
+        document.getElementById('status').textContent = `Retrying location (${attempts} attempts left)...`;
         geolocation.setTracking(false);
         geolocation.setTracking(true);
-        setTimeout(() => retryGeolocation(attempts - 1, delay), delay);
+        setTimeout(() => {
+          if (!locationSet) {
+            console.warn('Geolocation retry failed, using fallback');
+            updateMap(fallbackCoords, true);
+          }
+        }, delay);
       } else if (!locationSet) {
+        console.warn('Geolocation exhausted retries, using fallback');
         updateMap(fallbackCoords, true);
       }
     }
 
-    // Check geolocation support
+    // Force fallback if no position after initial timeout
+    setTimeout(() => {
+      if (!locationSet) {
+        console.warn('Initial geolocation timeout, using fallback');
+        document.getElementById('status').textContent = 'Geolocation timed out. Using fallback location.';
+        updateMap(fallbackCoords, true);
+      }
+    }, 7000);
+
+    // Check geolocation support and permissions
     if (!navigator.geolocation) {
+      console.error('Geolocation not supported by browser');
       document.getElementById('status').textContent = 'Geolocation not supported by browser. Using fallback.';
-      console.error('Geolocation not supported');
       updateMap(fallbackCoords, true);
     } else {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'denied') {
+          console.warn('Geolocation permission denied');
+          document.getElementById('status').textContent = 'Location permission denied. Enable in browser settings or use fallback.';
+          updateMap(fallbackCoords, true);
+        } else if (result.state === 'prompt') {
+          console.log('Geolocation permission prompt expected');
+          document.getElementById('status').textContent = 'Please allow location access when prompted...';
+        }
+      }).catch((err) => {
+        console.error('Permission query error:', err);
+        document.getElementById('status').textContent = 'Error checking permissions. Using fallback.';
+        updateMap(fallbackCoords, true);
+      });
+
       geolocation.on('change:position', () => {
         const coords = geolocation.getPosition();
         if (coords) {
+          console.log('Geolocation success:', coords);
           updateMap(coords);
         } else {
           console.warn('Geolocation returned null position');
@@ -161,24 +192,10 @@
       });
 
       geolocation.on('error', (error) => {
-        const msg = `Location error: ${error.message}. Enable GPS and permissions.`;
-        document.getElementById('status').textContent = msg;
+        console.error('Geolocation error:', error.message);
+        document.getElementById('status').textContent = `Location error: ${error.message}. Using fallback.`;
         document.getElementById('mgrs').textContent = 'MGRS: Location unavailable';
-        console.error('Geolocation error:', error);
-        retryGeolocation();
-      });
-
-      // Initial permission check
-      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        if (result.state === 'denied') {
-          document.getElementById('status').textContent = 'Location permission denied. Enable in browser settings or use fallback.';
-          console.warn('Geolocation permission denied');
-          updateMap(fallbackCoords, true);
-        } else if (result.state === 'prompt') {
-          document.getElementById('status').textContent = 'Please allow location access when prompted...';
-        }
-      }).catch((err) => {
-        console.error('Permission query error:', err);
+        updateMap(fallbackCoords, true);
       });
     }
 
@@ -202,8 +219,7 @@
         console.log('Playing TTS:', message);
         speak(message);
       }, (error) => {
-        const msg = 'Geolocation error: ' + error.message;
-        document.getElementById('status').textContent = msg;
+        console.error('Button geolocation error:', error.message);
         const mgrs = window.mgrs.forward(fallbackCoords, 6);
         const message = `Bob just shot a deer, advise me to go to grid ${mgrs}.`;
         document.getElementById('status').textContent = `Playing voice (fallback): "${message}"`;
