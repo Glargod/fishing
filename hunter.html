@@ -91,7 +91,7 @@
       tracking: true,
       trackingOptions: {
         enableHighAccuracy: true,
-        timeout: 10000, // Reduced timeout for faster fallback
+        timeout: 5000, // Shorter timeout for quicker fallback
         maximumAge: 0
       },
       projection: 'EPSG:4326'
@@ -114,49 +114,73 @@
     const fallbackCoords = [-64.35, 45.65];
     let locationSet = false;
 
-    // Retry geolocation
-    function retryGeolocation(attempts = 3, delay = 5000) {
-      if (!locationSet && attempts > 0) {
-        setTimeout(() => {
-          document.getElementById('status').textContent = `Retrying location (${attempts} attempts left)...`;
-          geolocation.setTracking(false);
-          geolocation.setTracking(true);
-          retryGeolocation(attempts - 1, delay);
-        }, delay);
-      } else if (!locationSet) {
-        const mercatorCoords = ol.proj.fromLonLat(fallbackCoords, 'EPSG:3857');
-        marker.setGeometry(new ol.geom.Point(mercatorCoords));
-        map.getView().setCenter(mercatorCoords);
-        const mgrs = window.mgrs.forward(fallbackCoords, 6);
-        document.getElementById('mgrs').textContent = `MGRS (Fallback): ${mgrs}`;
-        document.getElementById('status').textContent = 'Map active; using fallback (enable GPS)';
-        console.log('Fallback location:', fallbackCoords);
-      }
-    }
-
-    geolocation.on('change:position', () => {
-      const coords = geolocation.getPosition();
-      if (coords) {
+    // Update map with coordinates
+    function updateMap(coords, isFallback = false) {
+      try {
         const mercatorCoords = ol.proj.fromLonLat(coords, 'EPSG:3857');
         marker.setGeometry(new ol.geom.Point(mercatorCoords));
         map.getView().setCenter(mercatorCoords);
         const mgrs = window.mgrs.forward(coords, 6);
-        document.getElementById('mgrs').textContent = `MGRS: ${mgrs}`;
-        document.getElementById('status').textContent = 'Map and location active';
-        console.log('Location:', coords, 'MGRS:', mgrs);
+        document.getElementById('mgrs').textContent = `MGRS${isFallback ? ' (Fallback)' : ''}: ${mgrs}`;
+        document.getElementById('status').textContent = `Map and location active${isFallback ? ' (using fallback)' : ''}`;
+        console.log('Location:', coords, 'MGRS:', mgrs, isFallback ? '(Fallback)' : '');
         locationSet = true;
-      } else {
-        retryGeolocation();
+      } catch (e) {
+        console.error('Error updating map:', e);
+        document.getElementById('status').textContent = 'Error updating map. Check console.';
       }
-    });
+    }
 
-    geolocation.on('error', (error) => {
-      const msg = `Location error: ${error.message}. Enable GPS and permissions.`;
-      document.getElementById('status').textContent = msg;
-      document.getElementById('mgrs').textContent = 'MGRS: Location unavailable';
-      console.error('Geolocation error:', error);
-      retryGeolocation();
-    });
+    // Retry geolocation
+    function retryGeolocation(attempts = 2, delay = 3000) {
+      if (!locationSet && attempts > 0) {
+        document.getElementById('status').textContent = `Retrying location (${attempts} attempts left)...`;
+        console.log(`Retrying geolocation, ${attempts} attempts left`);
+        geolocation.setTracking(false);
+        geolocation.setTracking(true);
+        setTimeout(() => retryGeolocation(attempts - 1, delay), delay);
+      } else if (!locationSet) {
+        updateMap(fallbackCoords, true);
+      }
+    }
+
+    // Check geolocation support
+    if (!navigator.geolocation) {
+      document.getElementById('status').textContent = 'Geolocation not supported by browser. Using fallback.';
+      console.error('Geolocation not supported');
+      updateMap(fallbackCoords, true);
+    } else {
+      geolocation.on('change:position', () => {
+        const coords = geolocation.getPosition();
+        if (coords) {
+          updateMap(coords);
+        } else {
+          console.warn('Geolocation returned null position');
+          retryGeolocation();
+        }
+      });
+
+      geolocation.on('error', (error) => {
+        const msg = `Location error: ${error.message}. Enable GPS and permissions.`;
+        document.getElementById('status').textContent = msg;
+        document.getElementById('mgrs').textContent = 'MGRS: Location unavailable';
+        console.error('Geolocation error:', error);
+        retryGeolocation();
+      });
+
+      // Initial permission check
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'denied') {
+          document.getElementById('status').textContent = 'Location permission denied. Enable in browser settings or use fallback.';
+          console.warn('Geolocation permission denied');
+          updateMap(fallbackCoords, true);
+        } else if (result.state === 'prompt') {
+          document.getElementById('status').textContent = 'Please allow location access when prompted...';
+        }
+      }).catch((err) => {
+        console.error('Permission query error:', err);
+      });
+    }
 
     // Text-to-Speech setup
     const synth = window.speechSynthesis;
@@ -187,7 +211,7 @@
         speak(message);
       }, {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 5000,
         maximumAge: 0
       });
     });
