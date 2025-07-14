@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dubi - 80s Kid Zone</title>
+    <title>Dubi - Blockbuster Vault</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=VCR+OSD+Mono&display=swap');
         body {
-            font-family: 'Press Start 2P', cursive;
-            background: linear-gradient(135deg, #1a0033, #330066);
-            color: #00ffcc;
+            font-family: 'VCR OSD Mono', monospace;
+            background: #000000;
+            color: #00FFCC;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
         }
         .wrapper {
             min-height: 100vh;
-            padding-bottom: 70px; /* Space for footer */
+            padding-bottom: 70px;
             position: relative;
         }
         .header {
-            background: url('https://via.placeholder.com/1200x200/000066/00ffcc?text=80s+Skyline') no-repeat center;
-            background-size: cover;
+            background: linear-gradient(90deg, #000000, #FF6600);
             padding: 20px;
             text-align: center;
-            border-bottom: 5px solid #ff00ff;
-            box-shadow: 0 0 15px #ff00ff;
+            border-bottom: 5px solid #00FFCC;
+            box-shadow: 0 0 15px #FF6600;
         }
         .nav {
             display: flex;
@@ -34,83 +33,71 @@
             padding: 10px 0;
         }
         .nav a {
-            color: #ffcc00;
+            color: #FF6600;
             text-decoration: none;
             font-size: 16px;
-            text-shadow: 2px 2px #ff00ff;
+            text-shadow: 2px 2px #00FFCC;
             transition: all 0.3s;
         }
         .nav a:hover {
-            color: #00ffcc;
+            color: #00FFCC;
             transform: scale(1.2);
         }
         .category {
             margin: 20px;
             padding: 15px;
-            background: rgba(0, 0, 102, 0.8);
-            border: 3px dashed #ff00ff;
-            border-radius: 10px;
+            background: #1A1A1A;
+            border: 3px dashed #FF6600;
+            border-radius: 5px;
         }
         .category h2 {
-            color: #ffcc00;
+            color: #FF6600;
             text-align: center;
             text-transform: uppercase;
             margin-bottom: 10px;
-            text-shadow: 2px 2px #00ffcc;
+            text-shadow: 2px 2px #00FFCC;
         }
         .show-list {
             list-style: none;
             padding: 0;
         }
         .show-item {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-left: 5px solid #ff00ff;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255, 102, 0, 0.1);
+            border-left: 5px solid #FF6600;
             transition: all 0.3s;
         }
         .show-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(10px);
+            background: rgba(255, 102, 0, 0.2);
+            transform: translateX(8px);
         }
         .show-item img {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             vertical-align: middle;
             margin-right: 10px;
-            border: 2px solid #ffcc00;
-            border-radius: 5px;
+            border: 2px solid #FF6600;
+            border-radius: 3px;
         }
         .show-item a {
-            color: #00ffcc;
+            color: #00FFCC;
             text-decoration: none;
             font-size: 14px;
-        }
-        .see-all {
-            color: #ff00ff;
-            text-decoration: none;
-            font-size: 14px;
-            display: block;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .see-all:hover {
-            color: #ffcc00;
-            text-shadow: 2px 2px #00ffcc;
         }
         .footer {
             text-align: center;
             padding: 10px;
-            background: #000066;
+            background: #000000;
             color: #888;
-            border-top: 5px solid #ff00ff;
+            border-top: 5px solid #FF6600;
             position: relative;
             width: 100%;
             height: 60px;
-            margin-top: -60px; /* Overlap to align with padding-bottom */
+            margin-top: -60px;
         }
         .footer a {
-            color: #ffcc00;
+            color: #FF6600;
             margin: 0 10px;
             text-decoration: none;
         }
@@ -128,7 +115,7 @@
 <body>
     <div class="wrapper">
         <div class="header">
-            <h1>Dubi - 80s Kid Zone</h1>
+            <h1>Dubi - Blockbuster Vault</h1>
             <div class="nav">
                 <a href="#home">Home</a>
                 <a href="#kids">Kids</a>
@@ -144,65 +131,64 @@
                 <li class="show-item">
                     <a href="https://archive.org/details/the-friendly-giant-the-big-red-barn" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/The_Friendly_Giant_Logo.svg/100px-The_Friendly_Giant_Logo.svg.png" alt="The Friendly Giant">
-                        The Friendly Giant (1958–1985) - Gentle storytelling with Bob Homme, Rusty, and Jerome.
+                        The Friendly Giant
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/mr-dressup-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Mr._Dressup_Logo.svg/100px-Mr._Dressup_Logo.svg.png" alt="Mr. Dressup">
-                        Mr. Dressup (1967–1996) - Ernie Coombs’ crafts and Tickle Trunk adventures.
+                        Mr. Dressup
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/fred-penners-place" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Fred_Penners_Place_Logo.jpg/100px-Fred_Penners_Place_Logo.jpg" alt="Fred Penner’s Place">
-                        Fred Penner’s Place (1985–1997) - Musical show with songs like “The Cat Came Back.”
+                        Fred Penner’s Place
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/the-raccoons-episode-1" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/The_Raccoons_Logo.svg/100px-The_Raccoons_Logo.svg.png" alt="The Raccoons">
-                        The Raccoons (1985–1992) - Animated but story-driven, with Bert Raccoon and friends.
+                        The Raccoons
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/sharon-lois-brams-elephant-show" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Elephant_Show_Logo.jpg/100px-Elephant_Show_Logo.jpg" alt="Sharon, Lois & Bram’s Elephant Show">
-                        Sharon, Lois & Bram’s Elephant Show (1984–1988) - Musical trio with sing-alongs like “Skinnamarink.”
+                        Sharon, Lois & Bram’s Elephant Show
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/chez-helene" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Chez_Helene_Logo.jpg/100px-Chez_Helene_Logo.jpg" alt="Chez Hélène">
-                        Chez Hélène (1959–1973) - French-teaching show with Hélène and Suzie the Mouse.
+                        Chez Hélène
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/degrassi-junior-high" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Degrassi_Logo.svg/100px-Degrassi_Logo.svg.png" alt="Degrassi Junior High / High">
-                        Degrassi Junior High / High (1987–1991) - Gritty teen drama tackling real issues.
+                        Degrassi Junior High / High
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/you-cant-do-that-on-television" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/YCDTOTV_Logo.jpg/100px-YCDTOTV_Logo.jpg" alt="You Can’t Do That on Television">
-                        You Can’t Do That on Television (1979–1990) - Sketch comedy with green slime and irreverent humor.
+                        You Can’t Do That on Television
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/danger-bay" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Danger_Bay_Logo.jpg/100px-Danger_Bay_Logo.jpg" alt="Danger Bay">
-                        Danger Bay (1985–1990) - Marine biologist family adventures in Vancouver.
+                        Danger Bay
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/kids-in-the-hall" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Kids_In_The_Hall_Logo.svg/100px-Kids_In_The_Hall_Logo.svg.png" alt="Kids in the Hall">
-                        Kids in the Hall (1988–1995) - Absurd sketch comedy for older Gen Xers.
+                        Kids in the Hall
                     </a>
                 </li>
             </ul>
-            <a href="#see-all-canadian-live-action" class="see-all">See All</a>
         </div>
 
         <!-- Canadian Cartoons -->
@@ -212,53 +198,52 @@
                 <li class="show-item">
                     <a href="https://archive.org/details/inspector-gadget-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Inspector_Gadget_Logo.svg/100px-Inspector_Gadget_Logo.svg.png" alt="Inspector Gadget">
-                        Inspector Gadget (1983–1986) - Bumbling cyborg detective with Penny and Brain.
+                        Inspector Gadget
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/care-bears-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Care_Bears_Logo.svg/100px-Care_Bears_Logo.svg.png" alt="The Care Bears">
-                        The Care Bears (1985–1988) - Kindness-promoting bears in a colorful world.
+                        The Care Bears
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/babar-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Babar_Logo.jpg/100px-Babar_Logo.jpg" alt="Babar">
-                        Babar (1989–2000) - Elephant king’s adventures in Celesteville.
+                        Babar
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/beetlejuice-cartoon-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Beetlejuice_Cartoon_Logo.jpg/100px-Beetlejuice_Cartoon_Logo.jpg" alt="Beetlejuice">
-                        Beetlejuice (1989–1991) - Quirky animated take on the Tim Burton film.
+                        Beetlejuice
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/tintin-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Tintin_Logo.svg/100px-Tintin_Logo.svg.png" alt="The Adventures of Tintin">
-                        The Adventures of Tintin (1991–1992) - Journalist Tintin’s global adventures with Snowy.
+                        The Adventures of Tintin
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/rocket-robin-hood-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Rocket_Robin_Hood_Logo.jpg/100px-Rocket_Robin_Hood_Logo.jpg" alt="Rocket Robin Hood">
-                        Rocket Robin Hood (1966–1969) - Futuristic Robin Hood with campy sci-fi vibes.
+                        Rocket Robin Hood
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/mighty-hercules-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Mighty_Hercules_Logo.jpg/100px-Mighty_Hercules_Logo.jpg" alt="The Mighty Hercules">
-                        The Mighty Hercules (1963–1966) - Mythological hero’s adventures, popular in reruns.
+                        The Mighty Hercules
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/spider-man-1967-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/SpiderMan_1967_Logo.jpg/100px-SpiderMan_1967_Logo.jpg" alt="Spider-Man">
-                        Spider-Man (1967–1970) - Web-slinging superhero with iconic theme song.
+                        Spider-Man
                     </a>
                 </li>
             </ul>
-            <a href="#see-all-canadian-cartoons" class="see-all">See All</a>
         </div>
 
         <!-- Imported Cartoons -->
@@ -268,95 +253,94 @@
                 <li class="show-item">
                     <a href="https://archive.org/details/scooby-doo-where-are-you-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Scooby_Doo_Logo.svg/100px-Scooby_Doo_Logo.svg.png" alt="Scooby-Doo, Where Are You!">
-                        Scooby-Doo, Where Are You! (1969–1970, reruns) - Mystery-solving gang with humor and spookiness.
+                        Scooby-Doo, Where Are You!
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/flintstones-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/The_Flintstones_Logo.svg/100px-The_Flintstones_Logo.svg.png" alt="The Flintstones">
-                        The Flintstones (1960–1966, reruns) - Prehistoric family comedy with modern humor.
+                        The Flintstones
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/smurfs-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/The_Smurfs_Logo.jpg/100px-The_Smurfs_Logo.jpg" alt="The Smurfs">
-                        The Smurfs (1981–1989) - Blue creatures in a magical forest.
+                        The Smurfs
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/he-man-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/HeMan_Logo.svg/100px-HeMan_Logo.svg.png" alt="He-Man and the Masters of the Universe">
-                        He-Man and the Masters of the Universe (1983–1985) - Epic battles of He-Man vs. Skeletor.
+                        He-Man and the Masters of the Universe
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/she-ra-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/SheRa_Logo.jpg/100px-SheRa_Logo.jpg" alt="She-Ra: Princess of Power">
-                        She-Ra: Princess of Power (1985–1987) - Empowering adventures of He-Man’s sister.
+                        She-Ra: Princess of Power
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/transformers-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Transformers_Logo.svg/100px-Transformers_Logo.svg.png" alt="Transformers">
-                        Transformers (1984–1987) - Autobots vs. Decepticons with toy-driven action.
+                        Transformers
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/tmnt-1987-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/TMNT_Logo.jpg/100px-TMNT_Logo.jpg" alt="Teenage Mutant Ninja Turtles">
-                        Teenage Mutant Ninja Turtles (1987–1996) - Pizza-loving turtles fighting crime.
+                        Teenage Mutant Ninja Turtles
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/fraggle-rock-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Fraggle_Rock_Logo.svg/100px-Fraggle_Rock_Logo.svg.png" alt="Fraggle Rock">
-                        Fraggle Rock (1983–1987) - Jim Henson’s musical Fraggles, filmed in Canada.
+                        Fraggle Rock
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/jetsons-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Jetsons_Logo.svg/100px-The_Jetsons_Logo.svg.png" alt="The Jetsons">
-                        The Jetsons (1962–1963, reruns) - Futuristic family comedy.
+                        The Jetsons
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/looney-tunes-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Looney_Tunes_Logo.svg/100px-Looney_Tunes_Logo.svg.png" alt="Looney Tunes">
-                        Looney Tunes (1930s–1980s, reruns) - Bugs Bunny and friends’ slapstick humor.
+                        Looney Tunes
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/thundercats-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Thundercats_Logo.jpg/100px-Thundercats_Logo.jpg" alt="Thundercats">
-                        Thundercats (1985–1989) - Cat-like heroes led by Lion-O in epic adventures.
+                        Thundercats
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/ducktales-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/DuckTales_Logo.svg/100px-DuckTales_Logo.svg.png" alt="DuckTales">
-                        DuckTales (1987–1990) - Scrooge McDuck’s treasure-hunting with nephews.
+                        DuckTales
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/captain-planet-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Captain_Planet_Logo.jpg/100px-Captain_Planet_Logo.jpg" alt="Captain Planet and the Planeteers">
-                        Captain Planet and the Planeteers (1990–1996) - Teens saving the planet with environmental themes.
+                        Captain Planet and the Planeteers
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/muppet-babies-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Muppet_Babies_Logo.svg/100px-Muppet_Babies_Logo.svg.png" alt="Muppet Babies">
-                        Muppet Babies (1984–1991) - Baby Muppets in imaginative adventures.
+                        Muppet Babies
                     </a>
                 </li>
                 <li class="show-item">
                     <a href="https://archive.org/details/rocky-and-bullwinkle-episode" target="_blank">
                         <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Rocky_and_Bullwinkle_Logo.jpg/100px-Rocky_and_Bullwinkle_Logo.jpg" alt="Rocky and Bullwinkle">
-                        Rocky and Bullwinkle (1959–1964, reruns) - Witty moose and squirrel with “Fractured Fairy Tales.”
+                        Rocky and Bullwinkle
                     </a>
                 </li>
             </ul>
-            <a href="#see-all-imported-cartoons" class="see-all">See All</a>
         </div>
     </div>
     <div class="footer">
