@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dubi - Classic Canadian Kids Shows & Cartoons</title>
+    <title>Dubi - 80s Kid Zone</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(135deg, #1a0033, #330066);
+            color: #00ffcc;
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
         .header {
-            background-color: #00a1d6;
-            padding: 10px;
+            background: url('https://via.placeholder.com/1200x200/000066/00ffcc?text=80s+Skyline') no-repeat center;
+            background-size: cover;
+            padding: 20px;
             text-align: center;
+            border-bottom: 5px solid #ff00ff;
+            box-shadow: 0 0 15px #ff00ff;
         }
         .nav {
             display: flex;
@@ -24,60 +29,99 @@
             padding: 10px 0;
         }
         .nav a {
-            color: #fff;
+            color: #ffcc00;
             text-decoration: none;
-            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 2px 2px #ff00ff;
+            transition: all 0.3s;
+        }
+        .nav a:hover {
+            color: #00ffcc;
+            transform: scale(1.2);
         }
         .category {
             margin: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 102, 0.8);
+            border: 3px dashed #ff00ff;
+            border-radius: 10px;
         }
         .category h2 {
-            color: #b266ff;
+            color: #ffcc00;
+            text-align: center;
+            text-transform: uppercase;
             margin-bottom: 10px;
+            text-shadow: 2px 2px #00ffcc;
         }
-        .video-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        .video-list {
+            list-style: none;
+            padding: 0;
         }
         .video-item {
-            width: 120px;
-            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 5px solid #ff00ff;
+            transition: all 0.3s;
+        }
+        .video-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(10px);
         }
         .video-item img {
-            width: 100%;
-            height: auto;
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+            margin-right: 10px;
+            border: 2px solid #ffcc00;
             border-radius: 5px;
         }
         .video-item a {
-            color: #fff;
-            text-decoration: none;
-        }
-        .video-item p {
-            margin: 5px 0 0;
-            font-size: 12px;
-        }
-        .see-all {
-            color: #b266ff;
+            color: #00ffcc;
             text-decoration: none;
             font-size: 14px;
+        }
+        .see-all {
+            color: #ff00ff;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .see-all:hover {
+            color: #ffcc00;
+            text-shadow: 2px 2px #00ffcc;
         }
         .footer {
             text-align: center;
             padding: 10px;
-            font-size: 12px;
+            background: #000066;
             color: #888;
+            border-top: 5px solid #ff00ff;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
         }
         .footer a {
-            color: #888;
+            color: #ffcc00;
             margin: 0 10px;
             text-decoration: none;
+        }
+        /* VHS Glitch Effect */
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px, 0) skew(0deg); }
+            4%, 60% { transform: translate(-2px, 0) skew(0deg); }
+            62% { transform: translate(0, 0) skew(5deg); }
+        }
+        .header, .category h2 {
+            animation: glitch 2s linear infinite;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Dubi</h1>
+        <h1>Dubi - 80s Kid Zone</h1>
         <div class="nav">
             <a href="#home">Home</a>
             <a href="#kids">Kids</a>
@@ -87,83 +131,95 @@
     </div>
 
     <div class="category">
-        <h2>Classic Canadian Kids Shows & Cartoons</h2>
-        <p>Relive your childhood favorites - completely free!</p>
-        <a href="#start-watching" class="see-all">Start Watching</a>
-    </div>
-
-    <div class="category">
-        <h2>Canadian Classics</h2>
-        <div class="video-grid">
-            <div class="video-item">
+        <h2>Classic Canadian Kids Shows</h2>
+        <ul class="video-list">
+            <li class="video-item">
                 <a href="https://archive.org/details/mr-rogers-neighborhood" target="_blank">
-                    <img src="https://via.placeholder.com/120x80?text=Fred+Rogers+Cardigan" alt="Mr. Rogers">
-                    <p>Mr. Rogers (1968-2001) - Kids</p>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Mister_Rogers%27_Neighborhood_Logo_1971.svg/100px-Mister_Rogers%27_Neighborhood_Logo_1971.svg.png" alt="Mister Rogers">
+                    Mister Rogers (1968-2001) - Kids
                 </a>
-            </div>
-            <div class="video-item">
-                <a href="https://archive.org/search.php?query=mr.%20dressup" target="_blank">
-                    <img src="https://via.placeholder.com/120x80?text=Mr.+Dressup+Puppets" alt="Mr. Dressup">
-                    <p>Mr. Dressup (1967-1996) - Kids</p>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/mr.-dressup-episode-6-from-season-17-1983-kids" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Mr._Dressup_logo.svg/100px-Mr._Dressup_logo.svg.png" alt="Mr. Dressup">
+                    Mr. Dressup (1967-1996) - Kids
                 </a>
-            </div>
-            <div class="video-item">
-                <a href="https://americanarchive.org/catalog/cpb-aacip_29-4947dgdx" target="_blank">
-                    <img src="https://via.placeholder.com/120x80?text=Friendly+Giant+Castle" alt="The Friendly Giant">
-                    <p>The Friendly Giant (1958)</p>
+            </li>
+            <li class="video-item">
+                <a href="https://pbswisconsin.org/video/friendly-giant-108-big-red-barn/" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/The_Friendly_Giant_logo.svg/100px-The_Friendly_Giant_logo.svg.png" alt="The Friendly Giant">
+                    The Friendly Giant (1958-1985)
                 </a>
-            </div>
-        </div>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/captainkangaroo" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Captain_Kangaroo_logo.svg/100px-Captain_Kangaroo_logo.svg.png" alt="Captain Kangaroo">
+                    Captain Kangaroo (1955-1984)
+                </a>
+            </li>
+        </ul>
         <a href="#see-all-canadian" class="see-all">See All</a>
     </div>
 
     <div class="category">
         <h2>Classic Cartoons</h2>
-        <div class="video-grid">
-            <div class="video-item">
-                <a href="https://archive.org/details/ltmm-publicdomain" target="_blank">
-                    <img src="https://via.placeholder.com/120x80?text=Bugs+Bunny" alt="Looney Tunes">
-                    <p>Looney Tunes (1930-1969) - Cartoons</p>
+        <ul class="video-list">
+            <li class="video-item">
+                <a href="https://archive.org/details/looneytunesmerriemelodies1929-1969" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Looney_Tunes_Logo.svg/100px-Looney_Tunes_Logo.svg.png" alt="Looney Tunes">
+                    Looney Tunes (1930-1969)
                 </a>
-            </div>
-            <div class="video-item">
-                <a href="#" target="_blank" onclick="alert('Full episodes not freely available; consider Max or YouTube clips.')">
-                    <img src="https://via.placeholder.com/120x80?text=Scooby+Doo+Gang" alt="Scooby-Doo">
-                    <p>Scooby-Doo (1969-Present) - Cartoons</p>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/three-stooges" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/The_Three_Stooges_logo.svg/100px-The_Three_Stooges_logo.svg.png" alt="Three Stooges">
+                    Three Stooges (1934-1959)
                 </a>
-            </div>
-            <div class="video-item">
-                <a href="https://archive.org/details/tomandjerry_1080p" target="_blank">
-                    <img src="https://via.placeholder.com/120x80?text=Tom+and+Jerry+Chase" alt="Tom and Jerry">
-                    <p>Tom and Jerry (1940)</p>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/flintstones" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/The_Flintstones_logo.svg/100px-The_Flintstones_logo.svg.png" alt="The Flintstones">
+                    The Flintstones (1960-1966)
                 </a>
-            </div>
-        </div>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/the-jetsons" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/The_Jetsons_logo.svg/100px-The_Jetsons_logo.svg.png" alt="The Jetsons">
+                    The Jetsons (1962-1963)
+                </a>
+            </li>
+        </ul>
         <a href="#see-all-cartoons" class="see-all">See All</a>
     </div>
 
     <div class="category">
         <h2>Recently Added</h2>
-        <div class="video-grid">
-            <div class="video-item">
-                <a href="https://americanarchive.org/catalog/cpb-aacip_29-4947dgdx" target="_blank">
-                    <img src="https://via.placeholder.com/120x80?text=Friendly+Giant+Castle" alt="Friendly Giant">
-                    <p>Friendly Giant - New Episodes</p>
+        <ul class="video-list">
+            <li class="video-item">
+                <a href="https://archive.org/details/mr.-dressup-episode-1-from-season-15-1981-kids" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Mr._Dressup_logo.svg/100px-Mr._Dressup_logo.svg.png" alt="Mr. Dressup">
+                    Mr. Dressup (1981 Episode)
                 </a>
-            </div>
-            <div class="video-item">
-                <a href="https://archive.org/details/mr-rogers-neighborhood" target="_blank">
-                    <img src="https://via.placeholder.com/120x80?text=Fred+Rogers+Cardigan" alt="Mr. Rogers">
-                    <p>Mr. Rogers - Classic Episodes</p>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/looneytunesmerriemelodies1929-1969" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Looney_Tunes_Logo.svg/100px-Looney_Tunes_Logo.svg.png" alt="Looney Tunes">
+                    Looney Tunes (Extra Episode)
                 </a>
-            </div>
-            <div class="video-item">
-                <a href="#" target="_blank" onclick="alert('Clarification needed for Todi; no matching show found.')">
-                    <img src="https://via.placeholder.com/120x80?text=Todi+Unknown" alt="Todi">
-                    <p>Todi - Full Series</p>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/sesame-street" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Sesame_Street_logo.svg/100px-Sesame_Street_logo.svg.png" alt="Sesame Street">
+                    Sesame Street (Early Episodes)
                 </a>
-            </div>
-        </div>
+            </li>
+            <li class="video-item">
+                <a href="https://archive.org/details/electric-company" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/The_Electric_Company_logo.svg/100px-The_Electric_Company_logo.svg.png" alt="The Electric Company">
+                    The Electric Company (1971-1977)
+                </a>
+            </li>
+        </ul>
         <a href="#see-all-recent" class="see-all">See All</a>
     </div>
 
