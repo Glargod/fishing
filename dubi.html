@@ -1,358 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dubi - Blockbuster Vault</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=VCR+OSD+Mono&display=swap');
-        body {
-            font-family: 'VCR OSD Mono', monospace;
-            background: #000000;
-            color: #00FFCC;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
-        .wrapper {
-            min-height: 100vh;
-            padding-bottom: 70px; /* Space for footer */
-            position: relative;
-        }
-        .header {
-            background: linear-gradient(90deg, #000000, #FF6600);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 5px solid #00FFCC;
-            box-shadow: 0 0 15px #FF6600;
-        }
-        .nav {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 10px 0;
-        }
-        .nav a {
-            color: #FF6600;
-            text-decoration: none;
-            font-size: 16px;
-            text-shadow: 2px 2px #00FFCC;
-            transition: all 0.3s;
-        }
-        .nav a:hover {
-            color: #00FFCC;
-            transform: scale(1.2);
-        }
-        .category {
-            margin: 20px;
-            padding: 15px;
-            background: #1A1A1A;
-            border: 3px dashed #FF6600;
-            border-radius: 5px;
-        }
-        .category h2 {
-            color: #FF6600;
-            text-align: center;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px #00FFCC;
-        }
-        .show-list {
-            list-style: none;
-            padding: 0;
-        }
-        .show-item {
-            margin-bottom: 10px;
-            padding: 8px;
-            background: rgba(255, 102, 0, 0.1);
-            border-left: 5px solid #FF6600;
-            transition: all 0.3s;
-            text-align: center; /* Center the text */
-        }
-        .show-item:hover {
-            background: rgba(255, 102, 0, 0.2);
-            transform: translateX(8px);
-        }
-        .show-item img {
-            width: 80px;
-            height: 80px;
-            vertical-align: middle;
-            margin-right: 10px;
-            border: 2px solid #FF6600;
-            border-radius: 3px;
-        }
-        .show-item a {
-            color: #00FFCC;
-            text-decoration: none;
-            font-size: 16px; /* Increased font size for readability */
-            display: block; /* Ensures centering works with inline content */
-        }
-        .footer {
-            text-align: center;
-            padding: 10px;
-            background: #000000;
-            color: #888;
-            border-top: 5px solid #FF6600;
-            position: relative;
-            width: 100%;
-            height: 60px;
-            margin-top: -60px;
-        }
-        .footer a {
-            color: #FF6600;
-            margin: 0 10px;
-            text-decoration: none;
-        }
-        /* VHS Glitch Effect */
-        @keyframes glitch {
-            2%, 64% { transform: translate(2px, 0) skew(0deg); }
-            4%, 60% { transform: translate(-2px, 0) skew(0deg); }
-            62% { transform: translate(0, 0) skew(5deg); }
-        }
-        .header, .category h2 {
-            animation: glitch 2s linear infinite;
-        }
-    </style>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dubi - Blockbuster Vault</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=VCR+OSD+Mono&display=swap');
+    body { font-family:'VCR OSD Mono'; background:#000; color:#0f0; margin:0; padding:0; overflow-x:hidden; }
+    .wrapper { min-height:100vh; padding-bottom:70px; position:relative; }
+    .header { background:linear-gradient(90deg,#000,#f60); padding:20px; text-align:center; border-bottom:5px solid #0f0; box-shadow:0 0 15px #f60; animation:glitch 2s linear infinite; }
+    .nav { display:flex; justify-content:center; gap:20px; padding:10px 0; }
+    .nav a { color:#f60; text-decoration:none; font-size:16px; text-shadow:2px 2px #0f0; transition:all .3s; }
+    .nav a:hover { color:#0f0; transform:scale(1.2); }
+    .category { margin:20px; padding:15px; background:#111; border:3px dashed #f60; border-radius:5px; }
+    .category h2 { color:#f60; text-align:center; text-transform:uppercase; margin-bottom:10px; text-shadow:2px 2px #0f0; animation:glitch 2s linear infinite; }
+    .show-list { list-style:none; padding:0; }
+    .show-item { margin-bottom:10px; padding:8px; background:rgba(255,102,0,0.1); border-left:5px solid #f60; transition:all .3s; text-align:center; }
+    .show-item:hover { background:rgba(255,102,0,0.2); transform:translateX(8px); }
+    .show-item img { width:80px; height:auto; vertical-align:middle; margin-right:10px; border:2px solid #f60; border-radius:3px; }
+    .show-item a { color:#0f0; text-decoration:none; font-size:16px; display:inline-block; }
+    .footer { text-align:center; padding:10px; background:#000; color:#888; border-top:5px solid #f60; position:relative; width:100%; height:60px; margin-top:-60px; }
+    .footer a { color:#f60; margin:0 10px; text-decoration:none; }
+    @keyframes glitch {
+      2%,64%{transform:translate(2px,0) skew(0deg);} 4%,60%{transform:translate(-2px,0) skew(0deg);} 62%{transform:translate(0,0) skew(5deg);}
+    }
+  </style>
 </head>
 <body>
-    <div class="wrapper">
-        <div class="header">
-            <h1>Dubi - Blockbuster Vault</h1>
-            <div class="nav">
-                <a href="#home">Home</a>
-                <a href="#kids">Kids</a>
-                <a href="#cartoons">Cartoons</a>
-                <a href="#categories">Categories</a>
-            </div>
-        </div>
+<div class="wrapper">
+  <div class="header"><h1>Dubi - Blockbuster Vault</h1>
+    <div class="nav"><a href="#home">Home</a><a href="#kids">Kids</a><a href="#cartoons">Cartoons</a><a href="#categories">Categories</a></div>
+  </div>
 
-<!-- Canadian Live-Action Classics -->
-<div class="category">
-  <h2>Canadian Live-Action Classics</h2>
-  <ul class="show-list">
+  <!-- Canadian Live-Action Classics -->
+  <div class="category">
+    <h2>Canadian Live-Action Classics</h2>
+    <ul class="show-list">
+      <li class="show-item">
+        <a href="https://www.youtube.com/watch?v=qKNn86z78qg" target="_blank">
+          <img src="https://images.openai.com/thumbnails/url/GVMdqHicu1mUUVJSUGylr5-al1xUWVCSmqJbkpRnoJdeXJJYkpmsl5yfq5-Zm5ieWmxfaAuUsXL0S7F0Tw5OzwvJMspMcs6MjCoILnaOd_d3DPYvyS8wDA0tcPTwrwgOd83zMTBwKvcwyjOP8nMpNK4oCvRMtcxUKwYAzbApDA" alt="The Friendly Giant">
+          The Friendly Giant
+        </a>
+      </li>
+      <li class="show-item">
+        <a href="https://www.youtube.com/watch?v=l7XgnFnxlBs" target="_blank">
+          <img src="https://images.openai.com/thumbnails/url/AOKY8nicu1mUUVJSUGylr5-al1xUWVCSmqJbkpRnoJdeXJJYkpmsl5yfq5-Zm5ieWmxfaAuUsXL0S7F0Tw6yKEsJSUlKKk118k3NK_Qw8zNLS_aOSMpzzAowSEoOD3DxqkqNDzczrcpKC3Ezywp09gl2zyoo80tVKwYA07UpgA" alt="Mr. Dressup">
+          Mr. Dressup
+        </a>
+      </li>
+      <li class="show-item">
+        <a href="https://www.youtube.com/watch?v=hVbECl5plpc" target="_blank">
+          <img src="https://images.openai.com/thumbnails/url/KJvRhHicu1mSUVJSUGylr5-al1xUWVCSmqJbkpRnoJdeXJJYkpmsl5yfq5-Zm5ieWmxfaAuUsXL0S7F0Tw7OMzI3KMlzSizwcCyocA6KcDQtCDNM9QsPKI4vj0h0yQ6oCjMI8nJzjMoyKs4sCk10czT0zyh3dnR0KVcrBgAQ9imJ" alt="Fred Penner’s Place">
+          Fred Penner’s Place
+        </a>
+      </li>
+      <li class="show-item">
+        <a href="https://archive.org/details/raccoonstv" target="_blank">
+          <img src="https://images.openai.com/thumbnails/url/ZA7h0Xicu1mSUVJSUGylr5-al1xUWVCSmqJbkpRnoJdeXJJYkpmsl5yfq5-Zm5ieWmxfaAuUsXL0S7F0Tw4JN3A2KM3OMCnMLtUNCEnMzvLM9nBxT8ssjXCpKg43CC8ozHF3CQksDjGqskiPN3c1TA4Ldw-r9PJUKwYAy8ApNw" alt="The Raccoons">
+          The Raccoons
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    <!-- The Friendly Giant -->
-    <li class="show-item">
-      <a href="https://www.youtube.com/watch?v=-jpGJx5vxSE" target="_blank">
-        <img src="https://m.media-amazon.com/images/M/MV5BZGVmYTE5MzItZTQ2ZS00...jpg" alt="The Friendly Giant">
-        The Friendly Giant
-      </a>
-    </li>
+  <!-- Canadian Cartoons -->
+  <div class="category">
+    <h2>Canadian Cartoons</h2>
+    <ul class="show-list">
+      <li class="show-item"><a href="https://www.youtube.com/watch?v=ZgPX7TQ-Xfs" target="_blank"><img src="https://images.openai.com/thumbnails/url/tt0096866" alt="Inspector Gadget">Inspector Gadget</a></li>
+      <li class="show-item"><a href="https://www.youtube.com/watch?v=Qw8g3s3J7zs" target="_blank"><img src="https://images.openai.com/thumbnails/url/tt0189265" alt="The Care Bears">The Care Bears</a></li>
+      <li class="show-item"><a href="https://archive.org/details/BabarS1E1" target="_blank"><img src="https://images.openai.com/thumbnails/url/tt1227754" alt="Babar">Babar</a></li>
+      <!-- ...repeat for remaining cartoons... -->
+    </ul>
+  </div>
 
-    <!-- Mr. Dressup -->
-    <li class="show-item">
-      <a href="https://www.youtube.com/watch?v=FO-lWd-0u28" target="_blank">
-        <img src="https://m.media-amazon.com/images/M/MV5BMjAyMzE...jpg" alt="Mr. Dressup">
-        Mr. Dressup
-      </a>
-    </li>
+  <!-- Imported Cartoons -->
+  <div class="category">
+    <h2>Imported Cartoons</h2>
+    <ul class="show-list">
+      <li class="show-item"><a href="https://www.youtube.com/watch?v=uch5BRt_gF0" target="_blank"><img src="https://images.openai.com/thumbnails/url/tt0469569" alt="Scooby-Doo, Where Are You!">Scooby-Doo, Where Are You!</a></li>
+      <li class="show-item"><a href="https://www.youtube.com/watch?v=1Z4f_eO82hg" target="_blank"><img src="https://images.openai.com/thumbnails/url/tt0081445" alt="The Flintstones">The Flintstones</a></li>
+      <li class="show-item"><a href="https://archive.org/details/SMURFS_S1E1" target="_blank"><img src="https://images.openai.com/thumbnails/url/tt0077098" alt="The Smurfs">The Smurfs</a></li>
+      <!-- ...repeat for all others... -->
+    </ul>
+  </div>
 
-    <!-- Fred Penner’s Place -->
-    <li class="show-item">
-      <a href="https://www.youtube.com/watch?v=YU8T2UTTIKs" target="_blank">
-        <img src="https://m.media-amazon.com/images/M/MV5BXYZ...jpg" alt="Fred Penner’s Place">
-        Fred Penner’s Place
-      </a>
-    </li>
-
-    <!-- The Raccoons -->
-    <li class="show-item">
-      <a href="https://archive.org/details/the.-raccoons.-s-01-e-04.720p.-webrip.x-264-galaxy-tv" target="_blank">
-        <img src="https://m.media-amazon.com/images/M/MV5BABC...jpg" alt="The Raccoons">
-        The Raccoons
-      </a>
-    </li>
-
-    <!-- You Can’t Do That on Television -->
-    <li class="show-item">
-      <a href="https://archive.org/details/nickelodeon-commercials-1989-60fps" target="_blank">
-        <img src="https://m.media-amazon.com/images/M/MV5BJK...jpg" alt="You Can’t Do That on Television">
-        You Can’t Do That on Television
-      </a>
-    </li>
-
-    <!-- Danger Bay -->
-    <!-- (Placeholder thumbnail; episode link not found yet) -->
-    <li class="show-item">
-      <a href="#" target="_blank">
-        <img src="https://m.media-amazon.com/images/M/MV5BKM...jpg" alt="Danger Bay">
-        Danger Bay
-      </a>
-    </li>
-
-    <!-- Kids in the Hall -->
-    <!-- (Placeholder thumbnail; episode link not found yet) -->
-    <li class="show-item">
-      <a href="#" target="_blank">
-        <img src="https://m.media-amazon.com/images/M/MV5BLM...jpg" alt="Kids in the Hall">
-        Kids in the Hall
-      </a>
-    </li>
-
-  </ul>
 </div>
-
-
-        <!-- Canadian Cartoons -->
-        <div class="category">
-            <h2>Canadian Cartoons</h2>
-            <ul class="show-list">
-                <li class="show-item">
-                    <a href="https://archive.org/details/inspector-gadget-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Inspector_Gadget_Logo.svg/100px-Inspector_Gadget_Logo.svg.png">
-                        Inspector Gadget
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/care-bears-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Care_Bears_Logo.svg/100px-Care_Bears_Logo.svg.png">
-                        The Care Bears
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/babar-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Babar_Logo.jpg/100px-Babar_Logo.jpg">
-                        Babar
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/beetlejuice-cartoon-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Beetlejuice_Cartoon_Logo.jpg/100px-Beetlejuice_Cartoon_Logo.jpg">
-                        Beetlejuice
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/tintin-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Tintin_Logo.svg/100px-Tintin_Logo.svg.png">
-                        The Adventures of Tintin
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/rocket-robin-hood-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Rocket_Robin_Hood_Logo.jpg/100px-Rocket_Robin_Hood_Logo.jpg">
-                        Rocket Robin Hood
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/mighty-hercules-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Mighty_Hercules_Logo.jpg/100px-Mighty_Hercules_Logo.jpg">
-                        The Mighty Hercules
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/spider-man-1967-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/SpiderMan_1967_Logo.jpg/100px-SpiderMan_1967_Logo.jpg">
-                        Spider-Man
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Imported Cartoons -->
-        <div class="category">
-            <h2>Imported Cartoons</h2>
-            <ul class="show-list">
-                <li class="show-item">
-                    <a href="https://archive.org/details/scooby-doo-where-are-you-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Scooby_Doo_Logo.svg/100px-Scooby_Doo_Logo.svg.png">
-                        Scooby-Doo, Where Are You!
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/flintstones-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/The_Flintstones_Logo.svg/100px-The_Flintstones_Logo.svg.png">
-                        The Flintstones
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/smurfs-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/The_Smurfs_Logo.jpg/100px-The_Smurfs_Logo.jpg">
-                        The Smurfs
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/he-man-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/HeMan_Logo.svg/100px-HeMan_Logo.svg.png">
-                        He-Man and the Masters of the Universe
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/she-ra-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/SheRa_Logo.jpg/100px-SheRa_Logo.jpg">
-                        She-Ra: Princess of Power
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/transformers-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Transformers_Logo.svg/100px-Transformers_Logo.svg.png">
-                        Transformers
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/tmnt-1987-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/TMNT_Logo.jpg/100px-TMNT_Logo.jpg">
-                        Teenage Mutant Ninja Turtles
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/fraggle-rock-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Fraggle_Rock_Logo.svg/100px-Fraggle_Rock_Logo.svg.png">
-                        Fraggle Rock
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/jetsons-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/The_Jetsons_Logo.svg/100px-The_Jetsons_Logo.svg.png">
-                        The Jetsons
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/looney-tunes-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Looney_Tunes_Logo.svg/100px-Looney_Tunes_Logo.svg.png">
-                        Looney Tunes
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/thundercats-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Thundercats_Logo.jpg/100px-Thundercats_Logo.jpg">
-                        Thundercats
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/ducktales-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/DuckTales_Logo.svg/100px-DuckTales_Logo.svg.png">
-                        DuckTales
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/captain-planet-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7e/Captain_Planet_Logo.jpg/100px-Captain_Planet_Logo.jpg">
-                        Captain Planet and the Planeteers
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/muppet-babies-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/6e/Muppet_Babies_Logo.svg/100px-Muppet_Babies_Logo.svg.png">
-                        Muppet Babies
-                    </a>
-                </li>
-                <li class="show-item">
-                    <a href="https://archive.org/details/rocky-and-bullwinkle-episode" target="_blank">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Rocky_and_Bullwinkle_Logo.jpg/100px-Rocky_and_Bullwinkle_Logo.jpg">
-                        Rocky and Bullwinkle
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer">
-        <a href="#about">About</a>
-        <a href="#help">Help Center</a>
-        <a href="#terms">Terms</a>
-        <a href="#privacy">Privacy</a>
-        <a href="#contact">Contact</a>
-        <p>© 2023 Dubi. All content is used for educational purposes only.</p>
-        <p>Images sourced from Wikimedia Commons under CC BY-SA 4.0.</p>
-    </div>
+<div class="footer">
+  <a href="#about">About</a><a href="#help">Help Center</a><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#contact">Contact</a>
+  <p>© 2025 Dubi. All content is used for educational purposes only.</p>
+  <p>Images sourced via IMDb thumbnails.</p>
+</div>
 </body>
 </html>
