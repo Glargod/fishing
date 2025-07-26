@@ -14,7 +14,7 @@
             position: relative;
             overflow: hidden;
             min-height: 100vh;
-            -webkit-touch-callout: none; /* Prevent callout on iOS */
+            -webkit-touch-callout: none;
         }
         .bubble {
             position: absolute;
@@ -22,9 +22,10 @@
             border-radius: 50%;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 0, 0, 0.3);
             top: 100%;
-            z-index: -2;
+            z-index: 0; /* Adjusted to ensure visibility */
             animation: bubbleFloat 8s infinite linear, bubbleWobble 2s infinite ease-in-out;
-            -webkit-animation: bubbleFloat 8s infinite linear, bubbleWobble 2s infinite ease-in-out; /* Safari prefix */
+            -webkit-animation: bubbleFloat 8s infinite linear, bubbleWobble 2s infinite ease-in-out;
+            will-change: transform; /* Optimize animation for iOS */
         }
         @keyframes bubbleFloat {
             0% { top: 100%; opacity: 0.6; }
@@ -49,7 +50,7 @@
             border-radius: 5px;
             background-color: #F0E68C;
             color: #000;
-            -webkit-appearance: none; /* Remove iOS input styling */
+            -webkit-appearance: none;
         }
         #angleDisplay, #rangeDisplay {
             font-size: 20px;
@@ -61,7 +62,7 @@
             font-size: 100px;
             display: block;
             margin: 20px auto 0;
-            z-index: -1;
+            z-index: 1; /* Above bubbles */
         }
     </style>
 </head>
@@ -136,6 +137,23 @@
             const g = 9.81;
             const angleRad = angle * (Math.PI / 180);
             return (velocity ** 2 * Math.sin(2 * angleRad)) / g;
+        }
+
+        // Create 20 bubbles with debug
+        for (let i = 0; i < 20; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            document.body.appendChild(bubble);
+
+            const baseSize = 8 + Math.floor(Math.random() * 8);
+            const maxSize = baseSize * 7;
+            const randomSize = baseSize + Math.floor(Math.random() * (maxSize - baseSize + 1));
+            bubble.style.width = `${randomSize}px`;
+            bubble.style.height = `${randomSize}px`;
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.animationDuration = `${6 + Math.random() * 6}s`;
+            bubble.style.animationDelay = `${Math.random() * 4}s`;
+            if (!bubble.style.width) console.log('Bubble creation failed at index:', i); // Debug
         }
 
         updateDisplay();
