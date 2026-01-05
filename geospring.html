@@ -14,107 +14,107 @@
         a { color: #2980b9; text-decoration: none; }
         a:hover { text-decoration: underline; }
         ul { padding-left: 30px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f0f0f0; }
         footer { text-align: center; margin-top: 50px; padding: 20px; font-size: 0.9em; color: #777; }
+        .highlight { background: #e8f4fd; padding: 15px; border-left: 5px solid #2980b9; margin: 20px 0; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>Technical Review: Geothermal Potential in Springhill, Nova Scotia's Flooded Mines</h1>
-        <p><em>Updated Assessment Including Distributed Multi-Cluster Potential and Proposed ORC Enhancements – January 2026</em></p>
+        <p><em>Updated Assessment Including Hybrid Clusters, Residential Scenarios, and Proposal Recommendation – January 2026</em></p>
     </header>
 
     <section id="overview">
         <h2>Project Overview</h2>
-        <p>Springhill pioneered mine-water geothermal since the late 1980s, using flooded coal mines (~4 million m³ water at 18–20°C, deeper potential ~26°C). Proven for direct heating/cooling via heat pumps; electricity unexplored due to low temperatures.</p>
-        
-        <figure>
-            <img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1007%2Fs10230-025-01057-w/MediaObjects/10230_2025_1057_Fig1_HTML.png" alt="Mine water geothermal schematic">
-            <figcaption>Typical mine water heat extraction schematic (analogous to Springhill) – Springer</figcaption>
-        </figure>
+        <p>Springhill pioneered mine-water geothermal since the late 1980s (~4 million m³ water at 18–20°C). Proven for heating/cooling; electricity marginal.</p>
     </section>
 
-    <section id="current-system">
-        <h2>Current System and Resource</h2>
+    <section id="hybrid-clusters">
+        <h2>Hybrid Clusters Definition</h2>
+        <p><strong>Hybrid clusters</strong> are distributed modular sites combining primary thermal use (heating/cooling via heat pumps) with supplementary low-temperature electricity (binary ORC) from the same mine water.</p>
         <ul>
-            <li><strong>Access Points</strong>: ~25 wells drilled; 17 active. Multiple shafts enable distributed development.</li>
-            <li><strong>Technology</strong>: Open-loop heat pumps; reliable thermal use.</li>
-            <li><strong>Scale</strong>: Dozens of connections; vast interconnected reservoir.</li>
+            <li>2–3 wells/shafts per cluster.</li>
+            <li>Thermal priority (COP 3–5); cascaded residual to ORC.</li>
+            <li>Per cluster: Hundreds kW–MW thermal; tens–300 kW electrical.</li>
+            <li>Distributed across dozens of access points for balanced draw and synergies.</li>
         </ul>
     </section>
 
-    <section id="distributed-potential">
-        <h2>Potential for Multiple Distributed Clusters</h2>
-        <p>Numerous shafts/wells allow modular clusters (2–3 turbines/site). Benefits: balanced draw, proximity to loads, synergies in monitoring/heating networks. Realistic total: sub-1 MW electricity (heating dominant).</p>
+    <section id="residential-scenarios">
+        <h2>Residential Heating Coverage Scenarios</h2>
+        <p>Springhill: ~1,200–1,300 households. Average thermal demand ~15–20 MWh/year/home.</p>
         
-        <figure>
-            <img src="https://climeon.com/wp-content/uploads/2024/08/HeatPower300__00009-2.png" alt="Modular ORC unit">
-            <figcaption>Modular low-temperature ORC example (Climeon HeatPower)</figcaption>
-        </figure>
-    </section>
-
-    <section id="proposed-enhancements">
-        <h2>Proposed ORC Enhancements</h2>
-        
-        <h3>Insulated Buffer Tanks with Three Out-of-Sync (Phased) Evaporators per Turbine</h3>
-        <p>Insulated tanks store mine water, feeding three parallel evaporators in staggered phases for smoother vapor flow to one turbine.</p>
+        <h3>Scenario: 50/50 Mix (Baseboard Electric + Mini-Split/Heat Pumps)</h3>
         <ul>
-            <li><strong>Benefits</strong>: Stabilizes flow/temperature; enhances transfer; mitigates fouling; reduces turbine stress.</li>
-            <li><strong>Feasibility</strong>: Common buffering in heat pumps; phased parallel rare in steady geothermal but seen in variable sources. Marginal gains at low ΔT.</li>
-            <li><strong>Challenges</strong>: Added cost/complexity; no direct mine-water ORC precedents.</li>
+            <li>50% baseboard (COP=1): ~15–20 MWh electricity/year each.</li>
+            <li>50% mini-split/heat pump (seasonal COP ~3): ~5–7 MWh electricity/year each.</li>
+            <li><strong>Community Total Electrical Input</strong>: ~9,000–14,000 MWh/year.</li>
         </ul>
         
-        <figure>
-            <img src="https://www.researchgate.net/publication/320975042/figure/fig1/AS:558972395376646@1510280812977/Schematic-of-the-regenerative-ORC-geothermal-power-plant.png" alt="Regenerative ORC with potential parallel">
-            <figcaption>Regenerative ORC schematic (parallel concepts applicable) – ResearchGate</figcaption>
-        </figure>
-        
-        <figure>
-            <img src="https://www.exergy-orc.com/wp-content/uploads/2022/10/heat-recovery-industrial_01.png" alt="Modular parallel ORC">
-            <figcaption>Modular ORC with parallel heat recovery paths</figcaption>
-        </figure>
-        
-        <h3>Using Cooled Mine Water in Condenser Pools/Basins Before Reinjection</h3>
-        <p>Post-evaporator cooled water (~10–12°C) routes to basins for condenser cooling, then reinjects.</p>
+        <p>Mine-water hybrid clusters (COP 4–5 using steady 18–20°C source) deliver thermal efficiently:</p>
         <ul>
-            <li><strong>Benefits</strong>: Minor recovery; potential evaporative boost in dry conditions.</li>
-            <li><strong>Feasibility</strong>: Uncommon; standard binary ORC uses air-cooling or separate loops to avoid fouling.</li>
-            <li><strong>Challenges</strong>: High scaling/corrosion risk; insufficient ΔT; water loss in open systems. Air-cooling preferred.</li>
+            <li>Per cluster sustainable: ~1–3 MW_th → ~3,000–9,000 MWh thermal/year.</li>
+            <li><strong>Clusters Needed for Full Residential Heating</strong>: <strong>3–8 distributed hybrid clusters</strong> (highly feasible given available shafts/wells).</li>
+            <li>Bonus ORC power: ~200–800 kW total supplementary electricity.</li>
         </ul>
         
-        <figure>
-            <img src="https://www.ormat.com/Warehouse/userUploadFiles/Image/eothermal%20ORC1.png" alt="Air-cooled ORC condenser">
-            <figcaption>Typical air-cooled binary ORC condenser</figcaption>
-        </figure>
-        
-        <figure>
-            <img src="https://climeon.com/wp-content/uploads/2023/10/orc-animated.png" alt="ORC process">
-            <figcaption>ORC cycle with separate cooling loop</figcaption>
-        </figure>
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Household Type Split</th>
+                    <th>Annual Electrical Demand (MWh/year total)</th>
+                    <th>Hybrid Clusters Needed (Thermal Coverage)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>100% Baseboard</td>
+                    <td>All resistance (COP=1)</td>
+                    <td>18,000–26,000</td>
+                    <td>8–15</td>
+                </tr>
+                <tr>
+                    <td>50/50 Mix</td>
+                    <td>Half baseboard, half mini-split</td>
+                    <td>9,000–14,000</td>
+                    <td>3–8</td>
+                </tr>
+                <tr>
+                    <td>100% Mini-Split/Heat Pump</td>
+                    <td>All efficient (COP~3)</td>
+                    <td>6,000–9,000</td>
+                    <td>2–5</td>
+                </tr>
+            </tbody>
+        </table>
     </section>
 
-    <section id="orc-feasibility">
-        <h2>Overall Electricity Feasibility (ORC)</h2>
-        <p>Enhancements improve reliability but do not overcome low-temperature limits (~4–7% net efficiency). Per turbine: tens–300 kW; distributed total: sub-1 MW likely.</p>
-    </section>
-
-    <section id="challenges">
-        <h2>Challenges and Risks</h2>
-        <ul>
-            <li>Thermodynamic constraints at ultra-low ΔT.</li>
-            <li>Sustainable multi-site draw.</li>
-            <li>Fouling, complexity in enhancements.</li>
-        </ul>
+    <section id="proposal">
+        <h2>Is This Worth Proposing?</h2>
+        <div class="highlight">
+            <p><strong>Yes—absolutely worth proposing expanded hybrid clusters</strong> for residential district heating (with supplementary ORC electricity).</p>
+            <ul>
+                <li><strong>Proven Foundation</strong>: 35+ years reliable commercial heating; ongoing provincial studies and global mine-water district successes.</li>
+                <li><strong>Realistic Impact</strong>: 3–8 clusters cover near-full residential heating in a 50/50 mix—feasible with existing wells/shafts.</li>
+                <li><strong>Low-Risk Path</strong>: Start with heating pilots; add modular ORC for bonus power.</li>
+                <li><strong>Alignment</strong>: Supports NS clean energy goals, community resilience, and post-mining renewal.</li>
+            </ul>
+            <p>Pitch to municipality, NSCC, or provincial renewables—pragmatic, timely, and transformative.</p>
+        </div>
     </section>
 
     <section id="conclusion">
-        <h2>Conclusion and Recommendations</h2>
-        <p>Proposed enhancements (phased evaporators with buffers, condenser basins) offer innovative stability but marginal impact at proven temperatures. Distributed clusters amplify heating value; power remains supplementary.</p>
-        <p><strong>Recommendations</strong>: Model/pilot enhancements; explore deeper warmer water; prioritize heating expansion.</p>
+        <h2>Conclusion</h2>
+        <p>Hybrid clusters offer a grounded path to community-wide efficient heating. With a realistic 50/50 residential mix, full coverage is achievable with a handful of clusters—well worth pursuing.</p>
     </section>
 
     <footer>
-        <p>Report updated January 2026. Images illustrative of concepts/systems from public sources. Consult local studies for latest developments.</p>
+        <p>Report for Andrew Ross, updated January 2026. Estimates illustrative; actual requires detailed modeling and resource assessment.</p>
     </footer>
 
 </body>
