@@ -48,7 +48,7 @@
             </svg>
             <div class="info">2.1 m</div>
             <div class="status">🌊 Ebbing (Falling)</div>
-            <div id="pug-next" style="margin-top:8px;">Next Low in \~3h 20min (≈ 2:55 AM ADT)</div>
+            <div id="pug-next" style="margin-top:8px;">Calculating...</div>
         </div>
 
         <!-- Bay of Fundy Tab -->
@@ -71,7 +71,7 @@
             </svg>
             <div class="info">3.8 m</div>
             <div class="status">🌊 Flooding (Rising)</div>
-            <div id="burn-next" style="margin-top:8px;">Next High in \~2h 10min (≈ 1:45 AM ADT)</div>
+            <div id="burn-next" style="margin-top:8px;">Calculating...</div>
         </div>
 
         <button onclick="window.location.reload()">↻ Refresh Page</button>
@@ -82,6 +82,33 @@
             document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
             document.querySelectorAll('.tab-content').forEach((c,i) => c.classList.toggle('active', i===n));
         }
+
+        // Set your next tide times here
+        const pugNext = new Date("2026-06-26T02:55:00");
+        const burnNext = new Date("2026-06-26T01:45:00");
+
+        function updateCountdowns() {
+            const now = new Date();
+
+            // Pugwash
+            let diff = pugNext - now;
+            if (diff > 0) {
+                const h = Math.floor(diff / (1000*60*60));
+                const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+                document.getElementById('pug-next').textContent = `Next Low in ${h}h ${m}min (≈ ${pugNext.toLocaleTimeString('en-CA', {hour:'numeric', minute:'2-digit'})} ADT)`;
+            }
+
+            // Bay of Fundy
+            diff = burnNext - now;
+            if (diff > 0) {
+                const h = Math.floor(diff / (1000*60*60));
+                const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+                document.getElementById('burn-next').textContent = `Next High in ${h}h ${m}min (≈ ${burnNext.toLocaleTimeString('en-CA', {hour:'numeric', minute:'2-digit'})} ADT)`;
+            }
+        }
+
+        updateCountdowns();
+        setInterval(updateCountdowns, 30000);
     </script>
 </body>
 </html>
