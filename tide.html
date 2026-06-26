@@ -31,7 +31,7 @@
         <!-- Pugwash Tab -->
         <div id="tab0" class="tab-content active">
             <div class="station">Pugwash (01775)</div>
-            <svg class="clock-svg" width="210" height="210" viewBox="0 0 210 210">
+            <svg class="clock-svg" width="210" height="210" viewBox="0 0 210 210" id="pug-svg">
                 <defs>
                     <linearGradient id="tideGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stop-color="#ff5555"/>
@@ -43,18 +43,18 @@
                 <circle cx="105" cy="105" r="68" fill="none" stroke="#224466" stroke-width="8"/>
                 <text x="105" y="38" text-anchor="middle" fill="#ffdd88" font-size="14">HIGH</text>
                 <text x="105" y="182" text-anchor="middle" fill="#88eeff" font-size="14">LOW</text>
-                <line x1="105" y1="105" x2="105" y2="28" stroke="#ff4444" stroke-width="9" stroke-linecap="round" transform="rotate(135 105 105)"/>
+                <line id="pug-hand" x1="105" y1="105" x2="105" y2="28" stroke="#ff4444" stroke-width="9" stroke-linecap="round"/>
                 <circle cx="105" cy="105" r="14" fill="#ffdd44"/>
             </svg>
             <div class="info">2.1 m</div>
             <div class="status">🌊 Ebbing (Falling)</div>
-            <div id="pug-next" style="margin-top:8px;">Calculating...</div>
+            <div id="pug-next" style="margin-top:8px;">Next Low in calculating...</div>
         </div>
 
         <!-- Bay of Fundy Tab -->
         <div id="tab1" class="tab-content">
             <div class="station">Bay of Fundy (Burntcoat Head)</div>
-            <svg class="clock-svg" width="210" height="210" viewBox="0 0 210 210">
+            <svg class="clock-svg" width="210" height="210" viewBox="0 0 210 210" id="burn-svg">
                 <defs>
                     <linearGradient id="tideGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stop-color="#ff5555"/>
@@ -66,12 +66,12 @@
                 <circle cx="105" cy="105" r="68" fill="none" stroke="#224466" stroke-width="8"/>
                 <text x="105" y="38" text-anchor="middle" fill="#ffdd88" font-size="14">HIGH</text>
                 <text x="105" y="182" text-anchor="middle" fill="#88eeff" font-size="14">LOW</text>
-                <line x1="105" y1="105" x2="105" y2="28" stroke="#ff4444" stroke-width="9" stroke-linecap="round" transform="rotate(240 105 105)"/>
+                <line id="burn-hand" x1="105" y1="105" x2="105" y2="28" stroke="#ff4444" stroke-width="9" stroke-linecap="round"/>
                 <circle cx="105" cy="105" r="14" fill="#ffdd44"/>
             </svg>
             <div class="info">3.8 m</div>
             <div class="status">🌊 Flooding (Rising)</div>
-            <div id="burn-next" style="margin-top:8px;">Calculating...</div>
+            <div id="burn-next" style="margin-top:8px;">Next High in calculating...</div>
         </div>
 
         <button onclick="window.location.reload()">↻ Refresh Page</button>
@@ -83,14 +83,20 @@
             document.querySelectorAll('.tab-content').forEach((c,i) => c.classList.toggle('active', i===n));
         }
 
-        // Set your next tide times here
+        // Set rotation degrees (0 = Low, 180 = High)
+        const pugRotation = 135;   // change as needed
+        const burnRotation = 240;  // change as needed
+
+        document.getElementById('pug-hand').setAttribute('transform', `rotate(${pugRotation} 105 105)`);
+        document.getElementById('burn-hand').setAttribute('transform', `rotate(${burnRotation} 105 105)`);
+
+        // Countdowns (update times as needed)
         const pugNext = new Date("2026-06-26T02:55:00");
         const burnNext = new Date("2026-06-26T01:45:00");
 
         function updateCountdowns() {
             const now = new Date();
 
-            // Pugwash
             let diff = pugNext - now;
             if (diff > 0) {
                 const h = Math.floor(diff / (1000*60*60));
@@ -98,7 +104,6 @@
                 document.getElementById('pug-next').textContent = `Next Low in ${h}h ${m}min (≈ ${pugNext.toLocaleTimeString('en-CA', {hour:'numeric', minute:'2-digit'})} ADT)`;
             }
 
-            // Bay of Fundy
             diff = burnNext - now;
             if (diff > 0) {
                 const h = Math.floor(diff / (1000*60*60));
