@@ -3,35 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pugwash Tide</title>
+    <title>Fundy Tides</title>
     <style>
         body { font-family: Arial, sans-serif; margin:0; padding:20px; background: #0a2f4f; color: white; text-align: center; }
-        .container { max-width: 440px; margin: 0 auto; background: rgba(255,255,255,0.12); padding: 25px; border-radius: 20px; }
-        h1 { margin: 0 0 10px 0; }
-        .level { font-size: 5.2em; font-weight: bold; margin: 15px 0 5px 0; }
-        .status { font-size: 1.6em; margin: 10px 0; }
-        .percent { font-size: 1.8em; font-weight: bold; margin: 5px 0; }
-        .progress { height: 18px; background: #223344; border-radius: 999px; margin: 10px 0; overflow: hidden; }
+        .container { max-width: 520px; margin: 0 auto; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; }
+        h1 { margin: 0 0 20px 0; }
+        .station { margin: 25px 0 15px 0; font-size: 1.3em; font-weight: bold; }
+        .level { font-size: 4.2em; font-weight: bold; margin: 8px 0 4px 0; }
+        .status { font-size: 1.4em; margin: 8px 0; }
+        .percent { font-size: 1.6em; font-weight: bold; margin: 4px 0; }
+        .progress { height: 14px; background: #223344; border-radius: 999px; margin: 8px 0; overflow: hidden; }
         .bar { height: 100%; background: linear-gradient(90deg, #00ddff, #22ffaa); transition: width 1s ease; }
-        button { padding: 14px 32px; font-size: 1.1em; background: #00bbff; color: black; border: none; border-radius: 12px; cursor: pointer; margin: 15px; }
-        .time { font-size: 1.25em; margin-top: 8px; opacity: 0.9; }
+        button { padding: 12px 28px; font-size: 1em; background: #00bbff; color: black; border: none; border-radius: 10px; cursor: pointer; margin: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌊 Pugwash Tide</h1>
-        <div id="level" class="level">2.1 m</div>
-        <div id="status" class="status">🌊 Ebbing (Falling)</div>
-        
-        <div id="percent" class="percent">60%</div>
-        <div class="progress"><div id="bar" class="bar" style="width: 60%"></div></div>
-        
-        <div id="next" style="font-size: 1.35em; margin: 20px 0; line-height: 1.5;">Next Low Tide<br>in <b>3h 20min</b></div>
-        <div id="actual-time" class="time">≈ 2:55 a.m. ADT</div>
-        
+        <h1>🌊 Fundy Tides</h1>
+
+        <!-- Pugwash -->
+        <div class="station">Pugwash (01775)</div>
+        <div id="pug-level" class="level">2.1 m</div>
+        <div id="pug-status" class="status">🌊 Ebbing (Falling)</div>
+        <div id="pug-percent" class="percent">60%</div>
+        <div class="progress"><div id="pug-bar" class="bar" style="width: 60%"></div></div>
+        <div id="pug-next" style="margin:15px 0;">Next Low in \~3h 20min (≈ 2:55 AM ADT)</div>
+
+        <hr style="border-color:#334455; margin:30px 0;">
+
+        <!-- Burntcoat Head -->
+        <div class="station">Burntcoat Head (00270)</div>
+        <div id="burn-level" class="level">3.8 m</div>
+        <div id="burn-status" class="status">🌊 Flooding (Rising)</div>
+        <div id="burn-percent" class="percent">75%</div>
+        <div class="progress"><div id="burn-bar" class="bar" style="width: 75%"></div></div>
+        <div id="burn-next" style="margin:15px 0;">Next High in \~2h 10min (≈ 1:45 AM ADT)</div>
+
         <button onclick="window.location.reload()">↻ Refresh Page</button>
-        <p style="margin-top:20px;">
-            <a href="https://tides.gc.ca/en/stations/01775" target="_blank" style="color:#88ddff;">→ Official Data</a>
+        <p style="margin-top:25px; font-size:0.9em;">
+            <a href="https://tides.gc.ca/en/stations/01775" target="_blank" style="color:#88ddff;">Pugwash Official</a> | 
+            <a href="https://tides.gc.ca/en/stations/00270" target="_blank" style="color:#88ddff;">Burntcoat Head Official</a>
         </p>
     </div>
 </body>
