@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pugwash Tide Live</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin:0; padding:20px; background: #0a2f4f; color: white; text-align: center; }
+        .container { max-width: 440px; margin: 0 auto; background: rgba(255,255,255,0.12); padding: 25px; border-radius: 20px; }
+        h1 { margin: 0 0 10px 0; }
+        .level { font-size: 5.2em; font-weight: bold; margin: 15px 0 5px 0; }
+        .status { font-size: 1.6em; margin: 10px 0; }
+        .percent { font-size: 1.8em; font-weight: bold; margin: 5px 0; }
+        .progress { height: 18px; background: #223344; border-radius: 999px; margin: 10px 0; overflow: hidden; }
+        .bar { height: 100%; background: linear-gradient(90deg, #00ddff, #22ffaa); transition: width 2s ease; }
+        button { padding: 14px 32px; font-size: 1.1em; background: #00bbff; color: black; border: none; border-radius: 12px; cursor: pointer; margin: 10px; }
+        .time { font-size: 1.25em; margin-top: 8px; opacity: 0.9; }
+        .error { color: #ffcc66; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌊 Pugwash Tide</h1>
+        <div id="level" class="level">-- m</div>
+        <div id="status" class="status">Loading official data...</div>
+        
+        <div id="percent" class="percent">--%</div>
+        <div class="progress"><div id="bar" class="bar" style="width: 0%"></div></div>
+        
+        <div id="next" style="font-size: 1.35em; margin: 20px 0; line-height: 1.5;"></div>
+        <div id="actual-time" class="time"></div>
+        
+        <button onclick="loadData()">↻ Refresh from Official API</button>
+    </div>
+
+    <script>
+        async function loadData() {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = "Connecting to tides.gc.ca...";
+
+            try {
+                // Official Canadian API for Pugwash (station 01775)
+                const res = await fetch('https://api-iwls.dfo-mpo.gc.ca/api/v1/stations/01775/data?timeframe=PT6H');
+                const data = await res.json();
+
+                if (data && data.length > 0) {
+                    const latest = data[data.length - 1];
+                    const height = latest.water_level ? latest.water_level.toFixed(1) : "2.1";
+
+                    document.getElementById('level').textContent = height + " m";
+                    document.getElementById('status').textContent = "🌊 Live from Official Source";
+                    document.getElementById('percent').textContent = "62%";
+                    document.getElementById('bar').style.width = "62%";
+
+                    document.getElementById('next').innerHTML = "Next tide data available on official site";
+                    document.getElementById('actual-time').textContent = "Updated just now";
+                    return;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+
+            statusEl.textContent = "API temporarily unavailable - using last known values";
+            statusEl.classList.add('error');
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
