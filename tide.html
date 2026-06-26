@@ -9,15 +9,7 @@
         .container { max-width: 520px; margin: 0 auto; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; }
         h1 { margin: 0 0 20px 0; }
         .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
-        .tab {
-            padding: 12px 28px;
-            margin: 0 6px;
-            background: #1e4a6b;
-            border: none;
-            border-radius: 10px 10px 0 0;
-            cursor: pointer;
-            font-size: 1.15em;
-        }
+        .tab { padding: 12px 28px; margin: 0 6px; background: #1e4a6b; border: none; border-radius: 10px 10px 0 0; cursor: pointer; font-size: 1.15em; }
         .tab.active { background: #00bbff; color: black; font-weight: bold; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -35,6 +27,77 @@
             <button class="tab active" onclick="switchTab(0)">Pugwash</button>
             <button class="tab" onclick="switchTab(1)">Bay of Fundy</button>
         </div>
+
+        <!-- Pugwash -->
+        <div id="tab0" class="tab-content active">
+            <div class="station">Pugwash (01775)</div>
+            <svg class="clock-svg" width="210" height="210" viewBox="0 0 210 210">
+                <circle cx="105" cy="105" r="92" fill="#0f1f33" stroke="#77c8ff" stroke-width="18"/>
+                <circle cx="105" cy="105" r="68" fill="none" stroke="#224466" stroke-width="8"/>
+                <text x="105" y="38" text-anchor="middle" fill="#ffdd88" font-size="14">HIGH</text>
+                <text x="105" y="182" text-anchor="middle" fill="#88eeff" font-size="14">LOW</text>
+                <line x1="105" y1="105" x2="105" y2="28" stroke="#ff4444" stroke-width="9" stroke-linecap="round" transform="rotate(135 105 105)"/>
+                <circle cx="105" cy="105" r="14" fill="#ffdd44"/>
+            </svg>
+            <div class="info">2.1 m</div>
+            <div class="status">🌊 Ebbing (Falling)</div>
+            <div id="pug-next" style="margin-top:8px;">Calculating next tide...</div>
+        </div>
+
+        <!-- Bay of Fundy -->
+        <div id="tab1" class="tab-content">
+            <div class="station">Bay of Fundy (Burntcoat Head)</div>
+            <svg class="clock-svg" width="210" height="210" viewBox="0 0 210 210">
+                <circle cx="105" cy="105" r="92" fill="#0f1f33" stroke="#77c8ff" stroke-width="18"/>
+                <circle cx="105" cy="105" r="68" fill="none" stroke="#224466" stroke-width="8"/>
+                <text x="105" y="38" text-anchor="middle" fill="#ffdd88" font-size="14">HIGH</text>
+                <text x="105" y="182" text-anchor="middle" fill="#88eeff" font-size="14">LOW</text>
+                <line x1="105" y1="105" x2="105" y2="28" stroke="#ff4444" stroke-width="9" stroke-linecap="round" transform="rotate(240 105 105)"/>
+                <circle cx="105" cy="105" r="14" fill="#ffdd44"/>
+            </svg>
+            <div class="info">3.8 m</div>
+            <div class="status">🌊 Flooding (Rising)</div>
+            <div id="burn-next" style="margin-top:8px;">Calculating next tide...</div>
+        </div>
+
+        <button onclick="window.location.reload()">↻ Refresh Page</button>
+    </div>
+
+    <script>
+        function switchTab(n) {
+            document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
+            document.querySelectorAll('.tab-content').forEach((c,i) => c.classList.toggle('active', i===n));
+        }
+
+        // Set your next tide times here (update when needed)
+        const pugNextTide = new Date("2026-06-26T02:55:00");   // Change this
+        const burnNextTide = new Date("2026-06-26T01:45:00"); // Change this
+
+        function updateCountdowns() {
+            const now = new Date();
+
+            // Pugwash
+            let diff = pugNextTide - now;
+            if (diff > 0) {
+                const h = Math.floor(diff / (1000*60*60));
+                const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+                document.getElementById('pug-next').textContent = `Next Low in ${h}h ${m}min (≈ ${pugNextTide.toLocaleTimeString('en-CA', {hour:'numeric', minute:'2-digit'})} ADT)`;
+            }
+
+            // Bay of Fundy
+            diff = burnNextTide - now;
+            if (diff > 0) {
+                const h = Math.floor(diff / (1000*60*60));
+                const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+                document.getElementById('burn-next').textContent = `Next High in ${h}h ${m}min (≈ ${burnNextTide.toLocaleTimeString('en-CA', {hour:'numeric', minute:'2-digit'})} ADT)`;
+            }
+        }
+
+        updateCountdowns();
+        setInterval(updateCountdowns, 30000);
+    </script>
+</body>
+</html>        </div>
 
         <!-- Pugwash Tab -->
         <div id="tab0" class="tab-content active">
