@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operation Overlord — Automation Package</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #3fb950;
+    --accent2: #58a6ff;
+    --warning: #d29922;
+    --code-bg: #0d1117;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.4rem;
+  }
+
+  header .subtitle {
+    color: var(--muted);
+    font-size: 1.15rem;
+    max-width: 640px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(63, 185, 80, 0.15);
+    color: var(--accent);
+    border: 1px solid rgba(63, 185, 80, 0.4);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  section {
+    margin-bottom: 3rem;
+  }
+
+  h2 {
+    font-size: 1.55rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  h2 .num {
+    background: var(--accent);
+    color: #0d1117;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    margin: 1.5rem 0 0.6rem;
+    color: var(--accent2);
+  }
+
+  p, li {
+    color: var(--text);
+    margin-bottom: 0.7rem;
+  }
+
+  .muted { color: var(--muted); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    margin: 1rem 0;
+  }
+
+  .warning-box {
+    background: rgba(210, 153, 34, 0.1);
+    border: 1px solid rgba(210, 153, 34, 0.35);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1.2rem 0;
+    color: #e3b341;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1rem 1.2rem;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    position: relative;
+  }
+
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.88em;
+  }
+
+  .inline-code {
+    background: rgba(110, 118, 129, 0.25);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    background: #21262d;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover {
+    background: #30363d;
+    color: var(--text);
+  }
+
+  .copy-btn.copied {
+    background: rgba(63, 185, 80, 0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+  }
+
+  th {
+    background: #21262d;
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) td {
+    background: rgba(22, 27, 34, 0.6);
+  }
+
+  ul, ol {
+    padding-left: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 700px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.8rem; }
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  a { color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">UEFN • Verse Automation Package</div>
+  <h1>Operation Overlord</h1>
+  <p class="subtitle">
+    Full sequential objective system, progressive vehicle unlocks, bunker mutators, and win conditions — ready to drop into UEFN.
+  </p>
+</header>
+
+<div class="container">
+
+  <!-- INTRO -->
+  <section>
+    <h2><span class="num">0</span> Quick Start</h2>
+    <div class="card">
+      <ol>
+        <li>Open your island in <strong>UEFN</strong>.</li>
+        <li>Create a new Verse file named <span class="inline-code">OperationOverlord_GameManager.verse</span>.</li>
+        <li>Paste the Game Manager code from Section 1.</li>
+        <li>Place the devices listed in Section 2 and assign them to the matching <span class="inline-code">@editable</span> fields on the manager device.</li>
+        <li>Build Verse → Push Changes → Test.</li>
+      </ol>
+      <p class="muted" style="margin-top:1rem;margin-bottom:0">
+        The manager handles sequential unlocks, vehicle enabling, and win conditions automatically. You just wire the devices once.
+      </p>
+    </div>
+  </section>
+
+  <!-- VERSE CODE -->
+  <section>
+    <h2><span class="num">1</span> Core Game Manager (Verse)</h2>
+    <p>This is the brain. It drives the entire D-Day flow: Beachhead → Bunker Complex → Crossroads → Command Post.</p>
+
+    <div style="position:relative">
+      <button class="copy-btn" onclick="copyCode(this, 'verse-code')">Copy Code</button>
+      <pre id="verse-code"><code>using { /Fortnite.com/Devices }
+using { /Fortnite.com/Characters }
+using { /Fortnite.com/Game }
+using { /Fortnite.com/Playspaces }
+using { /Verse.org/Simulation }
+using { /UnrealEngine.com/Temporary/Diagnostics }
+using { /UnrealEngine.com/Temporary/SpatialMath }
+
+# ============================================================
+# OPERATION OVERLORD - Full Sequential War Manager
+# Allies (Team 1) must capture all 4 objectives in order.
+# Axis (Team 2) win if the timer expires.
+# ============================================================
+
+OperationOverlord_GameManager := class(creative_device):
+
+    # ----- Objective Capture Areas (sequential) -----
+    @editable Beachhead_Capture : capture_area_device = capture_area_device{}
+    @editable BunkerComplex_Capture : capture_area_device = capture_area_device{}
+    @editable Crossroads_Capture : capture_area_device = capture_area_device{}
+    @editable CommandPost_Capture : capture_area_device = capture_area_device{}
+
+    # ----- Vehicle Spawners -----
+    @editable AlliedLandingCraft : []vehicle_spawner_device = array{}          # Always available
+    @editable AlliedSupportVehicles : []vehicle_spawner_device = array{}      # Unlock after Beachhead
+    @editable AxisHeavyTanks : []vehicle_spawner_device = array{}              # Always available for Axis
+    @editable AxisLightVehicles : []vehicle_spawner_device = array{}
+    @editable LateGameSharedTanks : []vehicle_spawner_device = array{}         # Unlock after Bunker Complex
+
+    # ----- Mutator Zones (bunker damage boost) -----
+    @editable BunkerMutatorZones : []mutator_zone_device = array{}
+
+    # ----- Team Settings / Win -----
+    @editable RoundTimer : timer_device = timer_device{}
+    @editable AlliesTeamSettings : team_settings_and_inventory_device = team_settings_and_inventory_device{}
+    @editable AxisTeamSettings : team_settings_and_inventory_device = team_settings_and_inventory_device{}
+
+    # ----- Accolades (optional but recommended) -----
+    @editable BeachLandingAccolade : accolades_device = accolades_device{}
+    @editable ObjectiveCaptureAccolade : accolades_device = accolades_device{}
+    @editable MultiKillAccolade : accolades_device = accolades_device{}
+
+    # ----- State -----
+    var CurrentObjectiveIndex : int = 0
+    var BeachheadTaken : logic = false
+    var BunkerTaken : logic = false
+    var CrossroadsTaken : logic = false
+    var CommandPostTaken : logic = false
+
+    OnBegin&lt;override&gt;()&lt;suspends&gt;:void=
+        Print("Operation Overlord Game Manager online")
+
+        # Start with only Beachhead active
+        DisableAllCapturesExcept(Beachhead_Capture)
+        DisableVehicleGroup(AlliedSupportVehicles)
+        DisableVehicleGroup(LateGameSharedTanks)
+
+        # Wire sequential captures
+        Beachhead_Capture.AgentEntersEvent.Subscribe(OnBeachheadProgress)
+        Beachhead_Capture.CapturedEvent.Subscribe(OnBeachheadCaptured)
+
+        BunkerComplex_Capture.CapturedEvent.Subscribe(OnBunkerCaptured)
+        Crossroads_Capture.CapturedEvent.Subscribe(OnCrossroadsCaptured)
+        CommandPost_Capture.CapturedEvent.Subscribe(OnCommandPostCaptured)
+
+        # Timer = Axis win condition
+        RoundTimer.SuccessEvent.Subscribe(OnTimerExpired_AxisWin)
+
+        # Optional: enable bunker mutators immediately
+        for (Zone : BunkerMutatorZones):
+            Zone.Enable()
+
+    # ============================================================
+    # Sequential Capture Logic
+    # ============================================================
+
+    OnBeachheadProgress(Agent : agent):void=
+        # Optional: award "survived the landing" accolade once
+        if (not BeachheadTaken?):
+            BeachLandingAccolade.Award(Agent)
+
+    OnBeachheadCaptured(Agent : agent):void=
+        if (BeachheadTaken?):
+            return
+        set BeachheadTaken = true
+        set CurrentObjectiveIndex = 1
+        Print("BEACHHEAD SECURED - Support vehicles unlocked")
+
+        # Unlock Allied support vehicles
+        EnableVehicleGroup(AlliedSupportVehicles)
+
+        # Enable next objective
+        BunkerComplex_Capture.Enable()
+        ObjectiveCaptureAccolade.Award(Agent)
+
+    OnBunkerCaptured(Agent : agent):void=
+        if (BunkerTaken?):
+            return
+        set BunkerTaken = true
+        set CurrentObjectiveIndex = 2
+        Print("BUNKER COMPLEX TAKEN - Late game tanks unlocked")
+
+        EnableVehicleGroup(LateGameSharedTanks)
+        Crossroads_Capture.Enable()
+        ObjectiveCaptureAccolade.Award(Agent)
+
+    OnCrossroadsCaptured(Agent : agent):void=
+        if (CrossroadsTaken?):
+            return
+        set CrossroadsTaken = true
+        set CurrentObjectiveIndex = 3
+        Print("CROSSROADS SECURED - Final push to the Command Post")
+
+        CommandPost_Capture.Enable()
+        ObjectiveCaptureAccolade.Award(Agent)
+
+    OnCommandPostCaptured(Agent : agent):void=
+        if (CommandPostTaken?):
+            return
+        set CommandPostTaken = true
+        Print("COMMAND POST CAPTURED - ALLIES WIN")
+        ObjectiveCaptureAccolade.Award(Agent)
+
+        # Allies victory
+        GetPlayspace().EndGame(EndGameMode.TeamWin, 0)   # Team 1 = Allies (index 0)
+
+    OnTimerExpired_AxisWin():void=
+        if (CommandPostTaken?):
+            return
+        Print("TIMER EXPIRED - AXIS HOLD THE LINE")
+        GetPlayspace().EndGame(EndGameMode.TeamWin, 1)   # Team 2 = Axis
+
+    # ============================================================
+    # Helpers
+    # ============================================================
+
+    DisableAllCapturesExcept(Active : capture_area_device):void=
+        Beachhead_Capture.Disable()
+        BunkerComplex_Capture.Disable()
+        Crossroads_Capture.Disable()
+        CommandPost_Capture.Disable()
+        Active.Enable()
+
+    EnableVehicleGroup(Group : []vehicle_spawner_device):void=
+        for (Spawner : Group):
+            Spawner.Enable()
+
+    DisableVehicleGroup(Group : []vehicle_spawner_device):void=
+        for (Spawner : Group):
+            Spawner.Disable()</code></pre>
+    </div>
+  </section>
+
+  <!-- DEVICE SETTINGS -->
+  <section>
+    <h2><span class="num">2</span> Device Configuration</h2>
+
+    <h3>Capture Areas (all four)</h3>
+    <table>
+      <tr><th>Setting</th><th>Value</th></tr>
+      <tr><td>Team that can capture</td><td>Team 1 only (Allies)</td></tr>
+      <tr><td>Capture Time</td><td>25 seconds</td></tr>
+      <tr><td>Start State</td><td>Only Beachhead starts Enabled. The other three start Disabled — the Verse manager enables them in order.</td></tr>
+    </table>
+
+    <h3>Vehicle Spawners</h3>
+    <table>
+      <tr><th>Group</th><th>Team</th><th>Respawn</th><th>Start State</th><th>Notes</th></tr>
+      <tr>
+        <td>Allied Landing Craft</td>
+        <td>Team 1</td>
+        <td>30 s</td>
+        <td>Enabled</td>
+        <td>6–8 boats, 40–60 m offshore</td>
+      </tr>
+      <tr>
+        <td>Allied Support Vehicles</td>
+        <td>Team 1</td>
+        <td>40 s</td>
+        <td><strong>Disabled</strong></td>
+        <td>Unlocked after Beachhead</td>
+      </tr>
+      <tr>
+        <td>Axis Heavy Tanks</td>
+        <td>Team 2</td>
+        <td>70 s</td>
+        <td>Enabled</td>
+        <td>Place behind bunker line</td>
+      </tr>
+      <tr>
+        <td>Axis Light Vehicles</td>
+        <td>Team 2</td>
+        <td>35 s</td>
+        <td>Enabled</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Late-Game Shared Tanks</td>
+        <td>Any</td>
+        <td>90 s</td>
+        <td><strong>Disabled</strong></td>
+        <td>Unlocked after Bunker Complex</td>
+      </tr>
+    </table>
+
+    <h3>Mutator Zones (Bunker Line)</h3>
+    <div class="card">
+      <ul>
+        <li>Cover the entire cliff / bunker line with mutator zones.</li>
+        <li><strong>Team Filter:</strong> Team 2 only</li>
+        <li><strong>Weapon Damage:</strong> 1.5×</li>
+        <li>Fire Rate boost: +10–15% if available</li>
+      </ul>
+      <p class="muted" style="margin-bottom:0">This is what makes the Axis machine-gun fire feel properly lethal and suppressing.</p>
+    </div>
+  </section>
+
+  <!-- CLASSES -->
+  <section>
+    <h2><span class="num">3</span> Recommended Class Loadouts</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="margin-top:0;color:var(--accent)">Allies (Team 1)</h3>
+        <ul>
+          <li><strong>Assault</strong> — SMG + Assault Rifle + Grenades + Medkits</li>
+          <li><strong>Support</strong> — Heavy LMG + Ammo</li>
+          <li><strong>Demolition</strong> — Rocket Launcher + Explosives</li>
+          <li><strong>Medic</strong> — Healing items + SMG</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0;color:#f85149">Axis (Team 2)</h3>
+        <ul>
+          <li><strong>Machine Gunner</strong> — Highest fire-rate/damage LMG + extra ammo</li>
+          <li><strong>Bunker Crew</strong> — Heavy LMG + grenades</li>
+          <li><strong>Anti-Tank</strong> — Rocket / guided missile + explosives</li>
+          <li><strong>Sniper</strong> — High-damage long-range rifle</li>
+        </ul>
+        <p class="muted" style="margin-bottom:0;font-size:0.9rem">Give Axis higher starting ammo and slightly better defensive weapons.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PYTHON -->
+  <section>
+    <h2><span class="num">4</span> Bonus: Prop Scattering Script</h2>
+    <p>If you’re using <strong>UEFN-TOOLBELT</strong> (or similar Python automation), you can scatter the beach kill-zone props instead of placing them one by one.</p>
+
+    <div style="position:relative">
+      <button class="copy-btn" onclick="copyCode(this, 'python-code')">Copy Code</button>
+      <pre id="python-code"><code># Example Toolbelt-style commands
+# Adjust asset paths to match your project
+
+tb.run("scatter_props",
+    asset_path="/Game/Props/Military/AntiTankHedgehog",
+    count=45,
+    area_min=(-8000, -2000, 0),
+    area_max=(8000, 2500, 50),
+    min_distance=180.0,
+    random_yaw=True
+)
+
+tb.run("scatter_props",
+    asset_path="/Game/Props/Military/BarbedWire",
+    count=80,
+    area_min=(-7500, -1800, 0),
+    area_max=(7500, 2200, 30),
+    min_distance=120.0,
+    random_yaw=True
+)</code></pre>
+    </div>
+  </section>
+
+  <!-- FINAL NOTES -->
+  <section>
+    <h2><span class="num">5</span> Final Notes for Drew</h2>
+    <div class="card">
+      <p>This package turns the original 10-step manual blueprint into a <strong>code-driven sequential war</strong>.</p>
+      <ul>
+        <li>Only the Beachhead capture starts active.</li>
+        <li>Each objective unlocks the next + the corresponding vehicle group.</li>
+        <li>Timer expiry = Axis victory.</li>
+        <li>All four objectives captured = Allies victory.</li>
+        <li>Bunker mutators make the defensive fire feel properly oppressive.</li>
+      </ul>
+      <p style="margin-bottom:0">Wire the devices once, build Verse, and the flow runs itself. The remaining work is mostly terrain, props, and balance tuning.</p>
+    </div>
+
+    <div class="warning-box">
+      <strong>Note:</strong> Some exact device event names or EndGame API details can shift slightly between UEFN versions. If a Subscribe or EndGame call throws a compile error, check the current Verse digest for the exact signature — the overall structure stays the same.
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Operation Overlord Automation Package · Generated for quick hand-off · July 2026
+</footer>
+
+<script>
+function copyCode(btn, id) {
+  const code = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = "Copy Code";
+      btn.classList.remove("copied");
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
