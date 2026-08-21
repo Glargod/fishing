@@ -7,14 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-        body { font-family: 'Inter', system_ui, sans-serif; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
         .location-tab { transition: all 0.2s ease; }
         .location-tab.active { background-color: #3b82f6; color: white; }
     </style>
 </head>
 <body class="bg-zinc-950 text-slate-200 min-h-screen">
     <div class="max-w-2xl mx-auto p-4">
-        <!-- Header -->
         <header class="bg-blue-600 rounded-3xl p-6 mb-6">
             <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center gap-3">
@@ -26,192 +25,322 @@
                 </div>
                 <div>
                     <div id="current-time" class="text-right font-medium"></div>
-                    <div class="text-xs text-blue-200 text-right">ADT</div>
+                    <div id="tz-label" class="text-xs text-blue-200 text-right">Atlantic</div>
                 </div>
             </div>
 
-            <!-- Location Selector -->
             <div class="flex bg-blue-700 rounded-2xl p-1">
-                <button onclick="switchLocation('heather')" 
-                        class="location-tab active flex-1 px-6 py-2 rounded-xl text-sm font-medium" id="tab-heather">
+                <button type="button" onclick="switchLocation('heather')"
+                        class="location-tab active flex-1 px-4 py-2 rounded-xl text-sm font-medium" id="tab-heather">
                     Heather Beach
                 </button>
-                <button onclick="switchLocation('economy')" 
-                        class="location-tab flex-1 px-6 py-2 rounded-xl text-sm font-medium" id="tab-economy">
-                    Economy, NS (Bay of Fundy)
+                <button type="button" onclick="switchLocation('economy')"
+                        class="location-tab flex-1 px-4 py-2 rounded-xl text-sm font-medium" id="tab-economy">
+                    Economy (Fundy)
                 </button>
             </div>
         </header>
 
-        <!-- Today Summary -->
+        <div id="status" class="text-sm text-slate-400 mb-4 px-1"></div>
+
         <div class="bg-zinc-900 rounded-3xl p-6 mb-6">
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <div class="text-slate-400 text-sm">TODAY</div>
-                    <div id="today-date" class="text-xl font-semibold">Friday, June 12 2026</div>
+                    <div id="today-date" class="text-xl font-semibold">—</div>
                 </div>
-                <div id="fishing-badge" class="bg-emerald-900/60 text-emerald-400 px-4 py-2 rounded-2xl flex items-center gap-2 text-sm">
-                    🐟 Good Fishing
+                <div id="fishing-badge" class="bg-zinc-800 text-slate-300 px-4 py-2 rounded-2xl flex items-center gap-2 text-sm">
+                    …
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4">
-                <div class="bg-zinc-800 rounded-2xl p-5">
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-zinc-800 rounded-2xl p-4">
                     <div class="text-xs text-slate-400">NEXT HIGH</div>
-                    <div id="next-high" class="text-3xl font-bold tabular-nums">9:57 PM</div>
-                    <div id="next-high-height" class="text-emerald-400">1.43 m</div>
+                    <div id="next-high" class="text-2xl sm:text-3xl font-bold tabular-nums">—</div>
+                    <div id="next-high-height" class="text-emerald-400">—</div>
                 </div>
-                <div class="bg-zinc-800 rounded-2xl p-5">
+                <div class="bg-zinc-800 rounded-2xl p-4">
                     <div class="text-xs text-slate-400">NEXT LOW</div>
-                    <div id="next-low" class="text-3xl font-bold tabular-nums">3:14 PM</div>
-                    <div id="next-low-height" class="text-amber-400">-0.17 m</div>
+                    <div id="next-low" class="text-2xl sm:text-3xl font-bold tabular-nums">—</div>
+                    <div id="next-low-height" class="text-amber-400">—</div>
                 </div>
-                <div class="bg-zinc-800 rounded-2xl p-5">
+                <div class="bg-zinc-800 rounded-2xl p-4">
                     <div class="text-xs text-slate-400">NOW</div>
-                    <div id="current-height" class="text-3xl font-bold tabular-nums text-cyan-400">~0.9 m</div>
-                    <div class="text-xs text-slate-400">Rising</div>
+                    <div id="current-height" class="text-2xl sm:text-3xl font-bold tabular-nums text-cyan-400">—</div>
+                    <div id="current-trend" class="text-xs text-slate-400">—</div>
                 </div>
             </div>
         </div>
 
-        <!-- 7-Day Tide + Fishing -->
         <div class="bg-zinc-900 rounded-3xl p-6">
             <h2 class="font-semibold mb-5">7-Day Tide + Fishing</h2>
             <div id="tide-table" class="space-y-6"></div>
         </div>
+
+        <p class="text-xs text-slate-500 mt-6 px-1 leading-relaxed">
+            Predictions from the Canadian Hydrographic Service IWLS API.
+            Heather Beach uses <strong>Pugwash (01775)</strong>; Economy uses <strong>Burntcoat Head (00270)</strong>.
+            Not for navigation. Fishing score is a solunar-style estimate from range and moon phase.
+        </p>
     </div>
 
     <script>
+        const TZ = 'America/Halifax';
+        const API = 'https://api-iwls.dfo-mpo.gc.ca/api/v1';
+
+        const LOCATIONS = {
+            heather: {
+                name: 'Heather Beach',
+                subtitle: 'Northumberland Strait · via Pugwash',
+                stationId: '5cebf1e33d0f4a073c4bc22f',
+                stationName: 'Pugwash'
+            },
+            economy: {
+                name: 'Economy, NS',
+                subtitle: 'Minas Basin · via Burntcoat Head',
+                stationId: '5cebf1df3d0f4a073c4bbc58',
+                stationName: 'Burntcoat Head'
+            }
+        };
+
         let currentLocation = 'heather';
+        const cache = {};
 
-        const heatherData = {
-            name: "Heather Beach",
-            subtitle: "Nova Scotia, Canada",
-            today: {
-                nextHigh: { time: "9:57 PM", height: "1.43 m" },
-                nextLow: { time: "3:14 PM", height: "-0.17 m" },
-                currentHeight: "~0.9 m"
-            },
-            days: [
-                { date: "Fri 12", day: "Friday", fishing: "🐟", major: ["9:45 am", "10:02 pm"], minor: ["2:24 am", "6:06 pm"],
-                  tides: [{t:"2:17 am", ty:"Low", h:"0.57 m"}, {t:"8:07 am", ty:"High", h:"1.60 m"}, {t:"3:14 pm", ty:"Low", h:"-0.17 m"}, {t:"9:57 pm", ty:"High", h:"1.43 m"}] },
-                { date: "Sat 13", day: "Saturday", fishing: "🐟🐟", major: ["10:45 am", "11:08 pm"], minor: ["2:59 am", "7:31 pm"],
-                  tides: [{t:"3:25 am", ty:"Low", h:"0.67 m"}, {t:"9:00 am", ty:"High", h:"1.66 m"}, {t:"4:12 pm", ty:"Low", h:"-0.35 m"}, {t:"11:03 pm", ty:"High", h:"1.52 m"}] },
-                { date: "Sun 14", day: "Sunday", fishing: "🐟🐟🐟", major: ["11:47 am"], minor: ["3:45 am", "8:49 pm"],
-                  tides: [{t:"4:33 am", ty:"Low", h:"0.72 m"}, {t:"9:53 am", ty:"High", h:"1.70 m"}, {t:"5:09 pm", ty:"Low", h:"-0.49 m"}] },
-                { date: "Mon 15", day: "Monday", fishing: "🐟🐟", major: ["12:18 am", "12:48 pm"], minor: ["4:47 am", "10:46 am"] },
-                { date: "Tue 16", day: "Tuesday", fishing: "🐟🐟", major: ["1:03 am", "1:39 pm"], minor: ["5:35 am", "11:39 am"] },
-                { date: "Wed 17", day: "Wednesday", fishing: "🐟", major: ["1:58 am", "2:33 pm"], minor: ["6:31 am", "12:33 pm"] },
-                { date: "Thu 18", day: "Thursday", fishing: "🐟", major: ["2:50 am", "3:30 pm"], minor: ["7:23 am", "1:30 pm"] }
-            ]
-        };
+        function fmtTime(d) {
+            return d.toLocaleTimeString('en-CA', {
+                timeZone: TZ,
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
 
-        const economyData = {
-            name: "Economy, NS",
-            subtitle: "Bay of Fundy (extreme tides)",
-            today: {
-                nextHigh: { time: "10:44 AM", height: "14.15 m" },
-                nextLow: { time: "5:04 PM", height: "3.14 m" },
-                currentHeight: "~8.5 m"
-            },
-            days: [
-                { date: "Fri 12", day: "Friday", fishing: "🐟", major: ["10:44 am", "11:12 pm"], minor: ["4:40 am", "5:04 pm"],
-                  tides: [{t:"4:40 am", ty:"Low", h:"2.9 m"}, {t:"10:44 am", ty:"High", h:"14.15 m"}, {t:"5:04 pm", ty:"Low", h:"3.14 m"}, {t:"11:12 pm", ty:"High", h:"14.99 m"}] },
-                { date: "Sat 13", day: "Saturday", fishing: "🐟🐟", major: ["11:30 am"], minor: ["5:30 am", "6:00 pm"],
-                  tides: [{t:"5:30 am", ty:"Low", h:"2.5 m"}, {t:"11:30 am", ty:"High", h:"14.8 m"}, {t:"6:00 pm", ty:"Low", h:"2.8 m"}] },
-                { date: "Sun 14", day: "Sunday", fishing: "🐟🐟🐟", major: ["12:20 pm"], minor: ["6:20 am", "6:50 pm"],
-                  tides: [{t:"6:20 am", ty:"Low", h:"2.1 m"}, {t:"12:20 pm", ty:"High", h:"15.2 m"}, {t:"6:50 pm", ty:"Low", h:"2.4 m"}] },
-                { date: "Mon 15", day: "Monday", fishing: "🐟🐟", major: ["1:10 pm"], minor: ["7:10 am", "7:40 pm"],
-                  tides: [{t:"7:10 am", ty:"Low", h:"1.8 m"}, {t:"1:10 pm", ty:"High", h:"15.5 m"}] },
-                { date: "Tue 16", day: "Tuesday", fishing: "🐟🐟", major: ["2:00 pm"], minor: ["8:00 am", "8:30 pm"],
-                  tides: [{t:"8:00 am", ty:"Low", h:"1.5 m"}, {t:"2:00 pm", ty:"High", h:"15.7 m"}] },
-                { date: "Wed 17", day: "Wednesday", fishing: "🐟", major: ["2:50 pm"], minor: ["8:50 am", "9:20 pm"],
-                  tides: [{t:"8:50 am", ty:"Low", h:"1.4 m"}, {t:"2:50 pm", ty:"High", h:"15.4 m"}] },
-                { date: "Thu 18", day: "Thursday", fishing: "🐟", major: ["3:40 pm"], minor: ["9:40 am", "10:10 pm"],
-                  tides: [{t:"9:40 am", ty:"Low", h:"1.6 m"}, {t:"3:40 pm", ty:"High", h:"14.9 m"}] }
-            ]
-        };
+        function fmtDateLong(d) {
+            return d.toLocaleDateString('en-CA', {
+                timeZone: TZ,
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
 
-        function updateUI(data) {
-            document.getElementById('location-name').textContent = data.name;
-            document.getElementById('location-subtitle').textContent = data.subtitle;
+        function fmtDateShort(d) {
+            return d.toLocaleDateString('en-CA', {
+                timeZone: TZ,
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
 
-            document.getElementById('next-high').textContent = data.today.nextHigh.time;
-            document.getElementById('next-high-height').textContent = data.today.nextHigh.height;
-            document.getElementById('next-low').textContent = data.today.nextLow.time;
-            document.getElementById('next-low-height').textContent = data.today.nextLow.height;
-            document.getElementById('current-height').textContent = data.today.currentHeight;
+        function ymdInTz(d) {
+            return d.toLocaleDateString('en-CA', { timeZone: TZ });
+        }
+
+        function nowTzParts() {
+            const parts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: TZ,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).formatToParts(new Date());
+            const get = t => parts.find(p => p.type === t).value;
+            return { hour: Number(get('hour')), minute: Number(get('minute')) };
+        }
+
+        function moonIllumination(date) {
+            const synodic = 29.530588853;
+            const knownNew = Date.UTC(2000, 0, 6, 18, 14);
+            const days = (date.getTime() - knownNew) / 86400000;
+            let age = days % synodic;
+            if (age < 0) age += synodic;
+            return { age, phase: age / synodic, illum: (1 - Math.cos(2 * Math.PI * age / synodic)) / 2 };
+        }
+
+        function fishingScore(range, moon) {
+            const spring = 1 - Math.min(1, Math.abs(moon.phase - 0.5) * 2);
+            const newOrFull = Math.max(1 - Math.min(moon.phase, 1 - moon.phase) * 8, spring);
+            const rangeNorm = Math.min(1, range / 12);
+            const score = 0.55 * rangeNorm + 0.45 * newOrFull;
+            if (score >= 0.72) return { label: 'Best Fishing', fish: '🐟🐟🐟', cls: 'bg-emerald-900/60 text-emerald-400' };
+            if (score >= 0.45) return { label: 'Good Fishing', fish: '🐟🐟', cls: 'bg-emerald-900/40 text-emerald-300' };
+            return { label: 'Fair Fishing', fish: '🐟', cls: 'bg-zinc-800 text-slate-300' };
+        }
+
+        function classify(points) {
+            const out = [];
+            for (let i = 0; i < points.length; i++) {
+                const prev = points[i - 1];
+                const next = points[i + 1];
+                const v = points[i].value;
+                let ty;
+                if (prev && next) ty = v >= prev.value && v >= next.value ? 'High' : 'Low';
+                else if (next) ty = v >= next.value ? 'High' : 'Low';
+                else if (prev) ty = v >= prev.value ? 'High' : 'Low';
+                else ty = 'High';
+                out.push({ ...points[i], ty });
+            }
+            return out;
+        }
+
+        function interpolate(now, a, b) {
+            const t0 = a.t.getTime();
+            const t1 = b.t.getTime();
+            const x = Math.min(1, Math.max(0, (now.getTime() - t0) / (t1 - t0)));
+            const s = (1 - Math.cos(Math.PI * x)) / 2;
+            return a.value + (b.value - a.value) * s;
+        }
+
+        async function loadStation(locKey) {
+            if (cache[locKey] && Date.now() - cache[locKey].fetched < 15 * 60 * 1000) {
+                return cache[locKey].events;
+            }
+            const loc = LOCATIONS[locKey];
+            const from = new Date(Date.now() - 12 * 3600 * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
+            const to = new Date(Date.now() + 8 * 86400 * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
+            const url = `${API}/stations/${loc.stationId}/data?time-series-code=wlp-hilo&from=${from}&to=${to}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('CHS request failed (' + res.status + ')');
+            const raw = await res.json();
+            const points = raw
+                .map(r => ({ t: new Date(r.eventDate), value: Number(r.value) }))
+                .filter(p => !Number.isNaN(p.value))
+                .sort((a, b) => a.t - b.t);
+            const events = classify(points);
+            cache[locKey] = { events, fetched: Date.now() };
+            return events;
+        }
+
+        function render(locKey, events) {
+            const loc = LOCATIONS[locKey];
+            const now = new Date();
+            document.getElementById('location-name').textContent = loc.name;
+            document.getElementById('location-subtitle').textContent = loc.subtitle;
+            document.getElementById('today-date').textContent = fmtDateLong(now);
+
+            const nextHigh = events.find(e => e.ty === 'High' && e.t > now);
+            const nextLow = events.find(e => e.ty === 'Low' && e.t > now);
+            document.getElementById('next-high').textContent = nextHigh ? fmtTime(nextHigh.t) : '—';
+            document.getElementById('next-high-height').textContent = nextHigh ? nextHigh.value.toFixed(2) + ' m' : '—';
+            document.getElementById('next-low').textContent = nextLow ? fmtTime(nextLow.t) : '—';
+            document.getElementById('next-low-height').textContent = nextLow ? nextLow.value.toFixed(2) + ' m' : '—';
+
+            let current = null;
+            let trend = '—';
+            for (let i = 0; i < events.length - 1; i++) {
+                if (events[i].t <= now && events[i + 1].t >= now) {
+                    current = interpolate(now, events[i], events[i + 1]);
+                    trend = events[i + 1].value > events[i].value ? 'Rising' : 'Falling';
+                    break;
+                }
+            }
+            document.getElementById('current-height').textContent = current == null ? '—' : '~' + current.toFixed(1) + ' m';
+            document.getElementById('current-trend').textContent = trend;
+
+            const todayKey = ymdInTz(now);
+            const byDay = new Map();
+            for (const e of events) {
+                const key = ymdInTz(e.t);
+                if (!byDay.has(key)) byDay.set(key, []);
+                byDay.get(key).push(e);
+            }
+
+            const dayKeys = [...byDay.keys()].filter(k => k >= todayKey).slice(0, 7);
+            const todayEvents = byDay.get(todayKey) || [];
+            const todayRange = todayEvents.length
+                ? Math.max(...todayEvents.map(e => e.value)) - Math.min(...todayEvents.map(e => e.value))
+                : 0;
+            const badge = fishingScore(todayRange, moonIllumination(now));
+            const badgeEl = document.getElementById('fishing-badge');
+            badgeEl.className = badge.cls + ' px-4 py-2 rounded-2xl flex items-center gap-2 text-sm';
+            badgeEl.textContent = badge.fish + ' ' + badge.label;
 
             const container = document.getElementById('tide-table');
             container.innerHTML = '';
+            for (const key of dayKeys) {
+                const dayEvents = byDay.get(key);
+                const sample = dayEvents[0].t;
+                const range = Math.max(...dayEvents.map(e => e.value)) - Math.min(...dayEvents.map(e => e.value));
+                const score = fishingScore(range, moonIllumination(sample));
+                const highs = dayEvents.filter(e => e.ty === 'High');
+                const lows = dayEvents.filter(e => e.ty === 'Low');
 
-            data.days.forEach(day => {
-                let tideHTML = '';
-                if (day.tides) {
-                    tideHTML = day.tides.map(t => `
-                        <div class="flex items-center gap-4 text-sm">
-                            <div class="w-2 h-2 rounded-full ${t.ty === 'High' ? 'bg-cyan-400' : 'bg-orange-400'}"></div>
-                            <span class="font-medium">${t.t}</span>
-                            <span class="text-slate-400">${t.ty}</span>
-                            <span class="ml-auto tabular-nums">${t.h}</span>
-                        </div>
-                    `).join('');
-                }
+                const tideHTML = dayEvents.map(e => `
+                    <div class="flex items-center gap-4 text-sm">
+                        <div class="w-2 h-2 rounded-full ${e.ty === 'High' ? 'bg-cyan-400' : 'bg-orange-400'}"></div>
+                        <span class="font-medium">${fmtTime(e.t)}</span>
+                        <span class="text-slate-400">${e.ty}</span>
+                        <span class="ml-auto tabular-nums">${e.value.toFixed(2)} m</span>
+                    </div>
+                `).join('');
 
-                const html = `
+                container.insertAdjacentHTML('beforeend', `
                     <div class="border border-zinc-700 rounded-2xl p-5">
                         <div class="flex justify-between items-center mb-4">
                             <div>
-                                <span class="font-semibold">${day.date}</span>
-                                <span class="text-slate-400 ml-2">${day.day}</span>
+                                <span class="font-semibold">${fmtDateShort(sample)}</span>
                             </div>
-                            <div class="text-3xl">${day.fishing}</div>
+                            <div class="text-right">
+                                <div class="text-2xl leading-none">${score.fish}</div>
+                                <div class="text-[11px] text-slate-400 mt-1">range ${range.toFixed(1)} m</div>
+                            </div>
                         </div>
-                        
                         <div class="grid grid-cols-2 gap-6 mb-4 text-sm bg-zinc-950 p-4 rounded-xl">
                             <div>
-                                <div class="text-emerald-400 text-xs mb-1">MAJOR</div>
-                                ${day.major.map(t => `<div>${t}</div>`).join('')}
+                                <div class="text-emerald-400 text-xs mb-1">HIGH</div>
+                                ${highs.length ? highs.map(e => `<div>${fmtTime(e.t)}</div>`).join('') : '<div class="text-slate-500">—</div>'}
                             </div>
                             <div>
-                                <div class="text-amber-400 text-xs mb-1">MINOR</div>
-                                ${day.minor.map(t => `<div>${t}</div>`).join('')}
+                                <div class="text-amber-400 text-xs mb-1">LOW</div>
+                                ${lows.length ? lows.map(e => `<div>${fmtTime(e.t)}</div>`).join('') : '<div class="text-slate-500">—</div>'}
                             </div>
                         </div>
-                        
-                        ${tideHTML ? `<div class="space-y-2">${tideHTML}</div>` : ''}
+                        <div class="space-y-2">${tideHTML}</div>
                     </div>
-                `;
-                container.innerHTML += html;
-            });
+                `);
+            }
+
+            document.getElementById('status').textContent =
+                'Live CHS predictions · ' + loc.stationName + ' · updated ' + fmtTime(now);
+        }
+
+        async function refresh() {
+            const status = document.getElementById('status');
+            status.textContent = 'Loading CHS tides…';
+            try {
+                const events = await loadStation(currentLocation);
+                render(currentLocation, events);
+            } catch (err) {
+                status.textContent = 'Could not reach CHS. Check the connection and retry.';
+                console.error(err);
+            }
         }
 
         function switchLocation(loc) {
             currentLocation = loc;
             document.getElementById('tab-heather').classList.remove('active');
             document.getElementById('tab-economy').classList.remove('active');
-
-            if (loc === 'heather') {
-                document.getElementById('tab-heather').classList.add('active');
-                updateUI(heatherData);
-            } else {
-                document.getElementById('tab-economy').classList.add('active');
-                updateUI(economyData);
-            }
+            document.getElementById('tab-' + loc).classList.add('active');
+            refresh();
         }
 
         function updateClock() {
             const el = document.getElementById('current-time');
             if (el) {
-                const now = new Date();
-                el.textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                el.textContent = new Date().toLocaleTimeString('en-CA', {
+                    timeZone: TZ,
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            updateUI(heatherData);
             updateClock();
             setInterval(updateClock, 30000);
+            refresh();
+            setInterval(refresh, 15 * 60 * 1000);
         });
     </script>
 </body>
